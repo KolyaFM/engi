@@ -1,6 +1,6 @@
 {
   "name": "engi",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/local.test.ts",
+    "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/local.test.ts tests/v2.test.ts",
     "pack:build": "node --import tsx scripts/build-engi-pack.mjs"
   },
   "dependencies": {
