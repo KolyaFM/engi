@@ -22,13 +22,13 @@ export function recipes(b:Bundle):Recipe[]{const ix=indexes(b);const result:Reci
  for(const [tag,members] of scopes)for(const type of new Set(members.map(e=>e.type))){const typed=members.filter(e=>e.type===type);const image=typed.some(e=>ix.mediaByEntity.has(e.id));
  if(image){const base=recipe(tag,type,'identity','image','image_to_name','choice','Кто или что на изображении?');const pool=eligible(b,base);if(pool.length){result.push({...base,format:'recall_reveal',id:base.id.replace(/choice$/,'recall_reveal'),evidence:{...base.evidence!,selfReport:true}});if(new Set(pool.map(i=>i.answerId)).size>=3){result.push(base);if(pool.length>=3)result.push({...base,id:base.id.replace(/choice$/,'match'),format:'match',feed:{...base.feed!,presentation:'rapid_sequence'}})}}}
  for(const p of properties(b).filter(p=>p.learnable&&(!p.subjectTypes?.length||p.subjectTypes.includes(type)))){
-  const cue=p.valueKind==='date'||p.valueKind==='number'?'name':image?'image':'name';
-  for(const direction of ['forward','reverse'] as const){if(direction==='forward'&&p.learning?.forward===false)continue;if(direction==='reverse'&&(!p.inverse?.enabled||p.learning?.reverse!==true||p.valueKind!=='entity'))continue;
+  const cues:Recipe['cue'][]=p.valueKind==='date'||p.valueKind==='number'||!image?['name']:['image','name'];
+  for(const cue of cues)for(const direction of ['forward','reverse'] as const){if(direction==='reverse'&&cue!==cues[0])continue;if(direction==='forward'&&p.learning?.forward===false)continue;if(direction==='reverse'&&(!p.inverse?.enabled||p.learning?.reverse!==true||p.valueKind!=='entity'))continue;
    const base=recipe(tag,type,p.id,direction==='reverse'?'name':cue,direction==='reverse'?`property:${p.id}:reverse`:builtinKey(p,cue),'choice',direction==='reverse'?p.inverse?.name??`${p.name}: какой объект?`:p.name,direction);const pool=eligible(b,base);if(!pool.length)continue;const unique=new Set(pool.map(i=>i.answerId));const repeated=pool.length>unique.size;
    const enabled=(f:Format)=>{const field=f==='recall_reveal'?'recallReveal':f as keyof NonNullable<PropertyDefinition['learning']>;const value=p.learning?.[field];return value!=='off'&&(p.valueKind!=='text'||value==='on')};
    const formats:Format[]=[];if(enabled('recall_reveal'))formats.push('recall_reveal');if(unique.size>=3&&enabled('choice'))formats.push('choice');if(unique.size>=3&&pool.length>=3&&p.valueKind==='entity'&&enabled('match'))formats.push('match');if(unique.size>=2&&repeated&&p.valueKind==='entity'&&enabled('categorize'))formats.push('categorize');
    if(['date','number'].includes(p.valueKind)&&direction==='forward'&&new Set(pool.map(i=>i.year)).size>=3){if(enabled('sort'))formats.push('sort');if(p.valueKind==='date'&&enabled('timeline'))formats.push('timeline');if(p.valueKind==='date'&&enabled('missing'))formats.push('missing')}
-   for(const f of formats)result.push(recipe(tag,type,p.id,base.cue,base.memoryKey,f,base.label!,direction));
+   for(const f of formats){const next=recipe(tag,type,p.id,base.cue,base.memoryKey,f,base.label!,direction);if(cue!==cues[0])next.id=next.id.replace(`:${f}`,`:${cue}:${f}`);result.push(next)}
   }
  }
  }return result;

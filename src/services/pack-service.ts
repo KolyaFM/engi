@@ -1,6 +1,7 @@
 import {ZipReader,BlobReader,BlobWriter,TextWriter,configure,type Entry} from '@zip.js/zip.js';
 import {db,type EngiDB,type PackRow} from '../db/engi-db';
 import {factValue} from '../lib/engi/knowledge/properties';
+import {upstreamFingerprint} from '../lib/engi/knowledge/conflicts';
 import {getBundle,putBundle,contentTables} from '../db/repositories';
 import {validateImport} from '../lib/engi/validate';
 import {mediaStore} from '../media/media-store';
@@ -20,7 +21,7 @@ export async function importPackDirect(file:Blob,onProgress:(s:string)=>void=()=
  // A shared released ID has one meaning across packs; never silently reassign it.
  for(const f of bundle.facts)if(others.some(p=>p.factIds.includes(f.id))){const old=existing.facts.find(x=>x.id===f.id);if(old&&!old.userModified&&factValue(old)!==factValue(f))throw Error('Общий факт конфликтует с другим пакетом')}
  // Preserve user overlays and tombstones; removed upstream rows are archived, never erase history.
- const merge=(rows:any[],oldRows:any[])=>rows.map(row=>{const old=oldRows.find(o=>o.id===row.id);if(old?.userModified||old?.origin==='user'){const clean=(v:any)=>{const {origin,originPackId,originPackVersion,userModified,upstreamConflict,upstreamValue,...rest}=v;return rest};const differs=JSON.stringify(clean(old))!==JSON.stringify(clean(row));return {...old,upstreamConflict:differs,upstreamValue:differs?row:undefined}}return {...row,origin:'pack',originPackId:manifest.packId,originPackVersion:manifest.packVersion}});
+ const merge=(rows:any[],oldRows:any[])=>rows.map(row=>{const old=oldRows.find(o=>o.id===row.id);if(old?.userModified||old?.origin==='user'){const incoming=upstreamFingerprint(row),differs=upstreamFingerprint(old)!==incoming,conflict=differs&&old.upstreamAcknowledged!==incoming;return {...old,upstreamConflict:conflict,upstreamValue:conflict?row:undefined}}return {...row,origin:'pack',originPackId:manifest.packId,originPackVersion:manifest.packVersion}});
  const merged={...bundle};for(const key of ['entities','facts','media','tags','properties','entityTypes'] as const)(merged as any)[key]=merge(bundle[key]??[],existing[key]??[]);
  merged.entityTags=bundle.entityTags.map(row=>{const old=existing.entityTags.find(o=>o.entityId===row.entityId&&o.tagId===row.tagId);return old?.userModified?old:{...row,origin:'pack',originPackId:manifest.packId,originPackVersion:manifest.packVersion}});
  if(prior){for(const [key,table] of [['entityIds',d.entities],['factIds',d.facts],['mediaIds',d.media],['tagIds',d.tags]] as const){const nextIds=new Set((key==='entityIds'?bundle.entities:key==='factIds'?bundle.facts:key==='mediaIds'?bundle.media:bundle.tags).map(x=>x.id));for(const id of prior[key].filter(id=>!nextIds.has(id)&&!others.some(p=>p[key].includes(id)))){const old=await table.get(id);if(old&&!old.userModified&&old.origin!=='user')await (table as any).put({...old,archived:true})}}}

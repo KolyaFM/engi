@@ -1,31 +1,44 @@
 import {BUILTIN_PROPERTIES} from './knowledge/properties';
-import {recipes,eligible} from './questions/recipe-factory';
 export {recipes,eligible,canonicalTargets} from './questions/recipe-factory';
-import { fsrs,createEmptyCard,Rating,type Card } from 'ts-fsrs';
-import type { Bundle,Memory,Recipe,Task,Item,Format } from './types';
+import {fsrs,createEmptyCard,Rating,type Card} from 'ts-fsrs';
+import type {Memory,Task,Item,Format} from './types';
 export const scheduler=fsrs({request_retention:0.9,enable_fuzz:false});
 export const FACT_TYPES=Object.fromEntries(BUILTIN_PROPERTIES.map(p=>[p.id,{valueKind:p.valueKind,subject:p.subjectTypes??[],target:p.targetTypes}]));
-export function shuffle<T>(a:T[]):T[]{return [...a].sort(()=>Math.random()-.5)}
+export function shuffle<T>(a:T[]):T[]{const out=[...a];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
 export function normalize(s:string){return s.toLowerCase().replace(/ё/g,'е').replace(/[^\p{L}\p{N}]/gu,'')}
 export function hydrate(m:Memory):Card{return {...m.card,due:new Date(m.card.due),last_review:m.card.last_review?new Date(m.card.last_review):undefined}}
 export function retention(m:Memory){return m.firstSuccessAt?scheduler.get_retrievability(hydrate(m),new Date(),false):0}
-export function preflight(t:Task){const a=t.items;if(!a.length)return false;if(t.recipe.format==='match'&&!t.recipe.feed&&(a.length<3||new Set(a.map(i=>i.answerId)).size!==a.length))return false;if(['sort','timeline','missing'].includes(t.recipe.format)&& !(t.recipe.feed&&t.recipe.format==='timeline'&&a.length===1)&& (a.length<3||new Set(a.map(i=>i.year)).size!==a.length))return false;if(['sort','timeline','missing'].includes(t.recipe.format)){const sorted=[...a].sort((x,y)=>x.year!-y.year!);for(let i=1;i<sorted.length;i++)if(sorted[i-1].year!>=sorted[i].year!)return false;}if(t.recipe.format==='categorize'&&(t.recipe.feed?t.options.length<2:new Set(a.map(i=>i.answerId)).size<2))return false;if(t.recipe.format==='choice'&&(t.options.length<3||t.options.filter(o=>o.id===a[0].answerId).length!==1))return false;if(new Set(t.options.map(o=>normalize(o.name))).size!==t.options.length||new Set(t.options.map(o=>o.id)).size!==t.options.length)return false;if(['choice','match','categorize'].includes(t.recipe.format)&&t.items.some(i=>t.options.some(o=>o.id!==i.answerId&&[i.answer,...i.aliases].some(a=>normalize(a)===normalize(o.name)))))return false;return true;}
-export function generateSession(b:Bundle,mem:Memory[],tag='all',format='mixed',mode='daily'):Task[]{
- const memoryById=new Map(mem.map(m=>[m.id,m]));const pools=new Map<string,Item[]>();const getPool=(r:Recipe)=>{let p=pools.get(r.id);if(!p){p=eligible(b,r);pools.set(r.id,p)}return p};
- const rs=recipes(b).map(r=>format==='recall'&&r.format==='recall_reveal'?{...r,format:'recall' as Format}:r).filter(r=>(tag==='all'||r.tag===tag)&&(format==='mixed'||r.format===format));const out:Task[]=[];let recent:string[]=[];
- for(let n=0;n<15;n++){const candidates=shuffle(rs).filter(r=>!out.length||out[out.length-1].recipe.format!==r.format||format!=='mixed');let built:Task|undefined;
- for(const r of candidates){let pool=shuffle(getPool(r)).filter(i=>!recent.includes(i.entityId));if(pool.length<1)pool=shuffle(getPool(r));pool.sort((a,c)=>{const weight=(i:Item)=>{const m=memoryById.get(i.targetId);if(mode==='weak')return m?(m.attempts-m.correct)*10:0;if(mode==='explore')return m?0:10;return m?(new Date(m.card.due)<=new Date()?30:0)+(m.attempts-m.correct)*2:8;};return weight(c)-weight(a)});if(!pool.length)continue;
- let items=pool.slice(0,['choice','recall','recall_reveal'].includes(r.format)?1:4);if(r.format==='match'){const seen=new Set<string>();items=pool.filter(i=>{if(seen.has(i.answerId))return false;seen.add(i.answerId);return true}).slice(0,4);}if(['sort','timeline','missing'].includes(r.format)){const seen=new Set<number>();items=pool.filter(i=>{if(seen.has(i.year!))return false;seen.add(i.year!);return true}).slice(0,4);}
- const all=getPool(r);const unique=Array.from(new Map(all.map(i=>[i.answerId,{id:i.answerId,name:i.answer}])).values());let options=unique;
- if(r.format==='choice'){const m=memoryById.get(items[0].targetId);const wrong=shuffle(unique.filter(o=>o.id!==items[0].answerId));wrong.sort((a,c)=>(m?.confusions[c.id]||0)-(m?.confusions[a.id]||0));options=shuffle([{id:items[0].answerId,name:items[0].answer},...wrong.slice(0,3)]);}
- if(['match','categorize'].includes(r.format))options=shuffle(Array.from(new Map(items.map(i=>[i.answerId,{id:i.answerId,name:i.answer}])).values()));
- const m=memoryById.get(items[0].targetId);const t={id:crypto.randomUUID(),recipe:r,items:shuffle(items),options,reason:r.diagnostic?'Проверяем связи':!m?'Новое знание':new Date(m.card.due)<=new Date()?'Пора повторить':'Закрепляем'};if(preflight(t)){built=t;break;}}
- if(!built)break;out.push(built);recent=[...recent,...built.items.map(i=>i.entityId)].slice(-3);
- }return out;
+export function preflight(t:Task){
+ const a=t.items;if(!a.length)return false;
+ if(t.recipe.format==='match'&&!t.recipe.feed&&(a.length<3||new Set(a.map(i=>i.answerId)).size!==a.length))return false;
+ if(['sort','timeline','missing'].includes(t.recipe.format)&&!(t.recipe.feed&&t.recipe.format==='timeline'&&a.length===1)&&(a.length<3||new Set(a.map(i=>i.year)).size!==a.length))return false;
+ if(['sort','timeline','missing'].includes(t.recipe.format)){if(a.some(i=>!Number.isFinite(i.year)))return false;const sorted=[...a].sort((x,y)=>x.year!-y.year!);for(let i=1;i<sorted.length;i++)if(sorted[i-1].year!>=sorted[i].year!)return false}
+ if(t.recipe.format==='categorize'&&(t.recipe.feed?t.options.length<2:new Set(a.map(i=>i.answerId)).size<2))return false;
+ if(t.recipe.format==='choice'&&(t.options.length<(t.discrimination?2:3)||t.options.filter(o=>o.id===a[0].answerId).length!==1))return false;
+ if(new Set(t.options.map(o=>normalize(o.name))).size!==t.options.length||new Set(t.options.map(o=>o.id)).size!==t.options.length)return false;
+ if(['choice','match','categorize'].includes(t.recipe.format)&&t.items.some(i=>t.options.some(o=>o.id!==i.answerId&&[i.answer,...i.aliases].some(a=>normalize(a)===normalize(o.name)))))return false;
+ return true;
 }
-export function assess(t:Task,answer:any){const fmt=t.recipe.format;const evidence:{item:Item;correct:boolean;chosen?:string;level:string}[]=[];
- if(fmt==='timeline'){if(!answer||typeof answer!=='object')throw Error('Укажите годы');const scores=t.items.map(i=>Math.abs(Number(answer[i.entityId])-i.year!)<=15?1:0);return {score:scores.reduce<number>((a,b)=>a+b,0)/scores.length,evidence:[],expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};}
- if(['sort','missing'].includes(fmt)){const expected=[...t.items].sort((a,b)=>a.year!-b.year!).map(i=>i.entityId);if(fmt==='missing'){const target=expected[1];return {score:answer===target?1:0,evidence:[],expected};}if(!Array.isArray(answer)||new Set(answer).size!==t.items.length||!expected.every(x=>answer.includes(x)))throw Error('Заполните все позиции');let correct=0,total=0;for(let i=0;i<answer.length;i++)for(let j=i+1;j<answer.length;j++){total++;if(expected.indexOf(answer[i])<expected.indexOf(answer[j]))correct++;}return {score:correct/total,evidence:[],expected};}
- for(let index=0;index<t.items.length;index++){const item=t.items[index];const val=['match','categorize'].includes(fmt)?(typeof answer==='object'?answer?.[item.entityId]:answer):answer;const ok=fmt==='recall_reveal'?val===true:fmt==='recall'?[item.answer,...item.aliases].some(a=>normalize(a)===normalize(String(val??''))):val===item.answerId;evidence.push({item,correct:ok,chosen:String(val??''),level:t.recipe.evidence?.level??(fmt==='match'?'partial':'direct')});}return {score:evidence.filter(e=>e.correct).length/evidence.length,evidence,expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};
+export function assess(t:Task,answer:any){
+ const fmt=t.recipe.format,evidence:{item:Item;correct:boolean;chosen?:string;level:string}[]=[];
+ if(fmt==='timeline'){
+  if(!answer||typeof answer!=='object')throw Error('Укажите годы');
+  const scores=t.items.map(i=>Math.abs(Number(answer[i.entityId])-i.year!)<=15?1:0);
+  return {score:scores.reduce<number>((a,b)=>a+b,0)/scores.length,evidence:[],expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};
+ }
+ if(['sort','missing'].includes(fmt)){
+  const expected=[...t.items].sort((a,b)=>a.year!-b.year!).map(i=>i.entityId);
+  if(fmt==='missing')return {score:answer===expected[1]?1:0,evidence:[],expected};
+  if(!Array.isArray(answer)||new Set(answer).size!==t.items.length||!expected.every(x=>answer.includes(x)))throw Error('Заполните все позиции');
+  let correct=0,total=0;for(let i=0;i<answer.length;i++)for(let j=i+1;j<answer.length;j++){total++;if(expected.indexOf(answer[i])<expected.indexOf(answer[j]))correct++}
+  return {score:correct/total,evidence:[],expected};
+ }
+ for(const item of t.items){const val=['match','categorize'].includes(fmt)?(typeof answer==='object'?answer?.[item.entityId]:answer):answer;const ok=fmt==='recall_reveal'?val===true:val===item.answerId;evidence.push({item,correct:ok,chosen:String(val??''),level:t.recipe.evidence?.level??'direct'})}
+ return {score:evidence.filter(e=>e.correct).length/evidence.length,evidence,expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};
 }
-export function updateMemory(old:Memory|undefined,item:Item,correct:boolean,chosen:string|undefined,confidence='medium',fmt:Format='choice'){const now=new Date();const m=old??{id:item.targetId,card:createEmptyCard(now),attempts:0,correct:0,confusions:{}};const pretest=!old&&!correct;if(pretest)return undefined;const rating=!correct?Rating.Again:Rating.Good;const next=scheduler.next(old?hydrate(old):createEmptyCard(now),now,rating).card;return {...m,card:next,attempts:m.attempts+1,correct:m.correct+Number(correct),firstSuccessAt:m.firstSuccessAt??(correct?now.toISOString():undefined),confusions:!correct&&chosen?{...m.confusions,[chosen]:(m.confusions[chosen]||0)+1}:m.confusions};}
+export function updateMemory(old:Memory|undefined,item:Item,correct:boolean,chosen:string|undefined,confidence='medium',fmt:Format='choice'){
+ const now=new Date(),m=old??{id:item.targetId,card:createEmptyCard(now),attempts:0,correct:0,confusions:{}};
+ if(!old&&!correct)return undefined;
+ const next=scheduler.next(old?hydrate(old):createEmptyCard(now),now,correct?Rating.Good:Rating.Again).card;
+ return {...m,card:next,attempts:m.attempts+1,correct:m.correct+Number(correct),firstSuccessAt:m.firstSuccessAt??(correct?now.toISOString():undefined),confusions:!correct&&chosen?{...m.confusions,[chosen]:(m.confusions[chosen]||0)+1}:{...m.confusions}};
+}

@@ -3,7 +3,7 @@ import {properties,entityTypes} from './knowledge/properties';
 import type {Bundle} from './types';
 const id=z.string().min(1).max(150);
 const url=z.string().url().refine(s=>s.startsWith('https://'),'Нужна HTTPS-ссылка');
-const origin={origin:z.enum(['pack','user']).optional(),originPackId:id.optional(),originPackVersion:z.number().int().positive().optional(),userModified:z.boolean().optional(),archived:z.boolean().optional(),upstreamConflict:z.boolean().optional(),upstreamValue:z.unknown().optional()};
+const origin={origin:z.enum(['pack','user']).optional(),originPackId:id.optional(),originPackVersion:z.number().int().positive().optional(),userModified:z.boolean().optional(),archived:z.boolean().optional(),upstreamConflict:z.boolean().optional(),upstreamValue:z.unknown().optional(),upstreamAcknowledged:z.string().optional()};
 const kind=z.enum(['entity','text','number','date','boolean']);
 const flag=z.enum(['auto','on','off']);
 export const propertySchema=z.object({...origin,id,name:z.string().min(1).max(200),shortName:z.string().optional(),description:z.string().optional(),valueKind:kind,subjectTypes:z.array(id).optional(),targetTypes:z.array(id).optional(),cardinality:z.enum(['one','many']),learnable:z.boolean(),inverse:z.object({enabled:z.boolean(),name:z.string().optional()}).optional(),learning:z.object({forward:z.boolean().optional(),reverse:z.boolean().optional(),choice:flag.optional(),recallReveal:flag.optional(),match:flag.optional(),categorize:flag.optional(),timeline:flag.optional(),sort:flag.optional(),missing:flag.optional()}).optional(),builtIn:z.boolean().optional(),createdAt:z.string().optional(),updatedAt:z.string().optional()});
