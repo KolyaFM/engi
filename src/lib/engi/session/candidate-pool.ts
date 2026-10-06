@@ -23,11 +23,12 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  candidates.sort((a,c)=>{const rank=(i:typeof a)=>{const m=mem.get(i.targetId)!,overdue=Math.max(0,Date.now()-new Date(m.card.due).getTime())/86400000,tagPenalty=narrowTags(i.entityId).some(id=>recentTags.filter(t=>t===id).length>=2)?10:0;return (m.status==='triaged'||m.status==='learning'?-4:0)-Math.min(overdue,20)+tagPenalty};return rank(a)-rank(c)});
  const diagnosticFormat=['timeline','sort','missing'].includes(s.format??'');
  if(!diagnosticFormat)for(const i of candidates){const m=mem.get(i.targetId)!,task=composeUnit(b,m,s.tag,s.format,history);if(task){task.practice=s.mode==='practice'&&!unitDue(m,s.id,completed);task.reason=task.practice?'practice':m.status==='triaged'||m.status==='learning'?'bootstrap':'due';return {task}}}
- const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(i=>i.entityId)]),newUnits=units.filter(i=>!mem.has(i.targetId));
+ const entityOf=(i:typeof units[number])=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId;
+ const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId));
  const budget=Math.max(0,(due.length>=20?1:3)+newState.extraBudget-newState.introducedEntityIds.length);
- const ownerKnown=(i:typeof units[number])=>seenEntities.has(i.entityId)||!!(i.factId&&seenEntities.has(b.facts.find(f=>f.id===i.factId)?.entityId??''));
- const first=newUnits.find(ownerKnown)??(budget>0?newUnits.find(i=>!sameEntity(i.entityId)):undefined);
- if(first){const newProperty=ownerKnown(first),items=newProperty?[first]:newUnits.filter(i=>i.entityId===first.entityId);return {intro:{entityId:first.factId?b.facts.find(f=>f.id===first.factId)?.entityId??first.entityId:first.entityId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}
+ const ownerKnown=(i:typeof units[number])=>seenEntities.has(entityOf(i));
+ const first=newUnits.find(ownerKnown)??(budget>0?newUnits.find(i=>!sameEntity(entityOf(i))):undefined);
+ if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}
  if(diagnosticFormat||(s.ordinaryCount??0)>=8&&ordinary.slice(-8).every(t=>!t.recipe.diagnostic)){
   const activeIds=new Set(known.map(i=>i.factId)),db={...b,facts:b.facts.filter(f=>activeIds.has(f.id))};
   for(const format of diagnosticFormat?[s.format!]:['timeline','sort','missing']){

@@ -7,3 +7,4 @@ packs/
 dist-packs/
 pack-source/
 !tests/fixtures/*.engi
+/.ai_backups
