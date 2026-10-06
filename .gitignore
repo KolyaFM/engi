@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.engi
+*.engi-backup
+packs/
+dist-packs/
+pack-source/
+!tests/fixtures/*.engi

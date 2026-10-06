@@ -1,0 +1,1101 @@
+{
+  "entities": [
+    {
+      "id": "grande-jatte",
+      "type": "artwork",
+      "name": "Воскресный день на острове Гранд-Жатт",
+      "aliases": [
+        "Воскресенье на острове Гранд-Жатт",
+        "Гранд-Жатт"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:0",
+      "type": "person",
+      "name": "Жорж Сёра",
+      "aliases": [
+        "Сёра"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "bedroom",
+      "type": "artwork",
+      "name": "Спальня в Арле",
+      "aliases": [
+        "Спальня",
+        "Комната в Арле"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:1",
+      "type": "person",
+      "name": "Винсент ван Гог",
+      "aliases": [
+        "Гог"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "water-lilies",
+      "type": "artwork",
+      "name": "Кувшинки",
+      "aliases": [
+        "Водяные лилии"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:2",
+      "type": "person",
+      "name": "Клод Моне",
+      "aliases": [
+        "Моне"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "gare-saint-lazare",
+      "type": "artwork",
+      "name": "Прибытие поезда из Нормандии на вокзал Сен-Лазар",
+      "aliases": [
+        "Вокзал Сен-Лазар"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "paris-rain",
+      "type": "artwork",
+      "name": "Парижская улица в дождливую погоду",
+      "aliases": [
+        "Парижская улица. Дождь"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:3",
+      "type": "person",
+      "name": "Гюстав Кайботт",
+      "aliases": [
+        "Кайботт"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "basket-apples",
+      "type": "artwork",
+      "name": "Корзина с яблоками",
+      "aliases": [
+        "Натюрморт с корзиной яблок"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:4",
+      "type": "person",
+      "name": "Поль Сезанн",
+      "aliases": [
+        "Сезанн"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "child-bath",
+      "type": "artwork",
+      "name": "Купание ребёнка",
+      "aliases": [
+        "Купание ребенка"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:5",
+      "type": "person",
+      "name": "Мэри Кассат",
+      "aliases": [
+        "Кассат"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "moulin-rouge",
+      "type": "artwork",
+      "name": "В Мулен Руж",
+      "aliases": [
+        "В Мулен-Руж"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:6",
+      "type": "person",
+      "name": "Анри де Тулуз-Лотрек",
+      "aliases": [
+        "Тулуз-Лотрек"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "girl-pearl",
+      "type": "artwork",
+      "name": "Девушка с жемчужной серёжкой",
+      "aliases": [
+        "Девушка с жемчужной сережкой"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:7",
+      "type": "person",
+      "name": "Ян Вермеер",
+      "aliases": [
+        "Вермеер"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "mona-lisa",
+      "type": "artwork",
+      "name": "Мона Лиза",
+      "aliases": [
+        "Джоконда"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:8",
+      "type": "person",
+      "name": "Леонардо да Винчи",
+      "aliases": [
+        "Винчи"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "starry-night",
+      "type": "artwork",
+      "name": "Звёздная ночь",
+      "aliases": [
+        "Звездная ночь"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "scream",
+      "type": "artwork",
+      "name": "Крик",
+      "aliases": [
+        "The Scream"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "artist:9",
+      "type": "person",
+      "name": "Эдвард Мунк",
+      "aliases": [
+        "Мунк"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "washington",
+      "type": "person",
+      "name": "Джордж Вашингтон",
+      "aliases": [
+        "Вашингтон"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "adams",
+      "type": "person",
+      "name": "Джон Адамс",
+      "aliases": [
+        "Адамс"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "jefferson",
+      "type": "person",
+      "name": "Томас Джефферсон",
+      "aliases": [
+        "Джефферсон"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "lincoln",
+      "type": "person",
+      "name": "Авраам Линкольн",
+      "aliases": [
+        "Линкольн",
+        "Абрахам Линкольн"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "theodore-roosevelt",
+      "type": "person",
+      "name": "Теодор Рузвельт",
+      "aliases": [
+        "Тедди Рузвельт"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "eisenhower",
+      "type": "person",
+      "name": "Дуайт Эйзенхауэр",
+      "aliases": [
+        "Эйзенхауэр",
+        "Дуайт Дэвид Эйзенхауэр"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "kennedy",
+      "type": "person",
+      "name": "Джон Кеннеди",
+      "aliases": [
+        "Кеннеди",
+        "Джон Фицджеральд Кеннеди"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "reagan",
+      "type": "person",
+      "name": "Рональд Рейган",
+      "aliases": [
+        "Рейган"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "bush",
+      "type": "person",
+      "name": "Джордж Буш — младший",
+      "aliases": [
+        "Джордж Буш младший",
+        "Джордж Уокер Буш",
+        "Буш младший"
+      ],
+      "externalIds": {}
+    },
+    {
+      "id": "obama",
+      "type": "person",
+      "name": "Барак Обама",
+      "aliases": [
+        "Обама"
+      ],
+      "externalIds": {}
+    }
+  ],
+  "facts": [
+    {
+      "id": "grande-jatte:created_by",
+      "entityId": "grande-jatte",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:0",
+      "source": {
+        "url": "https://www.artic.edu/artworks/27992",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "1884–1886, border added 1888–1889",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "grande-jatte:date",
+      "entityId": "grande-jatte",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1884-01-01",
+      "dateEnd": "1886-12-31",
+      "datePrecision": "range",
+      "source": {
+        "url": "https://www.artic.edu/artworks/27992",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "1884–1886, border added 1888–1889",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "bedroom:created_by",
+      "entityId": "bedroom",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:1",
+      "source": {
+        "url": "https://www.artic.edu/artworks/28560",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "bedroom:date",
+      "entityId": "bedroom",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1889-01-01",
+      "dateEnd": "1889-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.artic.edu/artworks/28560",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "water-lilies:created_by",
+      "entityId": "water-lilies",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:2",
+      "source": {
+        "url": "https://www.artic.edu/artworks/16568",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "water-lilies:date",
+      "entityId": "water-lilies",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1906-01-01",
+      "dateEnd": "1906-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.artic.edu/artworks/16568",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "gare-saint-lazare:created_by",
+      "entityId": "gare-saint-lazare",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:2",
+      "source": {
+        "url": "https://www.artic.edu/artworks/16571",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "gare-saint-lazare:date",
+      "entityId": "gare-saint-lazare",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1877-01-01",
+      "dateEnd": "1877-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.artic.edu/artworks/16571",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "paris-rain:created_by",
+      "entityId": "paris-rain",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:3",
+      "source": {
+        "url": "https://www.artic.edu/artworks/20684",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "paris-rain:date",
+      "entityId": "paris-rain",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1877-01-01",
+      "dateEnd": "1877-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.artic.edu/artworks/20684",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "basket-apples:created_by",
+      "entityId": "basket-apples",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:4",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Paul_C%C3%A9zanne_-_The_Basket_of_Apples_-_1926.252_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Около 1893",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "basket-apples:date",
+      "entityId": "basket-apples",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1893-01-01",
+      "dateEnd": "1893-12-31",
+      "datePrecision": "circa",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Paul_C%C3%A9zanne_-_The_Basket_of_Apples_-_1926.252_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Около 1893",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "child-bath:created_by",
+      "entityId": "child-bath",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:5",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Mary_Cassatt_-_The_Child's_Bath_-_1910.2_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "child-bath:date",
+      "entityId": "child-bath",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1893-01-01",
+      "dateEnd": "1893-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Mary_Cassatt_-_The_Child's_Bath_-_1910.2_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "moulin-rouge:created_by",
+      "entityId": "moulin-rouge",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:6",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_1928.610_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "1892–1895",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "moulin-rouge:date",
+      "entityId": "moulin-rouge",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1892-01-01",
+      "dateEnd": "1895-12-31",
+      "datePrecision": "range",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_1928.610_-_Art_Institute_of_Chicago.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "1892–1895",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "girl-pearl:created_by",
+      "entityId": "girl-pearl",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:7",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Girl_with_a_Pearl_Earring.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Около 1665",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "girl-pearl:date",
+      "entityId": "girl-pearl",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1665-01-01",
+      "dateEnd": "1665-12-31",
+      "datePrecision": "circa",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Girl_with_a_Pearl_Earring.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Около 1665",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "mona-lisa:created_by",
+      "entityId": "mona-lisa",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:8",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Начата около 1503; работа продолжалась позднее",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "mona-lisa:date",
+      "entityId": "mona-lisa",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1503-01-01",
+      "dateEnd": "1503-12-31",
+      "datePrecision": "circa",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "Начата около 1503; работа продолжалась позднее",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "starry-night:created_by",
+      "entityId": "starry-night",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:1",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "starry-night:date",
+      "entityId": "starry-night",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1889-01-01",
+      "dateEnd": "1889-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "scream:created_by",
+      "entityId": "scream",
+      "key": "created_by",
+      "valueKind": "entity",
+      "valueEntityId": "artist:9",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:The_Scream.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "scream:date",
+      "entityId": "scream",
+      "key": "creation_date",
+      "valueKind": "date",
+      "dateStart": "1893-01-01",
+      "dateEnd": "1893-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://commons.wikimedia.org/wiki/File:The_Scream.jpg",
+        "name": "Art Institute of Chicago / Wikimedia Commons",
+        "locator": "year",
+        "family": "museum"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "washington:date",
+      "entityId": "washington",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1789-01-01",
+      "dateEnd": "1789-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "adams:date",
+      "entityId": "adams",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1797-01-01",
+      "dateEnd": "1797-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "jefferson:date",
+      "entityId": "jefferson",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1801-01-01",
+      "dateEnd": "1801-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "lincoln:date",
+      "entityId": "lincoln",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1861-01-01",
+      "dateEnd": "1861-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "theodore-roosevelt:date",
+      "entityId": "theodore-roosevelt",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1901-01-01",
+      "dateEnd": "1901-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "eisenhower:date",
+      "entityId": "eisenhower",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1953-01-01",
+      "dateEnd": "1953-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "kennedy:date",
+      "entityId": "kennedy",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1961-01-01",
+      "dateEnd": "1961-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "reagan:date",
+      "entityId": "reagan",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "1981-01-01",
+      "dateEnd": "1981-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "bush:date",
+      "entityId": "bush",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "2001-01-01",
+      "dateEnd": "2001-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    },
+    {
+      "id": "obama:date",
+      "entityId": "obama",
+      "key": "presidency_start",
+      "valueKind": "date",
+      "dateStart": "2009-01-01",
+      "dateEnd": "2009-12-31",
+      "datePrecision": "year",
+      "source": {
+        "url": "https://www.whitehousehistory.org/collections/president-biographies",
+        "name": "White House Historical Association",
+        "locator": "Год первого вступления в должность президента США",
+        "family": "whitehousehistory"
+      },
+      "verification": "verified"
+    }
+  ],
+  "media": [
+    {
+      "id": "grande-jatte:image",
+      "entityId": "grande-jatte",
+      "role": "artwork",
+      "url": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/843,/0/default.jpg",
+      "sourceUrl": "https://www.artic.edu/artworks/27992",
+      "license": "Public domain / CC0; Art Institute of Chicago"
+    },
+    {
+      "id": "bedroom:image",
+      "entityId": "bedroom",
+      "role": "artwork",
+      "url": "https://www.artic.edu/iiif/2/6644829f-f292-c5c4-a73c-0356a6fdbf0d/full/843,/0/default.jpg",
+      "sourceUrl": "https://www.artic.edu/artworks/28560",
+      "license": "Public domain / CC0; Art Institute of Chicago"
+    },
+    {
+      "id": "water-lilies:image",
+      "entityId": "water-lilies",
+      "role": "artwork",
+      "url": "https://www.artic.edu/iiif/2/3c27b499-af56-f0d5-93b5-a7f2f1ad5813/full/843,/0/default.jpg",
+      "sourceUrl": "https://www.artic.edu/artworks/16568",
+      "license": "Public domain / CC0; Art Institute of Chicago"
+    },
+    {
+      "id": "gare-saint-lazare:image",
+      "entityId": "gare-saint-lazare",
+      "role": "artwork",
+      "url": "https://www.artic.edu/iiif/2/0f1cc0e0-e42e-be16-3f71-2022da38cb93/full/843,/0/default.jpg",
+      "sourceUrl": "https://www.artic.edu/artworks/16571",
+      "license": "Public domain / CC0; Art Institute of Chicago"
+    },
+    {
+      "id": "paris-rain:image",
+      "entityId": "paris-rain",
+      "role": "artwork",
+      "url": "https://www.artic.edu/iiif/2/f8fd76e9-c396-5678-36ed-6a348c904d27/full/843,/0/default.jpg",
+      "sourceUrl": "https://www.artic.edu/artworks/20684",
+      "license": "Public domain / CC0; Art Institute of Chicago"
+    },
+    {
+      "id": "basket-apples:image",
+      "entityId": "basket-apples",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Paul_C%C3%A9zanne_-_The_Basket_of_Apples_-_1926.252_-_Art_Institute_of_Chicago.jpg/960px-Paul_C%C3%A9zanne_-_The_Basket_of_Apples_-_1926.252_-_Art_Institute_of_Chicago.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paul_C%C3%A9zanne_-_The_Basket_of_Apples_-_1926.252_-_Art_Institute_of_Chicago.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "child-bath:image",
+      "entityId": "child-bath",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Mary_Cassatt_-_The_Child%27s_Bath_-_1910.2_-_Art_Institute_of_Chicago.jpg/960px-Mary_Cassatt_-_The_Child%27s_Bath_-_1910.2_-_Art_Institute_of_Chicago.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mary_Cassatt_-_The_Child's_Bath_-_1910.2_-_Art_Institute_of_Chicago.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "moulin-rouge:image",
+      "entityId": "moulin-rouge",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_1928.610_-_Art_Institute_of_Chicago.jpg/960px-Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_1928.610_-_Art_Institute_of_Chicago.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Henri_de_Toulouse-Lautrec_-_At_the_Moulin_Rouge_-_1928.610_-_Art_Institute_of_Chicago.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "girl-pearl:image",
+      "entityId": "girl-pearl",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Girl_with_a_Pearl_Earring.jpg/960px-Girl_with_a_Pearl_Earring.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Girl_with_a_Pearl_Earring.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "mona-lisa:image",
+      "entityId": "mona-lisa",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/960px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "starry-night:image",
+      "entityId": "starry-night",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/960px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "scream:image",
+      "entityId": "scream",
+      "role": "artwork",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/960px-The_Scream.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Scream.jpg",
+      "license": "Public domain (PD-Art), Wikimedia Commons"
+    },
+    {
+      "id": "washington:image",
+      "entityId": "washington",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Gwashington.jpeg/960px-Gwashington.jpeg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gwashington.jpeg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "adams:image",
+      "entityId": "adams",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Official_Presidential_portrait_of_John_Adams_%28by_John_Trumbull%2C_circa_1792%29.jpg/960px-Official_Presidential_portrait_of_John_Adams_%28by_John_Trumbull%2C_circa_1792%29.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Official_Presidential_portrait_of_John_Adams_(by_John_Trumbull%2C_circa_1792).jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "jefferson:image",
+      "entityId": "jefferson",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Thomas_Jefferson_by_Rembrandt_Peale%2C_1800.jpg/960px-Thomas_Jefferson_by_Rembrandt_Peale%2C_1800.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Thomas_Jefferson_by_Rembrandt_Peale%2C_1800.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "lincoln:image",
+      "entityId": "lincoln",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Abraham_Lincoln_November_1863.jpg/960px-Abraham_Lincoln_November_1863.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Abraham_Lincoln_November_1863.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "theodore-roosevelt:image",
+      "entityId": "theodore-roosevelt",
+      "role": "portrait",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Theodore_Roosevelt-Pach.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Theodore_Roosevelt-Pach.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "eisenhower:image",
+      "entityId": "eisenhower",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Dwight_D_Eisenhower.jpg/960px-Dwight_D_Eisenhower.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dwight_D_Eisenhower.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "kennedy:image",
+      "entityId": "kennedy",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/John_F._Kennedy%2C_White_House_color_photo_portrait.jpg/960px-John_F._Kennedy%2C_White_House_color_photo_portrait.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:John_F._Kennedy%2C_White_House_color_photo_portrait.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "reagan:image",
+      "entityId": "reagan",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Ronald_Reagan_1985_presidential_portrait.jpg/960px-Ronald_Reagan_1985_presidential_portrait.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ronald_Reagan_1985_presidential_portrait.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "bush:image",
+      "entityId": "bush",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/George-W-Bush.jpeg/960px-George-W-Bush.jpeg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:George-W-Bush.jpeg",
+      "license": "Public domain, Wikimedia Commons"
+    },
+    {
+      "id": "obama:image",
+      "entityId": "obama",
+      "role": "portrait",
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/960px-President_Barack_Obama.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:President_Barack_Obama.jpg",
+      "license": "Public domain, Wikimedia Commons"
+    }
+  ],
+  "tags": [
+    {
+      "id": "art",
+      "name": "Живопись"
+    },
+    {
+      "id": "presidents",
+      "name": "Президенты США"
+    }
+  ],
+  "entityTags": [
+    {
+      "entityId": "grande-jatte",
+      "tagId": "art"
+    },
+    {
+      "entityId": "bedroom",
+      "tagId": "art"
+    },
+    {
+      "entityId": "water-lilies",
+      "tagId": "art"
+    },
+    {
+      "entityId": "gare-saint-lazare",
+      "tagId": "art"
+    },
+    {
+      "entityId": "paris-rain",
+      "tagId": "art"
+    },
+    {
+      "entityId": "basket-apples",
+      "tagId": "art"
+    },
+    {
+      "entityId": "child-bath",
+      "tagId": "art"
+    },
+    {
+      "entityId": "moulin-rouge",
+      "tagId": "art"
+    },
+    {
+      "entityId": "girl-pearl",
+      "tagId": "art"
+    },
+    {
+      "entityId": "mona-lisa",
+      "tagId": "art"
+    },
+    {
+      "entityId": "starry-night",
+      "tagId": "art"
+    },
+    {
+      "entityId": "scream",
+      "tagId": "art"
+    },
+    {
+      "entityId": "washington",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "adams",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "jefferson",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "lincoln",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "theodore-roosevelt",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "eisenhower",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "kennedy",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "reagan",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "bush",
+      "tagId": "presidents"
+    },
+    {
+      "entityId": "obama",
+      "tagId": "presidents"
+    }
+  ],
+  "missing": [],
+  "unresolved": []
+}

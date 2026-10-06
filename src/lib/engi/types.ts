@@ -1,0 +1,10 @@
+export type Entity={id:string;type:string;name:string;aliases:string[];externalIds:Record<string,string>};
+export type Fact={id:string;entityId:string;key:string;valueKind:'entity'|'text'|'number'|'date';valueEntityId?:string;valueText?:string;valueNumber?:number;dateStart?:string;dateEnd?:string;datePrecision?:'year'|'day'|'month'|'circa'|'range';source:{url:string;name:string;locator?:string;family?:string};verification:'direct'|'verified'|'unverified'|'ambiguous'|'conflict'|'rejected'};
+export type Media={id:string;entityId:string;role:string;url:string;sourceUrl:string;license:string};
+export type Bundle={entities:Entity[];facts:Fact[];media:Media[];tags:{id:string;name:string;parentId?:string}[];entityTags:{entityId:string;tagId:string}[];missing:unknown[];unresolved:unknown[]};
+export type Format='choice'|'recall'|'match'|'sort'|'categorize'|'timeline'|'missing';
+export type Recipe={id:string;format:Format;tag?:string;subjectType?:string;cue:'image'|'name';answerKey:string;memoryKey:string;diagnostic:boolean};
+export type Item={entityId:string;name:string;image?:string;targetId:string;answer:string;aliases:string[];answerId:string;year?:number;sourceUrl:string};
+export type Task={id:string;recipe:Recipe;items:Item[];options:{id:string;name:string}[];reason:string};
+export type Memory={id:string;card:any;attempts:number;correct:number;firstSuccessAt?:string;confusions:Record<string,number>};
+export type Snapshot={bundle:Bundle;memories:Memory[];events:{id:string;timestamp:string;recipe:string;level:string;payload:any}[]};
