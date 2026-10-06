@@ -1,6 +1,6 @@
 {
   "name": "engi",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -9,10 +9,11 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/local.test.ts tests/v2.test.ts tests/feed.test.ts tests/motivation.test.ts",
+    "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/*.test.ts",
     "pack:build": "node --import tsx scripts/build-engi-pack.mjs",
     "test:browser": "node tests/browser.mjs",
-    "test:production": "node tests/production.mjs"
+    "test:production": "node tests/production.mjs",
+    "test:recall": "node tests/recall22-browser.mjs"
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.8.0",

@@ -1,8 +1,49 @@
 import {useState} from 'react';
 import type {Bundle,PropertyDefinition} from '../../lib/engi/types';
 import {entityTypes} from '../../lib/engi/knowledge/properties';
+import {questionPrompt,reversePromptAvailable} from '../../lib/engi/questions/question-templates';
 import {newId,saveProperty} from '../../services/knowledge-service';
+
 export function PropertyEditor({bundle,initial,onSave,onClose}:{bundle:Bundle;initial?:PropertyDefinition;onSave:(p:PropertyDefinition)=>void;onClose:()=>void}){
- const [p,setP]=useState<PropertyDefinition>(initial??{id:newId(),name:'',valueKind:'entity',cardinality:'one',learnable:true,learning:{forward:true},origin:'user'});const [error,setError]=useState('');const [busy,setBusy]=useState(false);const types=entityTypes(bundle);
- return <div className="overlay nested"><section className="editor-panel" role="dialog" aria-modal="true" aria-label="Поле"><div className="section-heading"><h2>{initial?'Настроить поле':'Новое поле'}</h2><button className="icon-button" onClick={onClose} aria-label="Закрыть">×</button></div><label>Название<input value={p.name} onChange={e=>setP({...p,name:e.target.value})}/></label><label>Тип значения<select value={p.valueKind} disabled={!!initial} onChange={e=>setP({...p,valueKind:e.target.value as any,learnable:e.target.value!=='text'})}>{[['entity','Другой объект'],['date','Дата'],['number','Число'],['text','Текст'],['boolean','Да / нет']].map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label>Какие объекты могут иметь поле<select value={p.subjectTypes?.[0]??''} onChange={e=>setP({...p,subjectTypes:e.target.value?[e.target.value]:[]})}><option value="">Любые</option>{types.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label>{p.valueKind==='entity'&&<label>На какие объекты указывает<select value={p.targetTypes?.[0]??''} onChange={e=>setP({...p,targetTypes:e.target.value?[e.target.value]:[]})}><option value="">Любые</option>{types.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label>}<label className="check-label"><input type="checkbox" checked={p.cardinality==='many'} onChange={e=>setP({...p,cardinality:e.target.checked?'many':'one'})}/>Может иметь несколько значений</label><label className="check-label"><input type="checkbox" checked={p.learnable} onChange={e=>setP({...p,learnable:e.target.checked})}/>Участвует в обучении</label><label>Описание<textarea value={p.description??''} onChange={e=>setP({...p,description:e.target.value})}/></label><details><summary>Настройки обучения</summary>{p.valueKind==='entity'&&<><label className="check-label"><input type="checkbox" checked={!!p.learning?.reverse} onChange={e=>setP({...p,inverse:{enabled:e.target.checked},learning:{...p.learning,reverse:e.target.checked}})}/>Проверять обратную связь, если ответ единственный</label><label>Название обратного вопроса<input value={p.inverse?.name??''} onChange={e=>setP({...p,inverse:{enabled:!!p.inverse?.enabled,name:e.target.value}})}/></label></>}{(['choice','recallReveal','match','categorize','timeline','sort','missing'] as const).map((k,n)=><label key={k}>{['Выбор ответа','Вспомнить и открыть','Сопоставление','Категории','Временная шкала','Порядок','Пропуск'][n]}<select value={p.learning?.[k]??'auto'} onChange={e=>setP({...p,learning:{...p.learning,[k]:e.target.value}})}><option value="auto">Автоматически</option><option value="on">Включить, если подходит</option><option value="off">Выключить</option></select></label>)}</details>{error&&<p role="alert" className="bad-text">{error}</p>}<button className="button primary" disabled={busy||!p.name.trim()} onClick={async()=>{setBusy(true);try{const row={...p,name:p.name.trim(),updatedAt:new Date().toISOString()};await saveProperty(row);onSave(row)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}}>Сохранить поле</button></section></div>
+ const [p,setP]=useState<PropertyDefinition>(initial??{id:newId(),name:'',valueKind:'entity',cardinality:'one',learnable:true,learning:{forward:true},origin:'user'});
+ const [error,setError]=useState('');
+ const [busy,setBusy]=useState(false);
+ const types=entityTypes(bundle);
+ const previewSubject=bundle.entities.find(e=>!e.archived&&(!p.subjectTypes?.length||p.subjectTypes.includes(e.type)))?.name??'Джон Кеннеди';
+ const updateTemplate=(key:keyof NonNullable<PropertyDefinition['promptTemplates']>,value:string)=>setP({...p,promptTemplates:{...p.promptTemplates,[key]:value||undefined}});
+ return <div className="overlay nested"><section className="editor-panel" role="dialog" aria-modal="true" aria-label="Поле">
+  <div className="section-heading"><h2>{initial?'Настроить поле':'Новое поле'}</h2><button className="icon-button" onClick={onClose} aria-label="Закрыть">×</button></div>
+  <label>Название<input value={p.name} onChange={e=>setP({...p,name:e.target.value})}/></label>
+  <label>Тип значения<select value={p.valueKind} disabled={!!initial} onChange={e=>setP({...p,valueKind:e.target.value as PropertyDefinition['valueKind'],learnable:e.target.value!=='text'})}>{[['entity','Другой объект'],['date','Дата'],['number','Число'],['text','Текст'],['boolean','Да / нет']].map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label>
+  <label>Какие объекты могут иметь поле<select value={p.subjectTypes?.[0]??''} onChange={e=>setP({...p,subjectTypes:e.target.value?[e.target.value]:[]})}><option value="">Любые</option>{types.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label>
+  {p.valueKind==='entity'&&<label>На какие объекты указывает<select value={p.targetTypes?.[0]??''} onChange={e=>setP({...p,targetTypes:e.target.value?[e.target.value]:[]})}><option value="">Любые</option>{types.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label>}
+  <label className="check-label"><input type="checkbox" checked={p.cardinality==='many'} onChange={e=>setP({...p,cardinality:e.target.checked?'many':'one'})}/>Может иметь несколько значений</label>
+  <label className="check-label"><input type="checkbox" checked={p.learnable} onChange={e=>setP({...p,learnable:e.target.checked})}/>Участвует в обучении</label>
+  {p.learnable&&<>
+   <label>Как спрашивать?<textarea maxLength={1000} value={p.promptTemplates?.forward??''} placeholder={questionPrompt({...p,promptTemplates:undefined},'{subject}','choice')} onChange={e=>updateTemplate('forward',e.target.value)}/></label>
+   <p className="muted">{'Вставьте {subject} на месте названия объекта. Пустое поле использует обычную формулировку.'}</p>
+   <p aria-live="polite">Пример: {questionPrompt(p,previewSubject,'choice')}</p>
+  </>}
+  <label>Описание<textarea value={p.description??''} onChange={e=>setP({...p,description:e.target.value})}/></label>
+  <details><summary>Настройки обучения</summary>
+   {p.valueKind==='entity'&&<>
+    <label className="check-label"><input type="checkbox" checked={p.learning?.reverse??!!p.inverse?.enabled} onChange={e=>setP({...p,inverse:{...p.inverse,enabled:e.target.checked},learning:{...p.learning,reverse:e.target.checked}})}/>Проверять обратную связь, если ответ единственный</label>
+    <label>Название обратного вопроса<input value={p.inverse?.name??''} onChange={e=>setP({...p,inverse:{enabled:!!p.inverse?.enabled,name:e.target.value}})}/></label>
+    {p.learnable&&<>
+     <label>Как спрашивать в обратную сторону?<textarea maxLength={1000} value={p.promptTemplates?.reverse??''} placeholder="Какой фильм снял {subject}?" onChange={e=>updateTemplate('reverse',e.target.value)}/></label>
+     <p className="muted">{'Здесь {subject} — название ответа. Обратные вопросы требуют своей формулировки и единственного правильного ответа.'}</p>
+     {(p.learning?.reverse??p.inverse?.enabled)&&!reversePromptAvailable(p)&&<p role="status">Добавьте обратный вопрос, чтобы включить этот режим.</p>}
+    </>}
+   </>}
+   {p.learnable&&p.valueKind==='date'&&<>
+    <label>Как спрашивать на временной шкале?<textarea maxLength={1000} value={p.promptTemplates?.timeline??''} placeholder={questionPrompt({...p,promptTemplates:{forward:p.promptTemplates?.forward}},'{subject}','timeline')} onChange={e=>updateTemplate('timeline',e.target.value)}/></label>
+    <p aria-live="polite">Пример: {questionPrompt(p,previewSubject,'timeline')}</p>
+    <label>Как просить расставить объекты по порядку?<textarea maxLength={1000} value={p.promptTemplates?.sort??''} placeholder={questionPrompt({...p,promptTemplates:undefined},'{subject}','sort')} onChange={e=>updateTemplate('sort',e.target.value)}/></label>
+    <p className="muted">Сформулируйте задание для нескольких объектов, от раннего к позднему.</p>
+   </>}
+   {(['choice','recallReveal','match','categorize','timeline','sort','missing'] as const).map((k,n)=><label key={k}>{['Выбор ответа','Вспомнить и открыть','Сопоставление','Категории','Временная шкала','Порядок','Пропуск'][n]}<select value={p.learning?.[k]??'auto'} onChange={e=>setP({...p,learning:{...p.learning,[k]:e.target.value as 'auto'|'on'|'off'}})}><option value="auto">Автоматически</option><option value="on">Включить, если подходит</option><option value="off">Выключить</option></select></label>)}
+  </details>
+  {error&&<p role="alert" className="bad-text">{error}</p>}
+  <button className="button primary" disabled={busy||!p.name.trim()} onClick={async()=>{setBusy(true);try{const row={...p,name:p.name.trim(),updatedAt:new Date().toISOString()};await saveProperty(row);onSave(row)}catch(e){setError((e as Error).message)}finally{setBusy(false)}}}>Сохранить поле</button>
+ </section></div>
 }

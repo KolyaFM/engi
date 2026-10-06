@@ -10,8 +10,8 @@ async function seed(page){
  await page.evaluate(async()=>{
   const {saveKnowledge}=await import('/engi/src/services/knowledge-service.ts');
   const b={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'sample',name:'Объект'},{id:'author',name:'Автор'}],properties:[{id:'author-link',name:'Автор',valueKind:'entity',subjectTypes:['sample'],targetTypes:['author'],cardinality:'one',learnable:true},{id:'date',name:'Дата',valueKind:'date',subjectTypes:['sample'],cardinality:'one',learnable:true}]};
-  for(let i=0;i<8;i++){b.entities.push({id:'s'+i,type:'sample',name:'Объект '+i,summary:'Короткий факт об объекте.',aliases:[],externalIds:{}},{id:'a'+i,type:'author',name:'Автор '+i,aliases:[],externalIds:{}});b.facts.push({id:'f'+i,entityId:'s'+i,key:'author-link',valueKind:'entity',valueEntityId:'a'+i,verification:'user_confirmed',source:{kind:'manual',name:'Личное знание'}},{id:'d'+i,entityId:'s'+i,key:'date',valueKind:'date',dateStart:(1800+i*25)+'-01-01',dateEnd:(1800+i*25)+'-12-31',datePrecision:'year',verification:'user_confirmed',source:{kind:'manual',name:'Личное знание'}})}
-  await saveKnowledge(b);
+  for(let i=0;i<24;i++){b.entities.push({id:'s'+i,type:'sample',name:'Объект '+i,summary:'Короткий факт об объекте.',aliases:[],externalIds:{}},{id:'a'+i,type:'author',name:'Автор '+i,aliases:[],externalIds:{}});b.facts.push({id:'f'+i,entityId:'s'+i,key:'author-link',valueKind:'entity',valueEntityId:'a'+i,verification:'user_confirmed',source:{kind:'manual',name:'Личное знание'}},{id:'d'+i,entityId:'s'+i,key:'date',valueKind:'date',dateStart:(1800+i*25)+'-01-01',dateEnd:(1800+i*25)+'-12-31',datePrecision:'year',verification:'user_confirmed',source:{kind:'manual',name:'Личное знание'}})}
+  await saveKnowledge(b);const {canonicalTargets}=await import('/engi/src/lib/engi/questions/recipe-factory.ts');const {triagedMemory}=await import('/engi/src/lib/engi/learning/bootstrap.ts');const {db}=await import('/engi/src/db/engi-db.ts');const {learningRow}=await import('/engi/src/db/repositories.ts');for(const item of canonicalTargets(b)){const m=triagedMemory(item,'red','',0);m.card.due=new Date(0);await db.learningState.put(learningRow(m))}
  });await page.reload();await page.waitForSelector('.feed-home');
 }
 async function start(page,format){await page.getByLabel('Формат',{exact:true}).selectOption(format);await page.getByRole('button',{name:'Начать',exact:true}).click();await page.waitForSelector('.feed-question');await page.waitForSelector('.study-feed.state-ready')}
@@ -73,7 +73,7 @@ check('Recall pauses while details are open and resumes with thinking time intac
 
 check('All seven feed formats have no typed answer and fit phone width',async page=>{
  for(const fmt of ['choice','recall_reveal','match','categorize','missing','timeline','sort']){
-  if(fmt==='categorize')await page.evaluate(async()=>{const {saveKnowledge}=await import('/engi/src/services/knowledge-service.ts');const {db}=await import('/engi/src/db/engi-db.ts');const facts=await db.facts.where('key').equals('author-link').toArray();await saveKnowledge({facts:facts.map((f,i)=>({...f,valueEntityId:'a'+(i%3)}))})});
+  if(fmt==='categorize')await page.evaluate(async()=>{const {saveKnowledge}=await import('/engi/src/services/knowledge-service.ts');const {db}=await import('/engi/src/db/engi-db.ts');const facts=await db.facts.where('key').equals('author-link').toArray();await saveKnowledge({facts:facts.map((f,i)=>({...f,valueEntityId:'a'+(i%3)}))});const {getBundle,learningRow}=await import('/engi/src/db/repositories.ts');const {canonicalTargets}=await import('/engi/src/lib/engi/questions/recipe-factory.ts');const {triagedMemory}=await import('/engi/src/lib/engi/learning/bootstrap.ts');for(const item of canonicalTargets(await getBundle(db))){const m=triagedMemory(item,'red','',0);m.card.due=new Date(0);await db.learningState.put(learningRow(m))}});
   if(await page.locator('.study-feed').count()){await page.getByRole('button',{name:'Выйти из практики'}).click();await page.waitForSelector('.feed-home')}
   await start(page,fmt);assert.equal(await page.locator('.study-feed input[type=text],.study-feed input:not([type])').count(),0);
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -103,5 +103,45 @@ check('Recall recovers from a failed reveal write without another thinking inter
  await page.clock.runFor(500);await page.waitForSelector('.revealed-answer');assert.equal((await current(page)).session.interaction.recallElapsedMs,5000);
 });
 
+check('Recall early reveal persists actual active time without a review; only grading completes the card',async page=>{
+ await freezeClock(page);await start(page,'recall_reveal');const id=(await current(page)).task.id;
+ await page.clock.runFor(1234);await page.getByRole('button',{name:'Показать сейчас',exact:true}).click();await page.locator('.revealed-answer').waitFor();
+ const before=await current(page);assert.equal(before.session.interaction.recallElapsedMs,1234);assert.equal(before.session.interaction.earlyReveal,true);assert.equal(before.events.length,0);
+ await page.clock.runFor(9000);const after=await current(page);assert.equal(after.session.interaction.recallElapsedMs,1234);assert.equal(after.events.length,0);
+ await drag(page,-150);await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.reviewEvents.count())===1});
+ const result=(await current(page)).events[0];assert.equal(result.id,id);assert.equal(result.payload.score,0);
+});
+
+check('Object Intro autosaves colors across reload, spends three entities, and More opens exactly two',async page=>{
+ await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');await db.learningState.clear();await db.appMeta.delete('newLearning');await db.appMeta.delete('introducedEntities')});await page.reload();await page.locator('.feed-home').waitFor();
+ await page.getByRole('button',{name:'Начать',exact:true}).click();await page.locator('#object-intro-heading').waitFor();const initial=await current(page),intro=initial.session.intro;
+ assert(intro);assert.equal(await page.locator('.learning22-property').count(),2);
+ await page.getByRole('button',{name:'Автор: Знаю хорошо',exact:true}).click();await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const s=(await db.activeSessions.where('status').equals('active').toArray()).at(-1);return Object.values(s.intro.selections).includes('green')});
+ await page.getByRole('button',{name:'Дата: Не учить',exact:true}).click();await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const s=(await db.activeSessions.where('status').equals('active').toArray()).at(-1);return Object.values(s.intro.selections).includes('suspended')});
+ assert.equal((await current(page)).events.length,0);await page.reload();await page.getByRole('button',{name:'Продолжить с прошлого места'}).click();await page.locator('#object-intro-heading').waitFor();
+ assert.equal((await current(page)).session.intro.entityId,intro.entityId);assert.equal(await page.getByRole('button',{name:'Автор: Знаю хорошо',exact:true}).getAttribute('aria-pressed'),'true');assert.equal(await page.getByRole('button',{name:'Дата: Не учить',exact:true}).getAttribute('aria-pressed'),'true');
+ for(let n=0;n<3;n++){await page.locator('#object-intro-heading').waitFor();const previous=await page.locator('#object-intro-heading').textContent();await page.getByRole('button',{name:'Готово',exact:true}).click();if(n<2)await page.waitForFunction(previous=>document.querySelector('#object-intro-heading')?.textContent!==previous,previous)}
+ await page.locator('#stop-study-heading').waitFor();const stopped=await current(page);assert.equal(stopped.session.exhausted,true);assert.equal(stopped.events.length,0);
+ const status=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return {budget:(await db.appMeta.get('newLearning')).value,rows:await db.learningState.toArray()}});assert.equal(status.budget.introducedEntityIds.length,3);assert(status.rows.every(r=>r.payload.card.reps===0&&!r.payload.firstSuccessAt));assert.equal(status.rows.find(r=>r.id===intro.unitIds.find(id=>id.includes(':d'))).payload.status,'suspended');
+ await page.getByRole('button',{name:'Открыть ещё 2 объекта',exact:true}).click();
+ for(let n=0;n<2;n++){await page.locator('#object-intro-heading').waitFor();await page.getByRole('button',{name:'Готово',exact:true}).click()}
+ await page.locator('#stop-study-heading').waitFor();assert.equal((await current(page)).events.length,0);assert.equal(await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.get('newLearning')).value.introducedEntityIds.length}),5);
+});
+
+check('Property details suspend only that unit; resume preserves memory and makes it due',async page=>{
+ const before=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.learningState.get('ku:fact:f0:forward')).payload});
+ await page.getByRole('button',{name:'Знания',exact:true}).click();await page.locator('.object-card').filter({has:page.getByRole('heading',{name:'Объект 0',exact:true})}).click();
+ await page.locator('.entity-learning-row').filter({has:page.locator('strong',{hasText:'Автор'})}).click();await page.getByRole('button',{name:'★ Не учить это свойство',exact:true}).click();
+ await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.learningState.get('ku:fact:f0:forward')).payload.status==='suspended'});
+ const suspended=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return {memory:(await db.learningState.get('ku:fact:f0:forward')).payload,sibling:(await db.learningState.get('ku:fact:d0:forward')).payload,events:await db.reviewEvents.count()}});assert.deepEqual(suspended.memory.card,before.card);assert.equal(suspended.sibling.status,'triaged');assert.equal(suspended.events,0);
+ await page.locator('.entity-learning-row').filter({has:page.locator('strong',{hasText:'Автор'})}).click();await page.getByRole('button',{name:'Вернуть в обучение',exact:true}).click();
+ await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.learningState.get('ku:fact:f0:forward')).payload.status==='triaged'});
+ const restored=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.learningState.get('ku:fact:f0:forward')).payload});assert.deepEqual({...restored.card,due:before.card.due},before.card);assert.equal(restored.attempts,before.attempts);assert(new Date(restored.card.due).getTime()<=Date.now());
+});
+
 try{for(const scenario of scenarios.filter(s=>!process.env.ENGI_TEST_FILTER||s.name.includes(process.env.ENGI_TEST_FILTER))){const context=await browser.newContext({viewport:{width:393,height:852},isMobile:true,hasTouch:true});const page=await context.newPage();page.setDefaultTimeout(4000);try{await seed(page);await scenario.run(page);passed++;console.log('PASS '+scenario.name)}catch(e){failed++;console.error('FAIL '+scenario.name+'\n'+e.stack);console.error((await page.locator('.study-feed').textContent().catch(()=>''))?.slice(0,2000))}finally{await context.close()}}}finally{await browser.close()}
 console.log(JSON.stringify({browserAcceptance:{passed,failed}}));if(failed)process.exitCode=1;
+
+
+
+

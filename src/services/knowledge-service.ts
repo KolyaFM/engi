@@ -16,7 +16,7 @@ export async function saveKnowledge(delta:Partial<Bundle>,d:EngiDB=db){
   // Validate final graph as well: changing object type may invalidate existing relations.
   const final={...current};for(const key of ['entities','facts','media','tags','properties','entityTypes'] as const)(final as any)[key]=[...new Map([...(current[key]??[]),...(clean[key]??[])].map(row=>[row.id,row])).values()];
   validateImport(final,{entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[]},true);
-  for(const f of clean.facts){const old=current.facts.find(x=>x.id===f.id);if(old&&factValue(old)!==factValue(f)){const rows=await d.learningState.filter(r=>r.id.startsWith(`fact:${f.id}:`)).primaryKeys();await d.learningState.bulkDelete(rows)}}
+  for(const f of clean.facts){const old=current.facts.find(x=>x.id===f.id);if(old&&factValue(old)!==factValue(f)){const rows=await d.learningState.filter(r=>(r.id.startsWith(`fact:${f.id}:`)||r.id.startsWith(`ku:fact:${f.id}:`))).primaryKeys();await d.learningState.bulkDelete(rows)}}
   for(const p of clean.properties??[]){const old=current.properties?.find(x=>x.id===p.id);if(old&&old.cardinality!==p.cardinality){/* Semantics change affects generation, historical states remain. */}}
   await putBundle(d,clean);const active=await d.activeSessions.where('status').equals('active').toArray();for(const s of active)await d.activeSessions.update(s.id,{status:'completed'});return clean;
  });
@@ -41,7 +41,8 @@ export async function resolvePackConflict(table:ConflictTable,id:string,choice:'
   const clean=validateImport({entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],[table]:[next]},b,true);
   const final={...b,[table]:[...(b[table]??[]).filter((row:any)=>row.id!==id),...(clean[table]??[])]};
   validateImport(final,{entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[]},true);
-  if(table==='facts'&&factValue(old)!==factValue(next))await d.learningState.bulkDelete(await d.learningState.filter(r=>r.id.startsWith(`fact:${id}:`)).primaryKeys());
+  if(table==='facts'&&factValue(old)!==factValue(next))await d.learningState.bulkDelete(await d.learningState.filter(r=>(r.id.startsWith(`fact:${id}:`)||r.id.startsWith(`ku:fact:${id}:`))).primaryKeys());
   await putBundle(d,clean);await d.activeSessions.where('status').equals('active').modify({status:'completed'});return next;
  });
 }
+

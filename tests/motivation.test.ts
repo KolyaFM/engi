@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import {prepareDue} from './helpers22';
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {EngiDB} from '../src/db/engi-db';
@@ -36,7 +37,7 @@ test('invalid upstream relation cannot corrupt existing graph or dismiss conflic
 
 test('home hook uses real due memories and otherwise actual new objects',async()=>{
  const {returnHook}=await import('../src/lib/engi/knowledge/motivation');const b=fixture(),i=eligible(b,recipes(b).find(r=>r.answerKey==='p'&&r.format==='choice')!)[0],m=updateMemory(undefined,i,true,i.answerId)!;m.card.due=new Date(Date.now()-1000);
- assert.equal(returnHook({bundle:b,memories:[m],events:[]})!.kind,'due');assert.equal(returnHook({bundle:b,memories:[],events:[]})!.count,6);
+ assert.equal(returnHook({bundle:b,memories:[m],events:[]})!.kind,'due');assert.equal(returnHook({bundle:b,memories:[],events:[]})!.count,3);
  assert.equal(returnHook({bundle:{...b,entities:[],facts:[],entityTags:[]},memories:[],events:[]}),null);
 });
 
@@ -49,6 +50,7 @@ test('daily progress counts completed retrievals, excludes diagnostics and repor
 test('low-trust repeated self-grades are checked by objective choices, not more Recall',()=>{
  const b=fixture();b.properties![0].learning={match:'off',categorize:'off'};
  const memories=canonicalTargets(b).map(i=>({...updateMemory(undefined,i,true,i.answerId)!,selfReport:{remembered:5,missed:0,objectiveFailures:2,objectiveSuccesses:0}}));
+ for(const m of memories)m.card.due=new Date(Date.now()-1000);
  const tasks=composeFeed(b,memories,'all','mixed','weak',[],12);assert(tasks.length>=6);assert(tasks.every(t=>t.recipe.format==='choice'));assert(tasks.some(t=>t.reason==='calibration'));
 });
 
@@ -58,8 +60,8 @@ test('self-grade calibration and acknowledged local content survive backup and r
 }));
 
 test('a quick near-twin repair does not schedule FSRS twice and decays observed confusion',()=>setup(async d=>{
- const svc=createTrainerService(d);let s=await svc.startFeed('all','choice');const t=s.tasks[0],wrong=t.options.find(o=>o.id!==t.items[0].answerId)!;
- await d.learningState.put(learningRow(updateMemory(undefined,t.items[0],true,t.items[0].answerId)!));await svc.answer({sessionId:s.id,taskId:t.id,answer:wrong.id});await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});
+ await prepareDue(d);const svc=createTrainerService(d);let s=await svc.startFeed('all','choice');const t=s.tasks[0],wrong=t.options.find(o=>o.id!==t.items[0].answerId)!;
+ const established=updateMemory(undefined,t.items[0],true,t.items[0].answerId)!;established.card.due=new Date(Date.now()-1000);established.status='review';await d.learningState.put(learningRow(established));await svc.answer({sessionId:s.id,taskId:t.id,answer:wrong.id});await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});
  const before=(await d.learningState.get(t.items[0].targetId))!.payload;let repaired=false;
  for(let n=0;n<10;n++){s=await svc.advanceFeed(s.id);const next=s.tasks[s.currentPosition];if(next.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,next.id,{recallElapsedMs:5000,revealed:true});await svc.answer({sessionId:s.id,taskId:next.id,answer:next.recipe.format==='recall_reveal'?true:next.items[0].answerId});if(next.retryOf===t.id){const after=(await d.learningState.get(t.items[0].targetId))!.payload;assert.deepEqual(after.card,before.card);assert(after.confusions[wrong.id]<before.confusions[wrong.id]);assert.equal((await d.reviewEvents.get(next.id))!.payload.feedback.repairResolved,true);repaired=true;break}}
  assert(repaired);

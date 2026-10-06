@@ -10,11 +10,17 @@ import {TimelineCard} from './TimelineCard';
 import {SortChallengeCard} from './SortChallengeCard';
 import {playSuccess,useReducedMotion,useStudyPreferences} from './useStudyPreferences';
 import './study-feed.css';
+import {ObjectIntroCard} from './ObjectIntroCard';
+import {StopStudyCard} from './StopStudyCard';
+import {getBundle} from '../../db/repositories';
+import {db} from '../../db/engi-db';
+import type {Bundle,Familiarity} from '../../lib/engi/types';
 
 const reasonLabel:Record<string,string>={due:'Пора повторить',new:'Новое знание',weak:'Закрепляем',confusion:'Различаем похожее',retry:'Уточняем связь',challenge:'Проверяем связи',calibration:'Проверяем воспоминание',practice:'Свободная практика'};
 const delay=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
 
 export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void}){
+ const [introBundle,setIntroBundle]=useState<Bundle|null>(null);
  const [session,setSession]=useState(initial),[feedback,setFeedback]=useState<any>(null),[draft,setDraft]=useState<InteractionDraft|undefined>(initial.interaction);
  const [state,setState]=useState<'loading'|'ready'|'saving'|'feedback'|'exiting'>('loading'),[error,setError]=useState(''),[imageFailed,setImageFailed]=useState(false),[mediaReady,setMediaReady]=useState(false);
  const [details,setDetails]=useState(false),[reportText,setReportText]=useState(''),[notice,setNotice]=useState(''),[challengeIntro,setChallengeIntro]=useState(false);
@@ -37,10 +43,11 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   setDraft(session.interaction?.taskId===task?.id?session.interaction:undefined);
   setMediaReady(task?.recipe.cue!=='image'||!task.items[0]?.image);setChallengeIntro(!!task?.recipe.diagnostic);
   clearTimeout(introTimer.current);if(task?.recipe.diagnostic)introTimer.current=setTimeout(()=>setChallengeIntro(false),500);
+  if(!task)setState('ready');if(session.intro)void getBundle(db).then(setIntroBundle).catch(e=>setError(e.message));
   if(task)trainerService.getFeedback(task.id).then(f=>{if(!valid)return;if(f){lock.current=true;setState('feedback');setFeedback(f);scheduleNext(f)}else setState('ready')}).catch(e=>{if(valid){setError(e.message);setState('ready')}});
-  void mediaStore.prewarm(session.tasks.slice(session.currentPosition+1,session.currentPosition+5).flatMap(t=>t.items.flatMap(i=>i.image?[i.image]:[])));
+  void trainerService.preloadMedia(session.id).then(urls=>mediaStore.prewarm(urls)).catch(()=>{});
   return()=>{valid=false;clearTimeout(timer.current);clearTimeout(introTimer.current)};
- },[task?.id]);
+ },[task?.id,session.intro?.unitIds.join('|'),session.exhausted]);
 
  function persist(delta:Partial<InteractionDraft>):Promise<void>{
   const id=task.id,sid=session.id;
@@ -51,7 +58,7 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   if(advancing.current)return;advancing.current=true;clearTimeout(timer.current);setState('exiting');
   const current=sessionRef.current,currentTask=current.tasks[current.currentPosition];
   try{await writes.current.catch(()=>{});if(!reduced)await delay(180);const next=await trainerService.advanceFeed(current.id,skip,currentTask?.id);if(!alive.current)return;setSession(next);
-   if(!next.tasks[next.currentPosition]){setState('ready');setError('Для этого формата нужны дополнительные знания. Можно выбрать другой формат на главной.')}
+   if(next.exhausted||next.intro)setState('ready');
   }catch(e){if(alive.current){setError((e as Error).message);setState(feedback?'feedback':'ready')}}finally{advancing.current=false}
  }
  async function submit(value:any){
@@ -70,7 +77,12 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
 
  const busy=state!=='ready'||challengeIntro||details;
  const cue=<div className="feed-cue">{task?.recipe.format==='missing'?<ol className="feed-sequence">{task.sequence?.map((i,n)=><li key={n}>{i?.name??'?'}</li>)}</ol>:task?.recipe.format==='sort'?<span className="challenge-mark" aria-hidden="true">↕</span>:task?.recipe.cue==='image'&&task.items[0].image?<KnowledgeImage src={task.items[0].image} alt="Изображение для вопроса" onReady={()=>setMediaReady(true)} onFail={()=>setImageFailed(true)}/>:<h1>{task?.items[0].name}</h1>}</div>;
- let prompt=task?.recipe.label??'Выберите ответ';if(task?.recipe.format==='timeline')prompt='Когда это произошло?';if(task?.recipe.format==='sort')prompt='Расставьте по порядку';if(task?.recipe.format==='missing')prompt='Что пропущено в последовательности?';
+ async function introChoose(id:string,color:Familiarity){setState('saving');try{setSession(await trainerService.saveIntroSelection(session.id,id,color))}finally{setState('ready')}}
+ async function introDone(){setState('saving');setError('');try{setSession(await trainerService.completeIntro(session.id))}catch(e){setError((e as Error).message)}finally{setState('ready')}}
+ async function more(practice=false){setState('saving');setError('');try{setSession(await trainerService.openMore(session.id,practice))}catch(e){setError((e as Error).message)}finally{setState('ready')}}
+ if(session.intro)return introBundle?<ObjectIntroCard intro={session.intro} bundle={introBundle} onChoose={introChoose} onDone={()=>void introDone()} onExit={()=>void exit()} busy={state==='saving'} error={error}/>:<main className="study-feed"><p>Готовим знакомство…</p></main>;
+ if(session.exhausted)return <StopStudyCard onMore={()=>void more()} onPractice={()=>void more(true)} onExit={()=>void exit()} busy={state==='saving'} error={error}/>;
+ const prompt=task?.recipe.prompt??task?.recipe.label??'Вспомните ответ';
  return <main className={`study-feed state-${state}`}><header className="feed-header"><button className="icon-button" aria-label="Выйти из практики" disabled={state==='saving'||state==='exiting'} onClick={()=>void exit()}>×</button><span>{reasonLabel[task?.reason]??'Практика'}</span><span>{session.completedCount??0} карточек</span><button className="icon-button" aria-label="Подробнее о вопросе" disabled={state==='saving'||state==='exiting'} onClick={()=>{clearTimeout(timer.current);setDetails(true)}}>···</button></header>
  <div className="feed-viewport"><div className="feed-current" key={task?.id} data-task-id={task?.id}
   onPointerDown={e=>{if(!(e.target as HTMLElement).closest('button,input,.recall-swipe'))touch.current=e.clientY}}

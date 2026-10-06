@@ -7,18 +7,30 @@ export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,acces
  const callbacks=useRef({onPersist,onSubmit});callbacks.current={onPersist,onSubmit};
  const gesture=useRef<{x:number;y:number;time:number;width:number;dx:number;dy:number}|null>(null);
  const lastPersist=useRef(elapsedRef.current);
+ const pendingReveal=useRef<Partial<InteractionDraft>|null>(null),requestEarlyReveal=useRef<(()=>void)|null>(null);
+ const [revealing,setRevealing]=useState(false);
  useEffect(()=>{
   if(revealed||paused)return;
-  let last=Date.now(),timer:ReturnType<typeof setTimeout>|undefined,disposed=false;
+  let last=Date.now(),visible=document.visibilityState==='visible',timer:ReturnType<typeof setTimeout>|undefined,disposed=false,inFlight=false;
+  const accrue=()=>{const now=Date.now();if(visible&&!pendingReveal.current){elapsedRef.current=Math.min(5000,elapsedRef.current+Math.max(0,now-last));setElapsed(elapsedRef.current)}last=now};
   const persist=(force=false)=>{if(force||elapsedRef.current-lastPersist.current>=500){lastPersist.current=elapsedRef.current;void callbacks.current.onPersist({recallElapsedMs:elapsedRef.current}).catch(()=>{})}};
+  const reveal=()=>{
+   if(disposed||inFlight||!pendingReveal.current)return;inFlight=true;setRevealing(true);
+   void callbacks.current.onPersist(pendingReveal.current).then(()=>{if(!disposed)setRevealed(true)}).catch(()=>{if(!disposed)timer=setTimeout(tick,500)}).finally(()=>{inFlight=false});
+  };
   const tick=()=>{
-   if(disposed)return;const now=Date.now();if(document.visibilityState==='visible'){elapsedRef.current=Math.min(5000,elapsedRef.current+Math.max(0,now-last));setElapsed(elapsedRef.current)}last=now;
-   if(elapsedRef.current>=5000){void callbacks.current.onPersist({recallElapsedMs:5000,revealed:true}).then(()=>{if(!disposed)setRevealed(true)}).catch(()=>{if(!disposed)timer=setTimeout(tick,500)});return}
+   if(disposed)return;accrue();
+   if(pendingReveal.current){reveal();return}
+   if(elapsedRef.current>=5000){pendingReveal.current={recallElapsedMs:5000,revealed:true};reveal();return}
    persist();timer=setTimeout(tick,Math.min(100,5000-elapsedRef.current));
   };
-  const visibility=()=>{last=Date.now();persist(true)};
+  requestEarlyReveal.current=()=>{
+   if(disposed||pendingReveal.current||document.visibilityState!=='visible')return;
+   accrue();pendingReveal.current={revealed:true,earlyReveal:true,recallElapsedMs:elapsedRef.current};clearTimeout(timer);reveal();
+  };
+  const visibility=()=>{accrue();visible=document.visibilityState==='visible';if(!pendingReveal.current)persist(true)};
   document.addEventListener('visibilitychange',visibility);timer=setTimeout(tick,Math.min(100,5000-elapsedRef.current));
-  return()=>{disposed=true;clearTimeout(timer);if(document.visibilityState==='visible')elapsedRef.current=Math.min(5000,elapsedRef.current+Math.max(0,Date.now()-last));persist(true);document.removeEventListener('visibilitychange',visibility)};
+  return()=>{disposed=true;clearTimeout(timer);requestEarlyReveal.current=null;accrue();if(!pendingReveal.current)persist(true);document.removeEventListener('visibilitychange',visibility)};
  },[task.id,paused,revealed]);
  return <div className={`feed-question recall-swipe ${dragging?'is-dragging':''} ${offset>0?'remembering':offset<0?'missing-memory':''}`} style={reducedMotion?undefined:{transform:`translateX(${offset}px) rotate(${offset/35}deg)`}}
   onKeyDown={e=>{if(revealed&&!paused&&!busy&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();callbacks.current.onSubmit(e.key==='ArrowRight')}}}
@@ -27,15 +39,18 @@ export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,acces
    gesture.current={x:e.clientX,y:e.clientY,time:Date.now(),width:e.currentTarget.getBoundingClientRect().width,dx:0,dy:0};e.currentTarget.setPointerCapture(e.pointerId);
   }}
   onPointerMove={e=>{const g=gesture.current;if(!g)return;g.dx=e.clientX-g.x;g.dy=e.clientY-g.y;if(Math.abs(g.dx)>8&&Math.abs(g.dx)>Math.abs(g.dy)*1.2){setDragging(true);setOffset(Math.max(-g.width*.8,Math.min(g.width*.8,g.dx)))}}}
-  onPointerUp={()=>{const g=gesture.current;gesture.current=null;setDragging(false);setOffset(0);if(!g||paused||busy)return;
+  onPointerUp={()=>{const g=gesture.current;gesture.current=null;setDragging(false);setOffset(0);if(!g||!revealed||paused||busy)return;
    const distance=Math.abs(g.dx),horizontal=distance>Math.abs(g.dy)*1.2,velocity=distance/Math.max(20,Date.now()-g.time);
    if(horizontal&&(distance>=g.width*.27||(distance>=g.width*.15&&velocity>=.6)))callbacks.current.onSubmit(g.dx>0);
   }} onPointerCancel={()=>{gesture.current=null;setOffset(0);setDragging(false)}}>
-  {cue}<div className="feed-actions"><h2>{task.recipe.label??'Вспомните ответ'}</h2>
-   {!revealed?<div className="recall-thinking"><div className="recall-time-track" role="progressbar" aria-label="Время вспомнить" aria-valuemin={0} aria-valuemax={5} aria-valuenow={Math.ceil((5000-elapsed)/1000)}><span style={{width:`${(5000-elapsed)/50}%`}}/></div><span>{Math.ceil((5000-elapsed)/1000)}</span><p>Попробуйте вспомнить. Ответ откроется сам.</p></div>:
+  {cue}<div className="feed-actions"><h2>{task.recipe.prompt??task.recipe.label??'Вспомните ответ'}</h2>
+   {!revealed?<div className="recall-thinking"><div className="recall-time-track" role="progressbar" aria-label="Время вспомнить" aria-valuemin={0} aria-valuemax={5} aria-valuenow={Math.ceil((5000-elapsed)/1000)}><span style={{width:`${(5000-elapsed)/50}%`}}/></div><span>{Math.ceil((5000-elapsed)/1000)}</span><button className="button outline" style={{gridColumn:'1 / -1',justifySelf:'center',fontSize:13,padding:'6px 12px',minHeight:44}} disabled={paused||busy||revealing} onClick={()=>{if(!paused&&!busy&&!revealing)requestEarlyReveal.current?.()}}>Показать сейчас</button><p>Попробуйте вспомнить. Ответ откроется сам.</p></div>:
     <><h3 className="revealed-answer" aria-live="polite">{task.items[0].answer}</h3><div className="recall-hints" aria-hidden="true"><span>← Не вспомнил</span><span>Вспомнил →</span></div>
      <div className={`recall-controls ${reducedMotion||accessible?'show-controls':''}`} aria-label="Оцените воспоминание"><button className="button outline" disabled={busy||paused} onClick={()=>onSubmit(false)}>Не вспомнил</button><button className="button outline" disabled={busy||paused} onClick={()=>onSubmit(true)}>Вспомнил</button></div>
      <span className="swipe-verdict" aria-hidden="true">{offset>20?'Вспомнил ✓':offset< -20?'Не вспомнил':''}</span></>}
   </div>
  </div>;
 }
+
+
+
