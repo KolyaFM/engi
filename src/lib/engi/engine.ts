@@ -10,6 +10,7 @@ export function hydrate(m:Memory):Card{return {...m.card,due:new Date(m.card.due
 export function retention(m:Memory){return m.firstSuccessAt?scheduler.get_retrievability(hydrate(m),new Date(),false):0}
 export function preflight(t:Task){
  const a=t.items;if(!a.length)return false;
+ if(t.recipe.format==='multi_choice'&&(!t.answerSet?.length||t.answerSet.some(id=>!t.options.some(o=>o.id===id))||!t.options.some(o=>!t.answerSet!.includes(o.id))))return false;
  if(t.recipe.format==='match'&&!t.recipe.feed&&(a.length<3||new Set(a.map(i=>i.answerId)).size!==a.length))return false;
  if(['sort','timeline','missing'].includes(t.recipe.format)&&!(t.recipe.feed&&t.recipe.format==='timeline'&&a.length===1)&&(a.length<3||new Set(a.map(i=>i.year)).size!==a.length))return false;
  if(['sort','timeline','missing'].includes(t.recipe.format)){if(a.some(i=>!Number.isFinite(i.year)))return false;const sorted=[...a].sort((x,y)=>x.year!-y.year!);for(let i=1;i<sorted.length;i++)if(sorted[i-1].year!>=sorted[i].year!)return false}
@@ -21,6 +22,7 @@ export function preflight(t:Task){
 }
 export function assess(t:Task,answer:any){
  const fmt=t.recipe.format,evidence:{item:Item;correct:boolean;chosen?:string;level:string}[]=[];
+ if(fmt==='multi_choice'){if(!Array.isArray(answer)||new Set(answer).size!==answer.length||answer.some(id=>typeof id!=='string'||!t.options.some(o=>o.id===id)))throw Error('Выберите варианты из списка');const selected=new Set(answer),extra=answer.some(id=>!t.answerSet!.includes(id));for(const item of t.items)evidence.push({item,correct:selected.has(item.answerId)&&!extra,chosen:extra?answer.find(id=>!t.answerSet!.includes(id)):undefined,level:'direct'});const right=t.answerSet!.filter(id=>selected.has(id)).length,score=extra?0:right/t.answerSet!.length;return {score,evidence,expected:t.answerSet};}
  if(fmt==='timeline'){
   if(!answer||typeof answer!=='object')throw Error('Укажите годы');
   const scores=t.items.map(i=>Math.abs(Number(answer[i.entityId])-i.year!)<=15?1:0);

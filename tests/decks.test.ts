@@ -25,10 +25,10 @@ function fixture(): Bundle {
     ],
     facts: [],
     media: [
-      {id: 'm1', entityId: 'e1', role: 'portrait', url: 'engi-media://1111', license: 'cc', primary: true},
-      {id: 'm2', entityId: 'e2', role: 'portrait', url: 'engi-media://2222', license: 'cc', primary: true},
-      {id: 'm3', entityId: 'e3', role: 'artwork', url: 'engi-media://3333', license: 'cc', primary: true},
-      {id: 'm4', entityId: 'e3', role: 'detail', url: 'engi-media://4444', license: 'cc'},
+      {id: 'm1', entityId: 'e1', role: 'portrait', url: 'engi-media://0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', sourceUrl:'https://example.org/image', license: 'cc', primary: true},
+      {id: 'm2', entityId: 'e2', role: 'portrait', url: 'engi-media://edee29f882543b956620b26d0ee0e7e950399b1c4222f5de05e06425b4c995e9', sourceUrl:'https://example.org/image', license: 'cc', primary: true},
+      {id: 'm3', entityId: 'e3', role: 'artwork', url: 'engi-media://318aee3fed8c9d040d35a7fc1fa776fb31303833aa2de885354ddf3d44d8fb69', sourceUrl:'https://example.org/image', license: 'cc', primary: true},
+      {id: 'm4', entityId: 'e3', role: 'detail', url: 'engi-media://79f06f8fde333461739f220090a23cb2a79f6d714bee100d0e4b4af249294619', sourceUrl:'https://example.org/image', license: 'cc'},
     ],
     tags: [
       {id: 'tag-presidents', name: 'Президенты США'},
@@ -62,9 +62,9 @@ test('getDeckSampleImages returns up to limit distinct valid images', () => {
   const b = fixture();
   const images = getDeckSampleImages(b, ['e1', 'e2', 'e3'], 3);
   assert.equal(images.length, 3);
-  assert.equal(images[0], 'engi-media://1111');
-  assert.equal(images[1], 'engi-media://2222');
-  assert.equal(images[2], 'engi-media://3333');
+  assert.equal(images[0], 'engi-media://0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c');
+  assert.equal(images[1], 'engi-media://edee29f882543b956620b26d0ee0e7e950399b1c4222f5de05e06425b4c995e9');
+  assert.equal(images[2], 'engi-media://318aee3fed8c9d040d35a7fc1fa776fb31303833aa2de885354ddf3d44d8fb69');
 });
 
 test('getDeckList builds tag decks and automatically includes untagged pseudo-deck', () => {

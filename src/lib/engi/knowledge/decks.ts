@@ -34,6 +34,7 @@ export type DeckInfo = {
 };
 
 export function getUntaggedEntities(bundle: Bundle): Entity[] {
+  if(bundle.decks){const activeIds=new Set(bundle.decks.filter(d=>!d.archived).map(d=>d.id));const members=new Set((bundle.deckMembers??[]).filter(m=>!m.archived&&activeIds.has(m.deckId)).map(m=>m.entityId));return bundle.entities.filter(e=>!e.archived&&!members.has(e.id));}
   const activeTagIds = new Set(bundle.tags.filter(t => !t.archived).map(t => t.id));
   const taggedEntityIds = new Set(
     bundle.entityTags
@@ -91,7 +92,7 @@ export function progressForEntities(s: Snapshot, entityIds: Set<string>): DeckSt
 export function getDeckList(s: Snapshot): DeckInfo[] {
   const b = s.bundle;
   const ix = indexes(b);
-  const activeTags = b.tags.filter(t => !t.archived);
+  const activeTags = (b.decks??b.tags).filter(t => !t.archived);
 
   const childrenMap = new Map<string, string[]>();
   for (const t of activeTags) {
@@ -103,10 +104,10 @@ export function getDeckList(s: Snapshot): DeckInfo[] {
   }
 
   const decks: DeckInfo[] = activeTags.map(tag => {
-    const memberEntities = ix.entitiesByTag.get(tag.id) ?? [];
+    const memberEntities = ix.entitiesByScope.get(tag.id) ?? [];
     const entityIds = memberEntities.map(e => e.id);
     const p = progress(s, tag.id);
-    const counts = calculateDeckEntityCounts(entityIds, s);
+    const counts = calculateDeckEntityCounts(entityIds, s,tag.id);
     return {
       id: tag.id,
       name: tag.name,
@@ -134,7 +135,7 @@ export function getDeckList(s: Snapshot): DeckInfo[] {
   if (untagged.length > 0) {
     const untaggedIds = untagged.map(e => e.id);
     const p = progressForEntities(s, new Set(untaggedIds));
-    const counts = calculateDeckEntityCounts(untaggedIds, s);
+    const counts = calculateDeckEntityCounts(untaggedIds, s,UNTAGGED_TAG_ID);
     decks.push({
       id: UNTAGGED_TAG_ID,
       name: 'Неразобранное',
@@ -157,7 +158,7 @@ export function getDeckEntities(bundle: Bundle, deckId: string): Entity[] {
     return getUntaggedEntities(bundle);
   }
   const ix = indexes(bundle);
-  return ix.entitiesByTag.get(deckId) ?? [];
+  return ix.entitiesByScope.get(deckId) ?? [];
 }
 
 export function getDeckTypes(entities: Entity[], bundle: Bundle): { id: string; name: string }[] {
@@ -195,11 +196,13 @@ export type EntityMasterySummary = {
   label: string;
 };
 
-export function getEntityLearningStatus(entityId: string, snapshot: Snapshot): 'learned' | 'in_progress' | 'unlearned' {
+export function getEntityLearningStatus(entityId: string, snapshot: Snapshot,scope='all'): 'learned' | 'in_progress' | 'unlearned' {
   const b = snapshot.bundle;
+  const units=canonicalTargets(b,scope).filter(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId===entityId:i.entityId===entityId);
+  const eligibleIds=new Set(units.map(i=>i.targetId));
   const entityFactIds = new Set(b.facts.filter(f => f.entityId === entityId && !f.archived).map(f => f.id));
   const memories = snapshot.memories.filter(m => {
-    if (m.legacyOf) return false;
+    if (m.legacyOf||!eligibleIds.has(m.id)) return false;
     if (m.id.startsWith(`ku:entity:${entityId}:`)) return true;
     for (const factId of entityFactIds) {
       if (m.id.startsWith(`ku:fact:${factId}:`)) return true;
@@ -212,7 +215,7 @@ export function getEntityLearningStatus(entityId: string, snapshot: Snapshot): '
   const active = memories.filter(m => m.status !== 'suspended');
   if (active.length === 0) return 'unlearned';
 
-  const allLearned = active.every(
+  const allLearned = units.length>0&&units.every(i=>memories.some(m=>m.id===i.targetId))&&active.every(
     m => (m.attempts ?? 0) > 0 && !!m.firstSuccessAt && m.lastOutcome !== false && (m.card?.stability ?? 0) >= 7
   );
   if (allLearned) return 'learned';
@@ -225,7 +228,7 @@ export function getEntityLearningStatus(entityId: string, snapshot: Snapshot): '
   return 'unlearned';
 }
 
-export function calculateDeckEntityCounts(entityIds: string[], snapshot: Snapshot): {
+export function calculateDeckEntityCounts(entityIds: string[], snapshot: Snapshot,scope='all'): {
   learnedCount: number;
   startedCount: number;
   category: DeckCategory;
@@ -233,7 +236,7 @@ export function calculateDeckEntityCounts(entityIds: string[], snapshot: Snapsho
   let learnedCount = 0;
   let startedCount = 0;
   for (const id of entityIds) {
-    const status = getEntityLearningStatus(id, snapshot);
+    const status = getEntityLearningStatus(id, snapshot,scope);
     if (status === 'learned') {
       learnedCount++;
       startedCount++;

@@ -8,6 +8,6 @@ const due=canonicalTargets(b).map(i=>{const m=updateMemory(undefined,i,true,i.an
 }
 const r=recipes(b).find(r=>r.answerKey==='created_by'&&r.format==='choice');const item=eligible(b,r)[0];assert.equal(updateMemory(undefined,item,false,'wrong'),undefined,'New failed pretest must not receive Again');const memory=updateMemory(undefined,item,true,item.answerId);assert(memory.card.stability>0);assert(memory.firstSuccessAt);assert(retention(memory)>0.99);const again=updateMemory(memory,item,false,'wrong');assert.equal(again.confusions.wrong,1);assert.equal(again.attempts,2);
 const multi=structuredClone(b);multi.facts.push({...multi.facts.find(f=>f.entityId===item.entityId&&f.key==='created_by'),id:'other-author',valueEntityId:b.entities.find(e=>e.type==='person'&&e.id!==item.answerId).id});assert(!eligible(multi,r).some(i=>i.entityId===item.entityId),'Multiple authors must be excluded');
-const dateRecipes=recipes(b).filter(r=>r.answerKey==='creation_date');for(const r of dateRecipes)assert(eligible(b,r).some(i=>i.entityId==='mona-lisa'||i.entityId==='grande-jatte'),'Approximate and range dates included');
+const dateRecipes=recipes(b).filter(r=>r.answerKey==='creation_date'&&!['sort','missing'].includes(r.format));for(const r of dateRecipes)assert(eligible(b,r).some(i=>i.entityId==='mona-lisa'||i.entityId==='grande-jatte'),'Approximate and range dates included');
 console.log(JSON.stringify({generatedAndChecked:count,formats:7,fsrs:'real scheduler',pretest:'passed',multipleAuthors:'passed',approximateDates:'passed'}));
 

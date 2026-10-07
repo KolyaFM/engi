@@ -123,15 +123,15 @@ function fullFixture(): Bundle {
       {id: 'u1', type: 'person', name: 'Неразобранный деятель', aliases: [], externalIds: {}},
     ],
     facts: [
-      {id: 'f1', entityId: 'p1', key: 'party', valueKind: 'text', valueText: 'Либерал', verification: 'verified', source: {name: 'test'}},
-      {id: 'f2', entityId: 'p2', key: 'presidency_start', valueKind: 'date', dateStart: '1789-01-01', dateEnd: '1789-12-31', datePrecision: 'year', verification: 'verified', source: {name: 'test'}},
-      {id: 'f3', entityId: 'p3', key: 'presidency_start', valueKind: 'date', dateStart: '1797-01-01', dateEnd: '1797-12-31', datePrecision: 'year', verification: 'verified', source: {name: 'test'}},
-      {id: 'f4', entityId: 'u1', key: 'party', valueKind: 'text', valueText: 'Независимый', verification: 'verified', source: {name: 'test'}},
+      {id: 'f1', entityId: 'p1', key: 'custom_party_text', valueKind: 'text', valueText: 'Либерал', verification: 'verified', source: {name: 'test',kind:'manual'}},
+      {id: 'f2', entityId: 'p2', key: 'presidency_start', valueKind: 'date', dateStart: '1789-01-01', dateEnd: '1789-12-31', datePrecision: 'year', verification: 'verified', source: {name: 'test',kind:'manual'}},
+      {id: 'f3', entityId: 'p3', key: 'presidency_start', valueKind: 'date', dateStart: '1797-01-01', dateEnd: '1797-12-31', datePrecision: 'year', verification: 'verified', source: {name: 'test',kind:'manual'}},
+      {id: 'f4', entityId: 'u1', key: 'custom_party_text', valueKind: 'text', valueText: 'Независимый', verification: 'verified', source: {name: 'test',kind:'manual'}},
     ],
     media: [
-      {id: 'm1', entityId: 'p1', role: 'portrait', url: 'engi-media://m1', license: 'cc'},
-      {id: 'm2', entityId: 'p2', role: 'portrait', url: 'engi-media://m2', license: 'cc'},
-      {id: 'm3', entityId: 'p3', role: 'portrait', url: 'engi-media://m3', license: 'cc'},
+      {id: 'm1', entityId: 'p1', role: 'portrait', url: 'engi-media://ca0df2c95aa144c1d0ff2ff3c8f967fdc1de9ef0c4120b3726416701b519d619', sourceUrl:'https://example.org/image', license: 'cc'},
+      {id: 'm2', entityId: 'p2', role: 'portrait', url: 'engi-media://29c1b289e7522195b362e44f54e05470b69ad20540ab60a18a05e5bf6951f13d', sourceUrl:'https://example.org/image', license: 'cc'},
+      {id: 'm3', entityId: 'p3', role: 'portrait', url: 'engi-media://153812ae5fea0b73a011bf28bd7cea93644437c3fe3260b7b2d7e1e2f9f46bde', sourceUrl:'https://example.org/image', license: 'cc'},
     ],
     tags: [
       {id: 'parent-art', name: 'Искусство'},
@@ -144,7 +144,7 @@ function fullFixture(): Bundle {
       {entityId: 'p3', tagId: 'deck-presidents'},
     ],
     properties: [
-      {id: 'party', name: 'Партия', valueKind: 'text', cardinality: 'one', learnable: true, learning: {choice: 'on'}},
+      {id: 'custom_party_text', name: 'Партия (текст)', valueKind: 'text', cardinality: 'one', learnable: true, learning: {choice: 'on',recallReveal:'on'}},
       {id: 'presidency_start', name: 'Начало президентства', valueKind: 'date', cardinality: 'one', learnable: true, learning: {choice: 'on'}},
     ],
     entityTypes: [
@@ -170,11 +170,11 @@ test('deck integration: parent-child hierarchy populates childTagIds in deck cat
 test('deck integration: per-deck and untagged metrics isolation', () => {
   const b = fullFixture();
   const presTargets = canonicalTargets(b, 'deck-presidents');
-  assert.equal(presTargets.length, 2);
+  assert.equal(presTargets.length, 4);
   assert(presTargets.every(t => t.entityId === 'p2' || t.entityId === 'p3'));
 
   const artTargets = canonicalTargets(b, 'deck-art');
-  assert.equal(artTargets.length, 1);
+  assert.equal(artTargets.length, 2);
   assert.equal(artTargets[0].entityId === 'p1', true);
 
   const untagged = getDeckEntities(b, UNTAGGED_TAG_ID);
@@ -223,7 +223,7 @@ test('deck integration: multi-deck entity assignment maintains single memory sta
     const decks = getDeckList(s);
     const artDeck = decks.find(dk => dk.id === 'deck-art')!;
     assert.equal(artDeck.stats.covered, 0);
-    assert.equal(artDeck.stats.new, 0);
+    assert.equal(artDeck.stats.new, 1);
   } finally {
     d.close();
     await d.delete();

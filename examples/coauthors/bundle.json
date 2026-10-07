@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 3,
+  "name": "Соавторы — тестовые данные",
+  "entities": [
+    {
+      "name": "Тестовый автор А",
+      "type": "Человек"
+    },
+    {
+      "name": "Тестовый автор Б",
+      "type": "Человек"
+    },
+    {
+      "name": "Тестовый автор В",
+      "type": "Человек"
+    },
+    {
+      "name": "Тестовая книга",
+      "type": "Книга",
+      "completeProperties": [
+        "Автор"
+      ],
+      "facts": [
+        {
+          "property": "Автор",
+          "value": {
+            "name": "Тестовый автор А",
+            "type": "Человек"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетические данные для проверки интерфейса"
+          },
+          "verification": "user_confirmed"
+        },
+        {
+          "property": "Автор",
+          "value": {
+            "name": "Тестовый автор Б",
+            "type": "Человек"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетические данные для проверки интерфейса"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    }
+  ],
+  "deck": {
+    "name": "Соавторы — тестовые данные",
+    "members": [
+      {
+        "name": "Тестовая книга",
+        "type": "Книга"
+      }
+    ],
+    "learning": {
+      "properties": [
+        "Автор"
+      ],
+      "imageRecognition": false
+    }
+  }
+}

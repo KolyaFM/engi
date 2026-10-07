@@ -1,6 +1,6 @@
 {
   "name": "engi",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -13,7 +13,8 @@
     "pack:build": "node --import tsx scripts/build-engi-pack.mjs",
     "test:browser": "node tests/browser.mjs",
     "test:production": "node tests/production.mjs",
-    "test:recall": "node tests/recall22-browser.mjs"
+    "test:recall": "node tests/recall22-browser.mjs",
+    "test:browser:v3": "node tests/browser-v3.mjs"
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.8.0",

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 3,
+  "name": "Картины Ван Гога — пример формата",
+  "entities": [
+    {
+      "name": "Винсент ван Гог",
+      "type": "Человек",
+      "aliases": [
+        "Ван Гог",
+        "Vincent van Gogh"
+      ],
+      "facts": [
+        {
+          "property": "Дата рождения",
+          "value": "1853-03-30",
+          "source": {
+            "kind": "manual",
+            "name": "Демонстрационный пример — проверьте перед обучением"
+          },
+          "verification": "unverified"
+        }
+      ]
+    },
+    {
+      "name": "Звёздная ночь",
+      "type": "Картина",
+      "aliases": [
+        "The Starry Night"
+      ],
+      "facts": [
+        {
+          "property": "Автор",
+          "value": {
+            "name": "Винсент ван Гог",
+            "type": "Человек"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Демонстрационный пример — проверьте перед обучением"
+          },
+          "verification": "unverified"
+        },
+        {
+          "property": "Дата создания",
+          "value": 1889,
+          "source": {
+            "kind": "manual",
+            "name": "Демонстрационный пример — проверьте перед обучением"
+          },
+          "verification": "unverified"
+        }
+      ]
+    }
+  ],
+  "deck": {
+    "name": "Картины Ван Гога — пример формата",
+    "members": [
+      {
+        "name": "Звёздная ночь",
+        "type": "Картина"
+      }
+    ],
+    "learning": {
+      "properties": [
+        "Автор",
+        "Дата создания"
+      ],
+      "imageRecognition": true
+    }
+  }
+}

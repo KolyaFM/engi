@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {pluralObjects, pluralSubtags} from '../src/components/knowledge/DeckCard';
+import {pluralObjects, pluralSubtags} from '../src/lib/engi/knowledge/labels';
 import type {DeckInfo} from '../src/lib/engi/knowledge/decks';
 
 test('pluralSubtags correctly formats sub-tag badges in Russian', () => {
@@ -55,4 +55,31 @@ test('deck data structures conform to DeckCard specifications', () => {
   assert.equal(sampleDeck.stats.due, 3);
   assert.equal(sampleDeck.learnedEntityCount, 5);
   assert.equal(sampleDeck.category, 'in_progress');
+});
+
+test('deck in_progress with zero learned items reflects active in-progress status instead of unstarted', () => {
+  const activeDeck: DeckInfo = {
+    id: 'tag-art',
+    name: 'Живопись',
+    isUntagged: false,
+    childTagIds: [],
+    entityCount: 12,
+    learnedEntityCount: 0,
+    startedEntityCount: 3,
+    category: 'in_progress',
+    sampleImages: [],
+    stats: {
+      total: 12,
+      available: 12,
+      new: 9,
+      suspended: 0,
+      covered: 3,
+      retention: null,
+      due: 1,
+    },
+  };
+
+  assert.equal(activeDeck.category, 'in_progress');
+  assert.equal(activeDeck.learnedEntityCount, 0);
+  assert.equal(activeDeck.startedEntityCount, 3);
 });

@@ -1,4 +1,4 @@
-import {reviewLearning} from '../lib/engi/learning/bootstrap';
+import {reviewLearning,unitDue} from '../lib/engi/learning/bootstrap';
 import type {EngiDB,SessionRow,ReviewEventRow} from '../db/engi-db';
 import {learningRow} from '../db/repositories';
 import {assess} from '../lib/engi/engine';
@@ -22,10 +22,10 @@ export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:A
  let isNewFailure=false;
  for(const evidence of result.evidence.filter(e=>e.level==='direct')){
   const old=await d.learningState.get(evidence.item.targetId);
-  if(!old)continue;
+  if(!old||old.payload.status==='suspended')continue;
   if(!old.payload.attempts&&!evidence.correct)isNewFailure=true;
   const latency=session.interaction?.firstAttemptLatencyMs??input.latencyMs??0;
-  const applied=reviewLearning(old.payload,evidence.item,evidence.correct,task.recipe.format!=='recall_reveal',!!task.retryOf,!!task.practice,latency);
+  const applied=reviewLearning(old.payload,evidence.item,evidence.correct,task.recipe.format!=='recall_reveal',!!task.retryOf,!!task.practice||task.recipe.format==='multi_choice'&&!unitDue(old.payload,session.id,session.completedCount??0),latency);
   const m=applied.memory;if(applied.fsrsUpdated)fsrsUpdated.add(m.id);
   if(evidence.item.mediaId)m.recentMediaIds=[...m.recentMediaIds??[],evidence.item.mediaId].slice(-3);
   const wrong=discrete?wrongChoices:(!evidence.correct&&task.recipe.format!=='recall_reveal'&&evidence.chosen?[evidence.chosen]:[]);

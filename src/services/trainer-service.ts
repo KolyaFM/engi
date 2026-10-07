@@ -18,7 +18,7 @@ export function createTrainerService(d:EngiDB){return {
  getSnapshot:()=>getSnapshot(d),
  async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];const b=await getBundle(d),rows=await d.learningState.toArray(),ids=canonicalTargets(b,s.tag).filter(i=>rows.some(r=>r.id===i.targetId&&unitDue(r.payload,s.id,s.completedCount??0))).slice(0,4).map(i=>i.entityId);return b.media.filter(m=>ids.includes(m.entityId)&&!m.archived&&m.learningExemplar!==false).slice(0,4).map(m=>m.url)},
  async startFeed(tag='all',format='mixed',mode='daily'){
-  if(!['mixed','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
+  if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
   await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },

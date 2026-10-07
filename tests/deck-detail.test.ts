@@ -100,8 +100,8 @@ test('filterDeckEntities filters by combined text and category type', () => {
   assert.equal(filteredByType[0].id, 'a1');
 
   const filteredByName = filterDeckEntities(artEntities, s.bundle, 'Моне', 'all');
-  assert.equal(filteredByName.length, 1);
-  assert.equal(filteredByName[0].id, 'p1');
+  assert.equal(filteredByName.length, 2);
+  assert(filteredByName.some(e=>e.id==='p1')); // Search also finds a work through its author.
 });
 
 test('child tags of parent deck are accurately resolved for hierarchical navigation', () => {

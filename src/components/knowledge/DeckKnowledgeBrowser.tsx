@@ -2,7 +2,8 @@ import {useMemo, useState} from 'react';
 import type {Snapshot, Entity} from '../../lib/engi/types';
 import {indexes} from '../../lib/engi/indexes';
 import {entityTypes} from '../../lib/engi/knowledge/properties';
-import {saveTag, newId} from '../../services/knowledge-service';
+import {newId} from '../../services/knowledge-service';
+import {saveDeck,attachDeckMember} from '../../services/deck-service';
 import {getEntityMasterySummary, UNTAGGED_TAG_ID} from '../../lib/engi/knowledge/decks';
 import {DeckCatalog} from './DeckCatalog';
 import {DeckDetailView} from './DeckDetailView';
@@ -22,7 +23,7 @@ export function DeckKnowledgeBrowser({
   onStudy: (tag: string) => void;
 }) {
   const activeTags = useMemo(
-    () => snapshot.bundle.tags.filter(t => !t.archived),
+    () => (snapshot.bundle.decks??[]).filter(t => !t.archived),
     [snapshot.bundle.tags]
   );
   const allEntities = useMemo(
@@ -34,6 +35,7 @@ export function DeckKnowledgeBrowser({
   const [viewMode, setViewMode] = useState<'decks' | 'objects'>(activeTags.length > 0 ? 'decks' : 'objects');
 
   const [detail, setDetail] = useState<Entity | null>(null);
+  const [creationDeckId,setCreationDeckId]=useState<string|null>(null);
   const [edit, setEdit] = useState<Entity | null | undefined>(undefined);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   const [newDeckName, setNewDeckName] = useState('');
@@ -57,8 +59,7 @@ export function DeckKnowledgeBrowser({
     return allEntities.filter(e => {
       if (objectTypeFilter !== 'all' && e.type !== objectTypeFilter) return false;
       if (objectTagFilter !== 'all') {
-        const entityTags = ix.tagsByEntity.get(e.id);
-        if (!entityTags?.has(objectTagFilter)) return false;
+        if (!ix.entitiesByDeck.get(objectTagFilter)?.some(m=>m.id===e.id)) return false;
       }
       if (!q) return true;
       const searchString = ix.searchByEntity.get(e.id);
@@ -73,9 +74,10 @@ export function DeckKnowledgeBrowser({
     if (!newDeckName.trim()) return;
     setBusy(true);
     try {
-      await saveTag({
+      await saveDeck({
         id: newId(),
         name: newDeckName.trim(),
+        learning:{imageRecognition:true},
         parentId: newDeckParent || undefined,
       });
       setNewDeckName('');
@@ -94,7 +96,7 @@ export function DeckKnowledgeBrowser({
           deckId={selectedDeckId}
           snapshot={snapshot}
           onBack={() => {
-            const currentTag = snapshot.bundle.tags.find(t => t.id === selectedDeckId);
+            const currentTag = snapshot.bundle.decks?.find(t => t.id === selectedDeckId);
             if (currentTag?.parentId) {
               setSelectedDeckId(currentTag.parentId);
             } else {
@@ -103,7 +105,7 @@ export function DeckKnowledgeBrowser({
           }}
           onStudy={onStudy}
           onSelectEntity={e => setDetail(e)}
-          onCreateEntity={() => setEdit(null)}
+          onCreateEntity={deckId => {setCreationDeckId(deckId??null);setEdit(null)}}
           onReload={onReload}
           onSelectDeck={id => setSelectedDeckId(id)}
         />
@@ -138,7 +140,7 @@ export function DeckKnowledgeBrowser({
               onSelectDeck={id => setSelectedDeckId(id)}
               onStudy={onStudy}
               onCreateDeck={() => setShowCreateDeck(true)}
-              onCreateEntity={() => setEdit(null)}
+              onCreateEntity={() => {setCreationDeckId(null);setEdit(null)}}
               onReload={onReload}
             />
           ) : (
@@ -148,7 +150,7 @@ export function DeckKnowledgeBrowser({
                   <p className="eyebrow">База знаний</p>
                   <h1>Все объекты</h1>
                 </div>
-                <button type="button" className="button primary" onClick={() => setEdit(null)}>
+                <button type="button" className="button primary" onClick={() => {setCreationDeckId(null);setEdit(null)}}>
                   + Новый объект
                 </button>
               </div>
@@ -254,7 +256,7 @@ export function DeckKnowledgeBrowser({
           onEdit={() => {
             const current = detail;
             setDetail(null);
-            setEdit(current);
+            setCreationDeckId(null);setEdit(current);
           }}
           onClose={() => setDetail(null)}
           onOpen={e => setDetail(e)}
@@ -267,7 +269,8 @@ export function DeckKnowledgeBrowser({
         <EntityEditor
           bundle={snapshot.bundle}
           initial={edit ?? undefined}
-          onSave={async () => {
+          onSave={async saved => {
+            if(saved&&creationDeckId)await attachDeckMember(saved.id,creationDeckId);setCreationDeckId(null);
             setEdit(undefined);
             await onReload();
           }}

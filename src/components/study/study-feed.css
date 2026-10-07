@@ -14,3 +14,5 @@
 @media(max-width:760px){.stability-strip{gap:8px}.stability-strip>div{padding:16px 12px}.stability-strip strong{font-size:26px}.stability-strip span{font-size:12px}.conflict-comparison{grid-template-columns:1fr}.feed-option{min-height:58px}.recall-hints{font-size:13px}.feed-header span{font-size:12px}.feed-cue{max-height:30dvh}.return-hook{padding:18px}.feed-actions h2{overflow-wrap:anywhere}}
 @media(prefers-reduced-motion:reduce){.recall-swipe,.is-dragging{transform:none!important;transition:none!important}.feed-option.answer-wrong,.feed-option.answer-correct,.revealed-answer,.encoding-moment,.repair-closure,.challenge-intro,.memory-milestone,.stability-strip strong{animation:none}.recall-time-track span{transition:none}.memory-milestone{display:block!important}.state-exiting .feed-current{transform:none!important;transition:none!important}}
 
+
+.feed-option[aria-pressed="true"]:not(.answer-correct):not(.answer-wrong){border-color:#184be7;background:#edf2ff;box-shadow:0 0 0 1px #184be7;}

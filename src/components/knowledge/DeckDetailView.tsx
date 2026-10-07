@@ -8,15 +8,15 @@ import {
   UNTAGGED_TAG_ID,
 } from '../../lib/engi/knowledge/decks';
 import {indexes} from '../../lib/engi/indexes';
-import {entityTypes} from '../../lib/engi/knowledge/properties';
+import {entityTypes,textValue} from '../../lib/engi/knowledge/properties';
 import {KnowledgeImage} from './KnowledgeImage';
 import {pluralObjects} from './DeckCard';
 import {
-  archiveTag,
-  attachEntityTag,
-  detachEntityTag,
-  saveTag,
-} from '../../services/knowledge-service';
+  archiveDeck,
+  attachDeckMember,
+  detachDeckMember,
+  saveDeck,
+} from '../../services/deck-service';
 import './decks.css';
 
 export type DeckDetailViewProps = {
@@ -41,9 +41,9 @@ export function DeckDetailView({
   onSelectDeck,
 }: DeckDetailViewProps) {
   const isUntagged = deckId === UNTAGGED_TAG_ID;
-  const tag = isUntagged ? undefined : snapshot.bundle.tags.find(t => t.id === deckId);
+  const tag = isUntagged ? undefined : (snapshot.bundle.decks??[]).find(t => t.id === deckId);
   const deckTitle = isUntagged ? 'Неразобранное' : tag?.name ?? 'Колода';
-  const parentTag = tag?.parentId ? snapshot.bundle.tags.find(t => t.id === tag.parentId) : undefined;
+  const parentTag = tag?.parentId ? (snapshot.bundle.decks??[]).find(t => t.id === tag.parentId) : undefined;
 
   const [query, setQuery] = useState('');
   const [subtagFilter, setSubtagFilter] = useState('all');
@@ -52,6 +52,9 @@ export function DeckDetailView({
   const [busy, setBusy] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [editName, setEditName] = useState(tag?.name ?? '');
+  const [excludedFactIds,setExcludedFactIds]=useState(tag?.learning.excludedFactIds??[]);
+  const [imageRecognition,setImageRecognition]=useState(tag?.learning.imageRecognition??true);
+  const [propertyIds,setPropertyIds]=useState<string[]|undefined>(tag?.learning.propertyIds);
   const [editParent, setEditParent] = useState(tag?.parentId ?? '');
   const [showAddExisting, setShowAddExisting] = useState(false);
   const [existingQuery, setExistingQuery] = useState('');
@@ -62,14 +65,14 @@ export function DeckDetailView({
   const ix = useMemo(() => indexes(snapshot.bundle), [snapshot.bundle]);
 
   const childTags = useMemo(
-    () => snapshot.bundle.tags.filter(t => !t.archived && t.parentId === deckId),
-    [snapshot.bundle.tags, deckId]
+    () => (snapshot.bundle.decks??[]).filter(t => !t.archived && t.parentId === deckId),
+    [(snapshot.bundle.decks??[]), deckId]
   );
 
   const filteredEntities = useMemo(() => {
     let list = entities;
     if (subtagFilter !== 'all') {
-      list = list.filter(e => ix.tagsByEntity.get(e.id)?.has(subtagFilter));
+      list = list.filter(e => ix.entitiesByDeck.get(subtagFilter)?.some(m=>m.id===e.id));
     }
     list = filterDeckEntities(list, snapshot.bundle, query, typeFilter);
     return [...list].sort((a, b) => {
@@ -100,9 +103,10 @@ export function DeckDetailView({
     if (isUntagged || !tag || !editName.trim()) return;
     setBusy(true);
     try {
-      await saveTag({
+      await saveDeck({
         ...tag,
         name: editName.trim(),
+        learning:{...tag.learning,imageRecognition,propertyIds,excludedFactIds},
         parentId: editParent || undefined,
       });
       await onReload();
@@ -117,7 +121,7 @@ export function DeckDetailView({
     if (!window.confirm(`Удалить колоду «${tag.name}»? Объекты сохранятся в базе знаний.`)) return;
     setBusy(true);
     try {
-      await archiveTag(tag.id);
+      await archiveDeck(tag.id);
       await onReload();
       onBack();
     } finally {
@@ -131,7 +135,7 @@ export function DeckDetailView({
     if (!window.confirm('Убрать объект из этой колоды?')) return;
     setBusy(true);
     try {
-      await detachEntityTag(entityId, deckId);
+      await detachDeckMember(entityId, deckId);
       await onReload();
     } finally {
       setBusy(false);
@@ -143,7 +147,7 @@ export function DeckDetailView({
     setBusy(true);
     try {
       for (const entityId of selectedToAdd) {
-        await attachEntityTag(entityId, deckId);
+        await attachDeckMember(entityId, deckId);
       }
       setSelectedToAdd(new Set());
       setShowAddExisting(false);
@@ -154,8 +158,8 @@ export function DeckDetailView({
   }
 
   const otherTags = useMemo(
-    () => snapshot.bundle.tags.filter(t => !t.archived && t.id !== deckId),
-    [snapshot.bundle.tags, deckId]
+    () => (snapshot.bundle.decks??[]).filter(t => !t.archived && t.id !== deckId),
+    [(snapshot.bundle.decks??[]), deckId]
   );
 
   function getEntityEyebrow(e: Entity): string {
@@ -179,6 +183,7 @@ export function DeckDetailView({
             onClick={() => {
               setEditName(tag?.name ?? '');
               setEditParent(tag?.parentId ?? '');
+              setPropertyIds(tag?.learning.propertyIds);setImageRecognition(tag?.learning.imageRecognition??true);setExcludedFactIds(tag?.learning.excludedFactIds??[]);
               setShowSettings(true);
             }}
           >
@@ -198,7 +203,7 @@ export function DeckDetailView({
             <button
               type="button"
               className="button primary"
-              onClick={() => onStudy(isUntagged ? 'all' : deckId)}
+              onClick={() => onStudy(deckId)}
               disabled={entities.length === 0}
             >
               Учить эту тему
@@ -452,6 +457,11 @@ export function DeckDetailView({
               />
             </label>
 
+            <h3>Что учить</h3>
+            <label className="check-label"><input type="checkbox" checked={imageRecognition} onChange={e=>setImageRecognition(e.target.checked)}/>Узнавание по изображениям</label>
+            <label className="check-label"><input type="checkbox" checked={propertyIds===undefined} onChange={e=>setPropertyIds(e.target.checked?undefined:[])}/>Все подходящие свойства</label>
+            {propertyIds!==undefined&&(snapshot.bundle.properties??[]).filter(p=>p.learnable&&!p.archived&&(!entities.length||propertyIds.includes(p.id)||!p.subjectTypes?.length||entities.some(e=>p.subjectTypes!.includes(e.type)))).map(p=><label className="check-label" key={p.id}><input type="checkbox" checked={propertyIds.includes(p.id)} onChange={e=>setPropertyIds(e.target.checked?[...propertyIds,p.id]:propertyIds.filter(id=>id!==p.id))}/>{p.name}</label>)}
+            <details><summary>Исключения отдельных фактов</summary>{snapshot.bundle.facts.filter(f=>!f.archived&&entities.some(e=>e.id===f.entityId)).map(f=><label className="check-label" key={f.id}><input type="checkbox" checked={!excludedFactIds.includes(f.id)} onChange={e=>setExcludedFactIds(e.target.checked?excludedFactIds.filter(id=>id!==f.id):[...excludedFactIds,f.id])}/>{snapshot.bundle.entities.find(e=>e.id===f.entityId)?.name} — {snapshot.bundle.properties?.find(p=>p.id===f.key)?.name}: {textValue(f,snapshot.bundle)}</label>)}</details>
             <label>
               Родительская колода
               <select value={editParent} onChange={e => setEditParent(e.target.value)}>
