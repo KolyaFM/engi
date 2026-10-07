@@ -81,11 +81,7 @@ export function DeckCard({deck, onSelect, onStudy}: DeckCardProps) {
 
         <div className="deck-meta">
           <span className="deck-count">
-            {deck.learnedEntityCount} из {deck.entityCount} изучено
-            {deck.category === 'in_progress' && deck.learnedEntityCount === 0 && deck.startedEntityCount > 0
-              ? ` · ${deck.startedEntityCount} в работе`
-              : ''}
-            {deck.category === 'completed' && deck.entityCount > 0 ? ' ✓' : ''}
+            {deck.learnedEntityCount} из {deck.entityCount} изучено{deck.learnedEntityCount === deck.entityCount && deck.entityCount > 0 ? ' ✓' : ''}
           </span>
           {hasDue && (
             <span className="deck-badge-due" aria-label={`Пора повторить: ${deck.stats.due}`}>
@@ -106,17 +102,8 @@ export function DeckCard({deck, onSelect, onStudy}: DeckCardProps) {
                 aria-valuemax={100}
               >
                 <div
-                  className={`deck-retention-fill ${deck.category === 'completed' ? 'is-completed' : ''} ${deck.category === 'in_progress' && deck.learnedEntityCount === 0 ? 'is-started' : ''}`}
-                  style={{
-                    width:
-                      deck.category === 'completed'
-                        ? '100%'
-                        : deck.learnedEntityCount > 0
-                        ? `${Math.round((deck.learnedEntityCount / deck.entityCount) * 100)}%`
-                        : deck.category === 'in_progress'
-                        ? `${Math.max(12, Math.round((deck.startedEntityCount / deck.entityCount) * 100))}%`
-                        : '0%',
-                  }}
+                  className={`deck-retention-fill ${deck.category === 'completed' ? 'is-completed' : ''}`}
+                  style={{width: `${Math.round((deck.learnedEntityCount / deck.entityCount) * 100)}%`}}
                 />
               </div>
               <span className="deck-retention-label">
@@ -124,8 +111,6 @@ export function DeckCard({deck, onSelect, onStudy}: DeckCardProps) {
                   ? 'Изучено'
                   : deck.learnedEntityCount > 0
                   ? `${Math.round((deck.learnedEntityCount / deck.entityCount) * 100)}%`
-                  : deck.category === 'in_progress'
-                  ? 'В процессе'
                   : 'Не начато'}
               </span>
             </div>

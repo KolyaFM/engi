@@ -356,10 +356,6 @@
   background: #16a34a;
 }
 
-.deck-retention-fill.is-started {
-  background: color-mix(in srgb, var(--primary, #184be7) 70%, transparent);
-}
-
 .deck-detail-stats-bar {
   display: flex;
   gap: 12px;

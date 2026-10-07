@@ -4,7 +4,7 @@ import {storageHealth,protectStorage} from '../services/storage-health';
 import {saveBackup} from '../services/backup-service';
 import {toast} from 'sonner';
 import {useStudyPreferences} from './study/useStudyPreferences';
-import {resetLearningProgress} from '../services/learning-service';
+import {resetLearningProgress,clearAllData} from '../services/learning-service';
 
 export function SettingsPanel({revision,onImport,onRestore}:{revision:number;onImport:()=>void;onRestore:()=>void}){
  const [busy,setBusy]=useState(false);
@@ -21,6 +21,19 @@ export function SettingsPanel({revision,onImport,onRestore}:{revision:number;onI
    setBusy(false);
   }
  }
+ async function handleClearAll(){
+  if(!window.confirm('Удалить ВСЕ данные? Это действие безвозвратно удалит все объекты, факты, колоды, изображения, установленные пакеты и историю обучения. Восстановить данные можно будет только из копии .engi-backup. Продолжить?'))return;
+  setBusy(true);
+  try{
+   await clearAllData();
+   toast.success('Все данные удалены');
+   if(typeof window!=='undefined'&&typeof window.location?.reload==='function')window.location.reload();
+  }catch(e){
+   toast.error((e as Error).message);
+  }finally{
+   setBusy(false);
+  }
+ }
  return <>
   <BaseSettingsPanel revision={revision} onImport={onImport} onRestore={onRestore}/>
   <section className="panel storage-panel" style={{marginTop:'20px'}}>
@@ -30,6 +43,15 @@ export function SettingsPanel({revision,onImport,onRestore}:{revision:number;onI
    </p>
    <button type="button" className="button destructive" disabled={busy} onClick={handleReset} style={{minHeight:'44px',background:'#c74744',color:'#fff',borderColor:'#c74744'}}>
     {busy?'Сбрасываем…':'Сбросить прогресс обучения'}
+   </button>
+  </section>
+  <section className="panel storage-panel" style={{marginTop:'20px'}}>
+   <h2>Очистить все данные</h2>
+   <p className="muted" style={{margin:'8px 0 16px',fontSize:'14px',color:'#697886'}}>
+    Полностью удаляет все объекты, связи, изображения, установленные пакеты и прогресс обучения. База данных вернётся к исходному пустому состоянию.
+   </p>
+   <button type="button" className="button destructive" disabled={busy} onClick={handleClearAll} style={{minHeight:'44px',background:'#c74744',color:'#fff',borderColor:'#c74744'}}>
+    {busy?'Удаляем…':'Очистить все данные'}
    </button>
   </section>
  </>;

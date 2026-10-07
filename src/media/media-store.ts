@@ -7,5 +7,6 @@ export const mediaStore={
  async getBlob(hash:string){const response=await (await caches.open(MEDIA_CACHE)).match(mediaKey(hash));if(!response)throw Error('Локальное изображение отсутствует. Импортируйте пакет ещё раз.');return response.blob()},
  async createObjectUrl(hash:string){return URL.createObjectURL(await this.getBlob(hash))},
  async remove(hash:string){await (await caches.open(MEDIA_CACHE)).delete(mediaKey(hash))},
+ async clear(){if(typeof caches!=='undefined')await caches.delete(MEDIA_CACHE)},
  async prewarm(urls:string[]){await Promise.allSettled([...new Set(urls.map(hashFromUrl).filter(Boolean))].map(async hash=>{const url=await this.createObjectUrl(hash!);const img=new Image();img.src=url;try{await img.decode()}finally{URL.revokeObjectURL(url)}}))}
 };

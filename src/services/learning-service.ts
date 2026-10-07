@@ -2,6 +2,8 @@ import {db,type EngiDB} from '../db/engi-db';
 import {getBundle,learningRow,contentTables} from '../db/repositories';
 import {canonicalTargets} from '../lib/engi/questions/recipe-factory';
 import {triagedMemory} from '../lib/engi/learning/bootstrap';
+import {BUILTIN_PROPERTIES,BUILTIN_TYPES} from '../lib/engi/knowledge/properties';
+import {mediaStore} from '../media/media-store';
 export async function setUnitSuspended(id:string,suspend:boolean,d:EngiDB=db){
  await d.transaction('rw',[...contentTables(d),d.learningState,d.activeSessions],async()=>{
   const item=canonicalTargets(await getBundle(d)).find(i=>i.targetId===id);if(!item)throw Error('Знание больше не доступно');
@@ -19,4 +21,15 @@ export async function resetLearningProgress(d:EngiDB=db){
   await d.targetMappings.clear();
   await d.appMeta.bulkDelete(['dailyLearning','newLearning','introducedEntities','reviewsSinceBackup']);
  });
+}
+export async function clearAllData(d:EngiDB=db){
+ const tables=[...contentTables(d),d.learningState,d.reviewEvents,d.activeSessions,d.targetMappings,d.appMeta];
+ await d.transaction('rw',tables,async()=>{
+  for(const table of tables){
+   await table.clear();
+  }
+  await d.propertyDefinitions.bulkPut(BUILTIN_PROPERTIES);
+  await d.entityTypes.bulkPut(BUILTIN_TYPES);
+ });
+ try{await mediaStore.clear()}catch{}
 }

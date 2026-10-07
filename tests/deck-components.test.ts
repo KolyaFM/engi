@@ -56,30 +56,3 @@ test('deck data structures conform to DeckCard specifications', () => {
   assert.equal(sampleDeck.learnedEntityCount, 5);
   assert.equal(sampleDeck.category, 'in_progress');
 });
-
-test('deck in_progress with zero learned items reflects active in-progress status instead of unstarted', () => {
-  const activeDeck: DeckInfo = {
-    id: 'tag-art',
-    name: 'Живопись',
-    isUntagged: false,
-    childTagIds: [],
-    entityCount: 12,
-    learnedEntityCount: 0,
-    startedEntityCount: 3,
-    category: 'in_progress',
-    sampleImages: [],
-    stats: {
-      total: 12,
-      available: 12,
-      new: 9,
-      suspended: 0,
-      covered: 3,
-      retention: null,
-      due: 1,
-    },
-  };
-
-  assert.equal(activeDeck.category, 'in_progress');
-  assert.equal(activeDeck.learnedEntityCount, 0);
-  assert.equal(activeDeck.startedEntityCount, 3);
-});
