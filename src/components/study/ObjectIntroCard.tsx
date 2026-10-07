@@ -26,6 +26,14 @@ function formatIntroValue(fact:Fact|undefined,fallback:string,bundle:Bundle):str
  return textValue(fact,bundle);
 }
 
+function getIdentityInfo(type?:string):{label:string;text:string}{
+ if(type==='person')return {label:'Портрет',text:'Портрет'};
+ if(type==='artwork')return {label:'Узнать картину',text:'Узнать картину'};
+ if(type==='building'||type==='landmark')return {label:'Узнать сооружение',text:'Узнать сооружение'};
+ if(type==='event')return {label:'Узнать событие',text:'Узнать событие'};
+ return {label:'Узнать по фото',text:'Узнать по фото'};
+}
+
 export type ObjectIntroCardProps={
  intro:NonNullable<SessionRow['intro']>;
  bundle:Bundle;
@@ -41,7 +49,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
  const [saving,setSaving]=useState(false),[saveError,setSaveError]=useState('');
  const [selections,setSelections]=useState(intro.selections);
  const writeLock=useRef(false),pendingChoice=useRef<{unitId:string;color:Familiarity}|null>(null),activeDrag=useRef<{unitId:string;color:Familiarity}|null>(null);
- useEffect(()=>{setSelections(intro.selections)},[intro.selections]);
+ useEffect(()=>{setSelections(intro.selections);setSwipeOffset(0);setSwiping(false)},[intro.entityId,intro.selections]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
  const unitIds=new Set(intro.unitIds);
  const items=canonicalTargets(bundle).filter(i=>unitIds.has(i.targetId));
@@ -51,22 +59,29 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
  const disabled=busy||saving;
  const displayError=error||saveError;
  const [swipeOffset,setSwipeOffset]=useState(0),[swiping,setSwiping]=useState(false);
- const swipeGesture=useRef<{x:number;y:number;time:number;width:number;dx:number;dy:number;locked?:boolean}|null>(null);
+ const swipeGesture=useRef<{x:number;y:number;time:number;width:number;dx:number;dy:number;pointerId:number;locked?:boolean}|null>(null);
  const tippedRef=useRef(false);
 
  function handlePointerDown(e:React.PointerEvent){
   if(disabled||!e.isPrimary)return;
   if((e.target as HTMLElement).closest('button,input,textarea,select,.learning22-gauge'))return;
+  if(e.clientX<24||e.clientX>window.innerWidth-24)return;
   tippedRef.current=false;
-  swipeGesture.current={x:e.clientX,y:e.clientY,time:Date.now(),width:e.currentTarget.getBoundingClientRect().width,dx:0,dy:0};
+  swipeGesture.current={x:e.clientX,y:e.clientY,time:Date.now(),width:e.currentTarget.getBoundingClientRect().width,dx:0,dy:0,pointerId:e.pointerId};
+  try{e.currentTarget.setPointerCapture(e.pointerId)}catch{}
  }
  function handlePointerMove(e:React.PointerEvent){
-  const g=swipeGesture.current;if(!g)return;
+  const g=swipeGesture.current;if(!g||g.pointerId!==e.pointerId)return;
   g.dx=e.clientX-g.x;g.dy=e.clientY-g.y;
   const absX=Math.abs(g.dx),absY=Math.abs(g.dy);
   if(!g.locked){
-   if(absX>10&&absX>absY*1.3){g.locked=true;e.currentTarget.setPointerCapture(e.pointerId);setSwiping(true)}
-   else if(absY>10){swipeGesture.current=null;return}
+   if(absY>8&&absY>absX*1.1){
+    swipeGesture.current=null;
+    try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
+    setSwiping(false);setSwipeOffset(0);
+    return;
+   }
+   if(absX>8&&absX>absY*1.1){g.locked=true;setSwiping(true)}
   }
   if(g.locked){
    setSwipeOffset(Math.max(-g.width*.35,Math.min(g.width*.35,g.dx)));
@@ -75,14 +90,25 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
    else if(absX<threshold){tippedRef.current=false}
   }
  }
- function handlePointerUp(){
-  const g=swipeGesture.current;swipeGesture.current=null;setSwiping(false);setSwipeOffset(0);
-  if(!g||!g.locked)return;
+ function handlePointerUp(e:React.PointerEvent){
+  const g=swipeGesture.current;swipeGesture.current=null;
+  try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
+  if(!g||!g.locked){setSwiping(false);setSwipeOffset(0);return}
   const distance=Math.abs(g.dx),duration=Math.max(20,Date.now()-g.time),velocity=distance/duration;
   if(distance>=g.width*.22||(distance>=45&&velocity>=.45)){
    try{navigator.vibrate?.(12)}catch{}
-   if(g.dx>0)void chooseAll('green');else void chooseAll('red');
+   setSwiping(false);
+   const exitOffset=g.dx>0?(window.innerWidth||400)*1.3:-(window.innerWidth||400)*1.3;
+   setSwipeOffset(exitOffset);
+   if(g.dx>0)void chooseAll('green',true);else void chooseAll('red',true);
+  }else{
+   setSwiping(false);
+   setSwipeOffset(0);
   }
+ }
+ function handlePointerCancel(e:React.PointerEvent){
+  swipeGesture.current=null;setSwiping(false);setSwipeOffset(0);
+  try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
  }
 
  const rotation=Math.max(-10,Math.min(10,swipeOffset/20));
@@ -142,18 +168,21 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
   void choose(unitId,color);
  }
 
- async function chooseAll(color:Familiarity){
+ async function chooseAll(color:Familiarity,autoDone=false){
   if(disabled||writeLock.current)return;
+  const nextSelections:Record<string,Familiarity>={};
+  for(const item of items)nextSelections[item.targetId]=color;
+  setSelections(prev=>({...prev,...nextSelections}));
   writeLock.current=true;setSaving(true);setSaveError('');
   try{
-   const nextSelections:Record<string,Familiarity>={};
-   for(const item of items)nextSelections[item.targetId]=color;
    if(onChooseAll){
     await onChooseAll(nextSelections);
    }else{
     for(const item of items)await onChoose(item.targetId,color);
    }
+   if(autoDone)onDone();
   }catch{
+   setSwipeOffset(0);
    setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.');
   }finally{
    writeLock.current=false;setSaving(false);
@@ -167,20 +196,21 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
   onPointerDown={handlePointerDown}
   onPointerMove={handlePointerMove}
   onPointerUp={handlePointerUp}
-  onPointerCancel={handlePointerUp}
+  onPointerCancel={handlePointerCancel}
  >
-  <button type="button" className="learning22-close" onClick={onExit} disabled={disabled} aria-label="Закончить знакомство">✕</button>
-  {swipeOffset>15&&<div className="learning22-stamp learning22-stamp-know" style={{opacity:stampOpacity,transform:`rotate(-10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">ЗНАЮ</div>}
-  {swipeOffset<-15&&<div className="learning22-stamp learning22-stamp-plan" style={{opacity:stampOpacity,transform:`rotate(10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">В ПЛАН</div>}
-  <div className="learning22-scroll">
-   <section
-    className={`learning22-content ${!image||intro.newProperty?'no-hero':''}`}
-    style={{
-     transform:swipeOffset!==0?`translateX(${swipeOffset}px) rotate(${rotation}deg)`:undefined,
-     transition:swiping?'none':'transform 260ms cubic-bezier(0.175, 0.885, 0.32, 1.15)',
-    }}
-   >
-    {!intro.newProperty&&(image?(
+  <div
+   className={`learning22-card-sheet ${swiping?'is-swiping':''}`}
+   style={{
+    transform:swipeOffset!==0?`translateX(${swipeOffset}px) rotate(${rotation}deg)`:undefined,
+    transition:swiping?'none':'transform 260ms cubic-bezier(0.175, 0.885, 0.32, 1.15)',
+   }}
+  >
+   <button type="button" className="learning22-close" onClick={onExit} disabled={disabled} aria-label="Закончить знакомство">✕</button>
+   {swipeOffset>15&&<div className="learning22-stamp learning22-stamp-know" style={{opacity:stampOpacity,transform:`rotate(-10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">ЗНАЮ</div>}
+   {swipeOffset<-15&&<div className="learning22-stamp learning22-stamp-plan" style={{opacity:stampOpacity,transform:`rotate(10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">В ПЛАН</div>}
+   <div className="learning22-scroll">
+    <section className={`learning22-content ${!image?'no-hero':''}`}>
+    {image?(
      <div className="learning22-hero-wrap">
       <KnowledgeImage src={image.url} alt={entity?.name??'Изображение объекта'} className="learning22-portrait"/>
      </div>
@@ -188,7 +218,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
      <div className="learning22-hero-badge" aria-hidden="true">
       <span>{entity?.name?.trim()?.[0]?.toUpperCase()??'★'}</span>
      </div>
-    ))}
+    )}
 
     <div className="learning22-header-block">
      <div className="learning22-badges-strip">
@@ -196,7 +226,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
       {tags.map((tag,idx)=><span key={'t-'+idx} className="learning22-badge">{tag}</span>)}
      </div>
      <h1 id="object-intro-heading">{entity?.name??'Знакомство с объектом'}</h1>
-     {!intro.newProperty&&entity?.summary&&<p className="learning22-summary">{entity.summary}</p>}
+     {entity?.summary&&<p className="learning22-summary">{entity.summary}</p>}
     </div>
 
     <div className="learning22-section">
@@ -205,11 +235,12 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
        const fact=bundle.facts.find(f=>f.id===item.factId);
        const reverse=item.targetId.endsWith(':reverse');
        const isIdentity=!fact||item.targetId.includes(':visual_identity');
-       const label=isIdentity?'Портрет':reverse?questionPrompt(fact?propertyById.get(fact.key):undefined,item.name,'choice','reverse'):fact?propertyById.get(fact.key)?.name??fact.key:'Портрет';
+       const identityInfo=isIdentity?getIdentityInfo(entity?.type):undefined;
+       const label=isIdentity?identityInfo!.label:reverse?questionPrompt(fact?propertyById.get(fact.key):undefined,item.name,'choice','reverse'):fact?propertyById.get(fact.key)?.name??fact.key:'Портрет';
        const selected=selections[item.targetId]??intro.selections[item.targetId]??'red';
        const isSuspended=selected==='suspended';
        const currentGauge=gaugeLevels.find(g=>g.color===selected)??gaugeLevels[0];
-       const val=isIdentity?'Портрет':formatIntroValue(fact,item.answer,bundle);
+       const val=isIdentity?identityInfo!.text:formatIntroValue(fact,item.answer,bundle);
        return <div className={`learning22-property ${isSuspended?'is-suspended':''}`} key={item.targetId}>
         <div className="learning22-prop-meta">
          {!isIdentity&&<span className="learning22-prop-label">{label}</span>}
@@ -268,10 +299,11 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
     )}
    </section>
   </div>
-  <footer className="learning22-footer">
-   {displayError&&<p className="learning22-error" role="alert">{displayError}</p>}
-   <button type="button" className="learning22-action learning22-primary" onClick={onDone} disabled={disabled||!!displayError}>Готово</button>
-   <span className="learning22-status" role="status">{saving?'Сохраняем выбор…':''}</span>
-  </footer>
+   <footer className="learning22-footer">
+    {displayError&&<p className="learning22-error" role="alert">{displayError}</p>}
+    <button type="button" className="learning22-action learning22-primary" onClick={onDone} disabled={disabled||!!displayError}>Готово</button>
+    <span className="learning22-status" role="status">{saving?'Сохраняем выбор…':''}</span>
+   </footer>
+  </div>
  </main>;
 }

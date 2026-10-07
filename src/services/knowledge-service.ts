@@ -46,3 +46,7 @@ export async function resolvePackConflict(table:ConflictTable,id:string,choice:'
  });
 }
 
+export async function archiveTag(id:string,d:EngiDB=db){const b=await getBundle(d);const t=b.tags.find(x=>x.id===id);if(!t)throw Error('Колода не найдена');return saveKnowledge({tags:[{...t,archived:true}]},d)}
+export async function attachEntityTag(entityId:string,tagId:string,d:EngiDB=db){return saveKnowledge({entityTags:[{entityId,tagId,archived:false}]},d)}
+export async function detachEntityTag(entityId:string,tagId:string,d:EngiDB=db){return saveKnowledge({entityTags:[{entityId,tagId,archived:true}]},d)}
+

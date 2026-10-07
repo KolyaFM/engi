@@ -6,7 +6,7 @@ import {trainerService} from './services/trainer-service';
 import {importPack} from './services/pack-service';
 import {restoreBackup} from './services/backup-service';
 import {progress} from './lib/engi/knowledge/progress';
-import {KnowledgeBrowser} from './components/knowledge/KnowledgeBrowser';
+import {DeckKnowledgeBrowser as KnowledgeBrowser} from './components/knowledge/DeckKnowledgeBrowser';
 import {KnowledgeImage} from './components/knowledge/KnowledgeImage';
 import {ProgressDashboard} from './components/progress/ProgressDashboard';
 import {StudyFeed} from './components/study/StudyFeed';

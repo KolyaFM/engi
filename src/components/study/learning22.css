@@ -1,10 +1,11 @@
 /* Nordic Soft-Craft Archetype */
-.learning22-screen{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;height:100dvh;overflow:hidden;background:#F6F3EE;color:#292524;padding-top:env(safe-area-inset-top);box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.learning22-screen{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;height:100dvh;overflow:hidden;background:#F6F3EE;color:#292524;padding-top:env(safe-area-inset-top);box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;touch-action:pan-y;-webkit-user-select:none;user-select:none}
 .learning22-screen *{box-sizing:border-box}
+.learning22-card-sheet{position:relative;display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;will-change:transform;transform-origin:center bottom}
 .learning22-close{position:absolute;top:max(14px,env(safe-area-inset-top));left:16px;z-index:30;display:grid;place-items:center;width:38px;height:38px;border:1px solid #E5DFD7;border-radius:50%;background:rgba(255,255,255,.88);color:#44403C;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 3px 10px rgba(120,100,80,.08);font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s ease}
 .learning22-close:hover{background:#fff;transform:scale(1.04)}
 .learning22-close:active{transform:scale(.92)}
-.learning22-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.learning22-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 .learning22-content{max-width:540px;width:100%;margin:0 auto;padding:0 20px 32px;overflow-wrap:anywhere}
 .learning22-content.no-hero{padding-top:max(56px,calc(env(safe-area-inset-top) + 20px))}
 
@@ -57,7 +58,7 @@
 .learning22-suspend-btn.is-active{background:#FEE2E2;color:#DC2626;border-color:#FECACA}
 
 /* Dynamic Tactile Stamp Badges */
-.learning22-content{position:relative;will-change:transform}
+.learning22-content{position:relative}
 .learning22-stamp{position:fixed;top:max(24px,calc(env(safe-area-inset-top) + 14px));z-index:60;padding:8px 22px;border-radius:14px;border:3px solid currentColor;font-size:17px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;box-shadow:0 8px 24px rgba(120,100,80,.16);transition:opacity .1s ease}
 .learning22-stamp-know{right:20px;color:#15803D;background:rgba(238,248,242,.94);backdrop-filter:blur(8px)}
 .learning22-stamp-plan{left:20px;color:#C2410C;background:rgba(254,242,238,.94);backdrop-filter:blur(8px)}

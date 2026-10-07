@@ -4,7 +4,38 @@ import {storageHealth,protectStorage} from '../services/storage-health';
 import {saveBackup} from '../services/backup-service';
 import {toast} from 'sonner';
 import {useStudyPreferences} from './study/useStudyPreferences';
+import {resetLearningProgress} from '../services/learning-service';
+
 export function SettingsPanel({revision,onImport,onRestore}:{revision:number;onImport:()=>void;onRestore:()=>void}){
+ const [busy,setBusy]=useState(false);
+ async function handleReset(){
+  if(!window.confirm('Сбросить весь прогресс обучения? Это действие удалит карточки памяти, историю повторений и активные сессии. Сами знания и объекты останутся нетронутыми.'))return;
+  setBusy(true);
+  try{
+   await resetLearningProgress();
+   toast.success('Прогресс обучения сброшен');
+   if(typeof window!=='undefined'&&typeof window.location?.reload==='function')window.location.reload();
+  }catch(e){
+   toast.error((e as Error).message);
+  }finally{
+   setBusy(false);
+  }
+ }
+ return <>
+  <BaseSettingsPanel revision={revision} onImport={onImport} onRestore={onRestore}/>
+  <section className="panel storage-panel" style={{marginTop:'20px'}}>
+   <h2>Сброс прогресса</h2>
+   <p className="muted" style={{margin:'8px 0 16px',fontSize:'14px',color:'#697886'}}>
+    Сбрасывает все карточки памяти, FSRS-расписание, историю ответов и дневной бюджет. Объекты, связи и изображения сохраняются.
+   </p>
+   <button type="button" className="button destructive" disabled={busy} onClick={handleReset} style={{minHeight:'44px',background:'#c74744',color:'#fff',borderColor:'#c74744'}}>
+    {busy?'Сбрасываем…':'Сбросить прогресс обучения'}
+   </button>
+  </section>
+ </>;
+}
+
+function BaseSettingsPanel({revision,onImport,onRestore}:{revision:number;onImport:()=>void;onRestore:()=>void}){
  const {preferences,save}=useStudyPreferences();
  const [health,setHealth]=useState<Awaited<ReturnType<typeof storageHealth>>>();const [packs,setPacks]=useState<PackRow[]>([]);
  async function refresh(){try{setHealth(await storageHealth());setPacks(await db.installedPacks.toArray())}catch(e){toast.error((e as Error).message)}}

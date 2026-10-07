@@ -13,12 +13,13 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  const all=ix.factsByEntityAndKey.get(e.id)?.get(r.answerKey)??[];const values=all.filter(trusted);if(!values.length||all.some(f=>!trusted(f)))return [];
  if(new Set(values.map(factValue)).size!==1)return [];const f=values[0];const obj=ix.entityById.get(f.valueEntityId??'');if(f.valueKind==='entity'&&!obj)return [];
  const year=f.valueKind==='date'?Number(f.dateStart?.slice(0,4)):f.valueKind==='number'?f.valueNumber:undefined;
- if(f.valueKind==='date'&&!['year','day','month'].includes(f.datePrecision??''))return [];
+ if(f.valueKind==='date'&&(!year||!Number.isFinite(year)))return [];
  if(r.direction==='reverse'){
   if(!obj)return [];const related=(ix.incomingFactsByTarget.get(obj.id)??[]).filter(x=>x.key===f.key&&trusted(x));if(new Set(related.map(x=>x.entityId)).size!==1)return [];
   return [{entityId:obj.id,name:obj.name,image:ix.mediaByEntity.get(obj.id)?.[0]?.url,targetId:knowledgeUnitId(b,e.id,f.id,r.direction,r.cue,f.key),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,factId:f.id,sourceUrl:f.source.url??''}];
  }
- const answer=obj?.name??f.valueText??(f.valueKind==='boolean'?(f.valueBoolean?'Да':'Нет'):String(f.valueNumber??year??''));if(!answer)return [];
+ const dateAnswer=f.valueKind==='date'?(f.datePrecision==='circa'?`Около ${year}`:f.datePrecision==='range'&&f.dateEnd?.slice(0,4)!==String(year)?`${year}–${f.dateEnd?.slice(0,4)}`:String(year)):undefined;
+ const answer=obj?.name??f.valueText??(f.valueKind==='boolean'?(f.valueBoolean?'Да':'Нет'):dateAnswer??String(f.valueNumber??year??''));if(!answer)return [];
  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:knowledgeUnitId(b,e.id,f.id,r.direction,r.cue,f.key),answer,aliases:obj?.aliases??[],answerId:obj?.id??answer,answerEntityId:obj?.id,year,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
 })}
 export function recipes(b:Bundle):Recipe[]{const ix=indexes(b);const result:Recipe[]=[];const scopes:[string|undefined,typeof b.entities][]=[[undefined,[...ix.entityById.values()]],...b.tags.filter(t=>!t.archived).map(t=>[t.id,ix.entitiesByTag.get(t.id)??[]] as [string,typeof b.entities])];

@@ -11,3 +11,12 @@ export async function setUnitSuspended(id:string,suspend:boolean,d:EngiDB=db){
   await d.activeSessions.where('status').equals('active').modify({status:'completed'});
  });
 }
+export async function resetLearningProgress(d:EngiDB=db){
+ await d.transaction('rw',[d.learningState,d.reviewEvents,d.activeSessions,d.targetMappings,d.appMeta],async()=>{
+  await d.learningState.clear();
+  await d.reviewEvents.clear();
+  await d.activeSessions.clear();
+  await d.targetMappings.clear();
+  await d.appMeta.bulkDelete(['dailyLearning','newLearning','introducedEntities','reviewsSinceBackup']);
+ });
+}

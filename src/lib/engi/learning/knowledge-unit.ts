@@ -3,11 +3,10 @@ export type KnowledgeUnit={id:string;entityId:string;propertyId:string;factId?:s
 export type TargetMapping={legacyId:string;unitId:string};
 export function knowledgeUnitId(b:Bundle,entityId:string,factId:string|undefined,direction='forward',cue='name',property='identity'){
  if(!factId)return `ku:entity:${entityId}:visual_identity`;
- const visual=property==='created_by'&&cue==='image'&&b.entities.find(e=>e.id===entityId)?.type==='artwork';
- return `ku:fact:${factId}:${direction}${visual?':visual':''}`;
+ return `ku:fact:${factId}:${direction}`;
 }
 export function legacyUnitId(id:string,b:Bundle):string|undefined{
- if(id.startsWith('ku:'))return id;
+ if(id.startsWith('ku:')){if(id.endsWith(':visual'))return id.slice(0,-7);return id;}
  const identity=/^entity:(.+):image_to_name$/.exec(id);if(identity)return `ku:entity:${identity[1]}:visual_identity`;
  const f=b.facts.find(f=>id.startsWith(`fact:${f.id}:`));if(!f)return;
  const suffix=id.slice(`fact:${f.id}:`.length),direction=suffix.includes(':reverse')?'reverse':'forward',cue=suffix.includes('image')?'image':'name';
