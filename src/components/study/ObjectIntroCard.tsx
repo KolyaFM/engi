@@ -7,12 +7,6 @@ import {properties,textValue} from '../../lib/engi/knowledge/properties';
 import {KnowledgeImage} from '../knowledge/KnowledgeImage';
 import './learning22.css';
 
-const gaugeLevels:{color:Familiarity;label:string;text:string;step:number}[]=[
- {color:'red',label:'Не знаю',text:'В план',step:1},
- {color:'orange',label:'Знакомо, но не уверен',text:'Смутно',step:2},
- {color:'yellow',label:'Скорее знаю',text:'Знакомо',step:3},
- {color:'green',label:'Знаю хорошо',text:'Знаю',step:4},
-];
 
 function formatIntroValue(fact:Fact|undefined,fallback:string,bundle:Bundle):string{
  if(!fact)return fallback;
@@ -38,18 +32,17 @@ export type ObjectIntroCardProps={
  intro:NonNullable<SessionRow['intro']>;
  bundle:Bundle;
  onChoose:(unitId:string,color:Familiarity)=>Promise<void>;
- onChooseAll?:(selections:Record<string,Familiarity>)=>Promise<void>;
- onDone:()=>void;
+ onDone:(selections:Record<string,Familiarity>,animate?:boolean)=>Promise<void>;
  onExit:()=>void;
  busy?:boolean;
  error?:string;
 };
 
-export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit,busy=false,error}:ObjectIntroCardProps){
+export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,error}:ObjectIntroCardProps){
  const [saving,setSaving]=useState(false),[saveError,setSaveError]=useState('');
  const [selections,setSelections]=useState(intro.selections);
- const writeLock=useRef(false),pendingChoice=useRef<{unitId:string;color:Familiarity}|null>(null),activeDrag=useRef<{unitId:string;color:Familiarity}|null>(null);
- useEffect(()=>{setSelections(intro.selections);setSwipeOffset(0);setSwiping(false)},[intro.entityId,intro.selections]);
+ const writes=useRef<Promise<void>>(Promise.resolve()),latestSelections=useRef(intro.selections),exiting=useRef(false);
+ useEffect(()=>{latestSelections.current=intro.selections;setSelections(intro.selections);setSwipeOffset(0);setSwiping(false)},[intro.entityId]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
  const unitIds=new Set(intro.unitIds);
  const items=canonicalTargets(bundle).filter(i=>unitIds.has(i.targetId));
@@ -100,14 +93,14 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
    setSwiping(false);
    const exitOffset=g.dx>0?(window.innerWidth||400)*1.3:-(window.innerWidth||400)*1.3;
    setSwipeOffset(exitOffset);
-   if(g.dx>0)void chooseAll('green',true);else void chooseAll('red',true);
+   void finish(Object.fromEntries(items.map(item=>[item.targetId,g.dx>0?'green':'red'])),true);
   }else{
    setSwiping(false);
    setSwipeOffset(0);
   }
  }
  function handlePointerCancel(e:React.PointerEvent){
-  swipeGesture.current=null;setSwiping(false);setSwipeOffset(0);
+  if(exiting.current)return;swipeGesture.current=null;setSwiping(false);setSwipeOffset(0);
   try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
  }
 
@@ -122,73 +115,19 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
  const entityType=bundle.entityTypes?.find(t=>t.id===entity?.type)?.name??entity?.type;
 
  async function choose(unitId:string,color:Familiarity){
-  setSelections(prev=>({...prev,[unitId]:color}));
-  if(busy)return;
-  if(writeLock.current){pendingChoice.current={unitId,color};return}
-  writeLock.current=true;setSaving(true);setSaveError('');
-  try{
-   await onChoose(unitId,color);
-   while(pendingChoice.current){
-    const next=pendingChoice.current;
-    pendingChoice.current=null;
-    await onChoose(next.unitId,next.color);
-   }
-  }catch{setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.')}
-  finally{writeLock.current=false;setSaving(false)}
+  if(disabled||exiting.current)return;
+  latestSelections.current={...latestSelections.current,[unitId]:color};setSelections(latestSelections.current);setSaveError('');
+  // Draft writes are ordered, but do not block or dim the card's controls.
+  const write=writes.current.catch(()=>{}).then(()=>onChoose(unitId,color));writes.current=write;
+  try{await write}catch{if(!exiting.current)setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.')}
  }
 
- function stepFromPointer(clientX:number,target:HTMLElement):Familiarity{
-  const rect=target.getBoundingClientRect();
-  const ratio=Math.max(0,Math.min(1,(clientX-rect.left)/rect.width));
-  if(ratio<0.28)return 'red';
-  if(ratio<0.53)return 'orange';
-  if(ratio<0.78)return 'yellow';
-  return 'green';
+ async function finish(next:Record<string,Familiarity>=latestSelections.current,animate=false){
+  if(disabled||exiting.current)return;
+  exiting.current=true;setSaving(true);setSaveError('');
+  try{await writes.current.catch(()=>{});await onDone(next,animate)}catch{exiting.current=false;setSwipeOffset(0);setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.');}
+  finally{setSaving(false)}
  }
- function handleGaugePointerDown(e:React.PointerEvent<HTMLDivElement>,unitId:string,isSuspended:boolean){
-  if(disabled||isSuspended)return;
-  e.currentTarget.setPointerCapture(e.pointerId);
-  const color=stepFromPointer(e.clientX,e.currentTarget);
-  activeDrag.current={unitId,color};
-  setSelections(prev=>({...prev,[unitId]:color}));
- }
- function handleGaugePointerMove(e:React.PointerEvent<HTMLDivElement>,unitId:string){
-  if(!activeDrag.current||activeDrag.current.unitId!==unitId)return;
-  const color=stepFromPointer(e.clientX,e.currentTarget);
-  if(color!==activeDrag.current.color){
-   activeDrag.current.color=color;
-   setSelections(prev=>({...prev,[unitId]:color}));
-   try{navigator.vibrate?.(5)}catch{}
-  }
- }
- function handleGaugePointerUp(e:React.PointerEvent<HTMLDivElement>,unitId:string){
-  if(!activeDrag.current||activeDrag.current.unitId!==unitId)return;
-  const color=activeDrag.current.color;
-  activeDrag.current=null;
-  void choose(unitId,color);
- }
-
- async function chooseAll(color:Familiarity,autoDone=false){
-  if(disabled||writeLock.current)return;
-  const nextSelections:Record<string,Familiarity>={};
-  for(const item of items)nextSelections[item.targetId]=color;
-  setSelections(prev=>({...prev,...nextSelections}));
-  writeLock.current=true;setSaving(true);setSaveError('');
-  try{
-   if(onChooseAll){
-    await onChooseAll(nextSelections);
-   }else{
-    for(const item of items)await onChoose(item.targetId,color);
-   }
-   if(autoDone)onDone();
-  }catch{
-   setSwipeOffset(0);
-   setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.');
-  }finally{
-   writeLock.current=false;setSaving(false);
-  }
- }
-
  return <main
   className="learning22-screen"
   aria-labelledby="object-intro-heading"
@@ -238,46 +177,17 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
        const identityInfo=isIdentity?getIdentityInfo(entity?.type):undefined;
        const label=isIdentity?identityInfo!.label:reverse?questionPrompt(fact?propertyById.get(fact.key):undefined,item.name,'choice','reverse'):fact?propertyById.get(fact.key)?.name??fact.key:'Портрет';
        const selected=selections[item.targetId]??intro.selections[item.targetId]??'red';
-       const isSuspended=selected==='suspended';
-       const currentGauge=gaugeLevels.find(g=>g.color===selected)??gaugeLevels[0];
+       const known=selected==='green'||selected==='suspended';
        const val=isIdentity?identityInfo!.text:formatIntroValue(fact,item.answer,bundle);
-       return <div className={`learning22-property ${isSuspended?'is-suspended':''}`} key={item.targetId}>
+       return <div className={`learning22-property ${known?'is-known':''}`} key={item.targetId}>
         <div className="learning22-prop-meta">
          {!isIdentity&&<span className="learning22-prop-label">{label}</span>}
          <span className="learning22-value">{val}</span>
         </div>
-        <div className="learning22-controls">
-         <div
-          className={`learning22-gauge learning22-gauge-${selected}`}
-          role="group"
-          aria-label={`Уровень для ${label}`}
-          onPointerDown={e=>handleGaugePointerDown(e,item.targetId,isSuspended)}
-          onPointerMove={e=>handleGaugePointerMove(e,item.targetId)}
-          onPointerUp={e=>handleGaugePointerUp(e,item.targetId)}
-          onPointerCancel={e=>handleGaugePointerUp(e,item.targetId)}
-         >
-          {gaugeLevels.map(level=>{
-           const isActive=!isSuspended&&currentGauge.step>=level.step;
-           const isTarget=selected===level.color;
-           return <button type="button" key={level.color}
-            className={`learning22-gauge-bar learning22-gauge-bar-${level.step} ${isActive?'is-active':''}`}
-            aria-label={`${label}: ${level.label}`}
-            aria-pressed={isTarget}
-            disabled={disabled}
-            onClick={e=>{e.stopPropagation();void choose(item.targetId,level.color)}}/>;
-          })}
-         </div>
-         <div className="learning22-ctrl-div" aria-hidden="true"/>
-         <button type="button"
-          className={`learning22-suspend-btn ${isSuspended?'is-active':''}`}
-          aria-label={`${label}: Не учить`}
-          aria-pressed={isSuspended}
-          disabled={disabled}
-          onClick={()=>void choose(item.targetId,isSuspended?'red':'suspended')}>
-          ✕
-         </button>
-        </div>
-       </div>;
+        <div className="learning22-controls" role="group" aria-label={`Знакомство: ${label}`}>
+         <button type="button" className={`learning22-choice ${!known?'is-selected':''}`} aria-label={`${label}: Не знаю`} aria-pressed={!known} disabled={disabled} onClick={()=>void choose(item.targetId,'red')}>Не знаю</button>
+         <button type="button" className={`learning22-choice ${known?'is-selected is-known':''}`} aria-label={`${label}: Знаю`} aria-pressed={known} disabled={disabled} onClick={()=>void choose(item.targetId,'green')}>Знаю</button>
+        </div>       </div>;
       })}
      </div>
     </div>
@@ -301,7 +211,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onChooseAll,onDone,onExit
   </div>
    <footer className="learning22-footer">
     {displayError&&<p className="learning22-error" role="alert">{displayError}</p>}
-    <button type="button" className="learning22-action learning22-primary" onClick={onDone} disabled={disabled||!!displayError}>Готово</button>
+    <button type="button" className="learning22-action learning22-primary" onClick={()=>void finish()} disabled={disabled}>Готово</button>
     <span className="learning22-status" role="status">{saving?'Сохраняем выбор…':''}</span>
    </footer>
   </div>

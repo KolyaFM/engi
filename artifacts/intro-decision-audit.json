@@ -1,0 +1,305 @@
+[
+  {
+    "count": 6,
+    "samples": [
+      {
+        "color": "green",
+        "chooseMs": 1,
+        "completeMs": 19.200000047683716,
+        "planMs": 4.199999928474426,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "green"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 3.1999999284744263
+          },
+          {
+            "stage": "catalog",
+            "ms": 3.799999952316284
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 0.6000000238418579
+          },
+          {
+            "stage": "catalog",
+            "ms": 0.20000004768371582
+          },
+          {
+            "stage": "candidates",
+            "ms": 0.7000000476837158
+          },
+          {
+            "stage": "proposals",
+            "ms": 1.100000023841858
+          },
+          {
+            "stage": "selection",
+            "ms": 7
+          }
+        ]
+      },
+      {
+        "color": "red",
+        "chooseMs": 0.3999999761581421,
+        "completeMs": 12.400000095367432,
+        "planMs": 3.8000000715255737,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "red"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 2.100000023841858
+          },
+          {
+            "stage": "catalog",
+            "ms": 2.399999976158142
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 0.3999999761581421
+          },
+          {
+            "stage": "catalog",
+            "ms": 0.2999999523162842
+          },
+          {
+            "stage": "candidates",
+            "ms": 0.6000000238418579
+          },
+          {
+            "stage": "proposals",
+            "ms": 0.8999999761581421
+          },
+          {
+            "stage": "selection",
+            "ms": 4.799999952316284
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "count": 60,
+    "samples": [
+      {
+        "color": "green",
+        "chooseMs": 0.7999999523162842,
+        "completeMs": 80,
+        "planMs": 11.300000071525574,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "green"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 55.200000047683716
+          },
+          {
+            "stage": "catalog",
+            "ms": 57
+          },
+          {
+            "stage": "browser.longtask",
+            "ms": 57
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 1.2999999523162842
+          },
+          {
+            "stage": "catalog",
+            "ms": 0.6000000238418579
+          },
+          {
+            "stage": "candidates",
+            "ms": 2.5
+          },
+          {
+            "stage": "proposals",
+            "ms": 3.6999999284744263
+          },
+          {
+            "stage": "selection",
+            "ms": 11.400000095367432
+          }
+        ]
+      },
+      {
+        "color": "red",
+        "chooseMs": 0.5999999046325684,
+        "completeMs": 60.90000009536743,
+        "planMs": 9.799999952316284,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "red"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 42
+          },
+          {
+            "stage": "catalog",
+            "ms": 43.199999928474426
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 1
+          },
+          {
+            "stage": "catalog",
+            "ms": 0.5
+          },
+          {
+            "stage": "candidates",
+            "ms": 2.100000023841858
+          },
+          {
+            "stage": "proposals",
+            "ms": 3.100000023841858
+          },
+          {
+            "stage": "selection",
+            "ms": 9.100000023841858
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "count": 300,
+    "samples": [
+      {
+        "color": "green",
+        "chooseMs": 1.600000023841858,
+        "completeMs": 967.8999999761581,
+        "planMs": 85.20000004768372,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "green"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 846.2999999523163
+          },
+          {
+            "stage": "catalog",
+            "ms": 861.2000000476837
+          },
+          {
+            "stage": "browser.longtask",
+            "ms": 861
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 5.899999976158142
+          },
+          {
+            "stage": "catalog",
+            "ms": 2.5
+          },
+          {
+            "stage": "candidates",
+            "ms": 18.600000023841858
+          },
+          {
+            "stage": "proposals",
+            "ms": 33.5
+          },
+          {
+            "stage": "selection",
+            "ms": 59.60000002384186
+          }
+        ]
+      },
+      {
+        "color": "red",
+        "chooseMs": 1,
+        "completeMs": 934.1999999284744,
+        "planMs": 58.200000047683716,
+        "units": [
+          {
+            "stage": "first-check",
+            "successes": 0
+          }
+        ],
+        "legacyFamiliarity": [
+          "red"
+        ],
+        "learning": 1,
+        "profile": [
+          {
+            "stage": "candidates",
+            "ms": 809.8999999761581
+          },
+          {
+            "stage": "catalog",
+            "ms": 832.1999999284744
+          },
+          {
+            "stage": "browser.longtask",
+            "ms": 832
+          },
+          {
+            "stage": "bundle.read",
+            "ms": 6.200000047683716
+          },
+          {
+            "stage": "catalog",
+            "ms": 2.5
+          },
+          {
+            "stage": "candidates",
+            "ms": 18
+          },
+          {
+            "stage": "proposals",
+            "ms": 32.60000002384186
+          },
+          {
+            "stage": "selection",
+            "ms": 58.299999952316284
+          }
+        ]
+      }
+    ]
+  }
+]

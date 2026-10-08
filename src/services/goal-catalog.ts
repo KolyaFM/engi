@@ -10,9 +10,10 @@ let cached:{key:string;entries:GoalCatalogEntry[]}|undefined;
 export function buildGoalCatalog(b:Bundle,memories:Memory[]){
  const end=feedSpan('catalog');
  try{
- const key=JSON.stringify([b,memories]);
- if(cached?.key===key)return structuredClone(cached.entries);
- const entries=buildGoalCatalogUncached(b,memories);cached={key,entries:structuredClone(entries)};return entries;
+ const key=JSON.stringify([b,memories.filter(m=>m.legacyOf).map(m=>[m.id,m.legacyOf]).sort()]);
+ if(cached?.key!==key){const entries=buildGoalCatalogUncached(b,memories);cached={key,entries:entries.map(e=>({...e,suspended:false}))};}
+ const suspended=new Set(memories.filter(m=>m.status==='suspended').map(m=>m.id));
+ return structuredClone(cached.entries).map(e=>({...e,suspended:e.targetIds.some(id=>suspended.has(id))}));
  }finally{end();}
 }
 export function buildGoalCatalogUncached(b:Bundle,memories:Memory[]){

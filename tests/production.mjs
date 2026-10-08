@@ -34,7 +34,7 @@ try{
  for(let n=0;n<3;n++){
   await page.locator('#object-intro-heading').waitFor();const intro=(await snapshot()).activeSessions.find(s=>s.status==='active').intro;assert(intro);introIds.push(intro.entityId);
   await page.waitForFunction(()=>document.querySelector('.learning22-portrait')?.naturalWidth>0);
-  const green=page.getByRole('button',{name:/: Знаю хорошо$/});const count=await green.count();assert(count>=2);
+  const green=page.getByRole('button',{name:/: Не знаю$/});const count=await green.count();assert(count>=2);
   for(let i=0;i<count;i++){await green.nth(i).click();await page.waitForFunction(()=>document.querySelector('.learning22-screen')?.getAttribute('aria-busy')==='false')}
   await page.getByRole('button',{name:'Готово',exact:true}).click();
   await page.waitForFunction(previous=>document.querySelector('#object-intro-heading')?.textContent!==previous,'Объект '+intro.entityId.replace('offline-s',''));

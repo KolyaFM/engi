@@ -1,0 +1,5579 @@
+[
+  {
+    "inspection": {
+      "name": "50 штатов США: столицы, карта, годы и прозвища",
+      "imageFilesValidated": 50,
+      "dateFacts": 50,
+      "uniqueYears": 34,
+      "datePrecision": [
+        "year"
+      ],
+      "dateProperties": [
+        {
+          "id": "creation_date",
+          "name": "Дата создания",
+          "valueKind": "date",
+          "subjectTypes": [
+            "artwork",
+            "book",
+            "film",
+            "game"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "inverse": {
+            "enabled": false
+          },
+          "learning": {
+            "forward": true
+          },
+          "builtIn": true
+        },
+        {
+          "id": "presidency_start",
+          "name": "Начало президентства",
+          "valueKind": "date",
+          "subjectTypes": [
+            "person"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "inverse": {
+            "enabled": false
+          },
+          "learning": {
+            "forward": true
+          },
+          "builtIn": true
+        },
+        {
+          "id": "presidency_end",
+          "name": "Конец президентства",
+          "valueKind": "date",
+          "subjectTypes": [
+            "person"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "inverse": {
+            "enabled": false
+          },
+          "learning": {
+            "forward": true
+          },
+          "builtIn": true
+        },
+        {
+          "id": "birth_date",
+          "name": "Дата рождения",
+          "valueKind": "date",
+          "subjectTypes": [
+            "person"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "inverse": {
+            "enabled": false
+          },
+          "learning": {
+            "forward": true
+          },
+          "builtIn": true
+        },
+        {
+          "id": "event_start",
+          "name": "Начало события",
+          "valueKind": "date",
+          "subjectTypes": [
+            "event"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "inverse": {
+            "enabled": false
+          },
+          "learning": {
+            "forward": true
+          },
+          "builtIn": true
+        },
+        {
+          "origin": "pack",
+          "id": "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.property.3",
+          "name": "Год вступления в Союз",
+          "aliases": [],
+          "valueKind": "date",
+          "subjectTypes": [
+            "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.type.1"
+          ],
+          "cardinality": "one",
+          "learnable": true,
+          "promptTemplates": {
+            "forward": "В каком году штат {subject} вступил в Союз?"
+          }
+        }
+      ],
+      "recipes": [
+        {
+          "format": "sort",
+          "scope": "all",
+          "pool": 50
+        },
+        {
+          "format": "timeline",
+          "scope": "all",
+          "pool": 50
+        },
+        {
+          "format": "missing",
+          "scope": "all",
+          "pool": 50
+        },
+        {
+          "format": "sort",
+          "scope": "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.deck.55",
+          "pool": 50
+        },
+        {
+          "format": "timeline",
+          "scope": "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.deck.55",
+          "pool": 50
+        },
+        {
+          "format": "missing",
+          "scope": "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.deck.55",
+          "pool": 50
+        }
+      ],
+      "deckId": "local.05e6ede3-dfe5-4af9-b218-4064c587ef0f.deck.55"
+    }
+  },
+  {
+    "summary": {
+      "name": "fresh-mixed-10s",
+      "format": "mixed",
+      "seconds": 10,
+      "seed": false,
+      "count": 500,
+      "counts": {
+        "intro": 50,
+        "match": 172,
+        "choice": 237,
+        "missing": 12,
+        "sort": 10,
+        "recall_reveal": 9,
+        "timeline": 10
+      },
+      "firstChronology": 428,
+      "firstChronologyMinutes": 71.33333333333333,
+      "chronology": 32,
+      "totalScreens": 500,
+      "sharePercent": 6.4
+    },
+    "screens": [
+      {
+        "screen": 0,
+        "format": "intro",
+        "firstChecks": 0
+      },
+      {
+        "screen": 1,
+        "format": "intro",
+        "firstChecks": 4
+      },
+      {
+        "screen": 2,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 8,
+        "completedDates": 0
+      },
+      {
+        "screen": 3,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 7,
+        "completedDates": 0
+      },
+      {
+        "screen": 4,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 6,
+        "completedDates": 0
+      },
+      {
+        "screen": 5,
+        "format": "intro",
+        "firstChecks": 5
+      },
+      {
+        "screen": 6,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 9,
+        "completedDates": 0
+      },
+      {
+        "screen": 7,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 8,
+        "completedDates": 0
+      },
+      {
+        "screen": 8,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 7,
+        "completedDates": 0
+      },
+      {
+        "screen": 9,
+        "format": "intro",
+        "firstChecks": 6
+      },
+      {
+        "screen": 10,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 10,
+        "completedDates": 0
+      },
+      {
+        "screen": 11,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 9,
+        "completedDates": 0
+      },
+      {
+        "screen": 12,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 8,
+        "completedDates": 0
+      },
+      {
+        "screen": 13,
+        "format": "intro",
+        "firstChecks": 7
+      },
+      {
+        "screen": 14,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 11,
+        "completedDates": 0
+      },
+      {
+        "screen": 15,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 10,
+        "completedDates": 0
+      },
+      {
+        "screen": 16,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 9,
+        "completedDates": 0
+      },
+      {
+        "screen": 17,
+        "format": "intro",
+        "firstChecks": 8
+      },
+      {
+        "screen": 18,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 19,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 11,
+        "completedDates": 0
+      },
+      {
+        "screen": 20,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 10,
+        "completedDates": 0
+      },
+      {
+        "screen": 21,
+        "format": "intro",
+        "firstChecks": 9
+      },
+      {
+        "screen": 22,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 0
+      },
+      {
+        "screen": 23,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 24,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 11,
+        "completedDates": 0
+      },
+      {
+        "screen": 25,
+        "format": "intro",
+        "firstChecks": 10
+      },
+      {
+        "screen": 26,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 0
+      },
+      {
+        "screen": 27,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 0
+      },
+      {
+        "screen": 28,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 29,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 30,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 0
+      },
+      {
+        "screen": 31,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 0
+      },
+      {
+        "screen": 32,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 0
+      },
+      {
+        "screen": 33,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 34,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 35,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 0
+      },
+      {
+        "screen": 36,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 37,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 0
+      },
+      {
+        "screen": 38,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 0
+      },
+      {
+        "screen": 39,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 1
+      },
+      {
+        "screen": 40,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 1
+      },
+      {
+        "screen": 41,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 1
+      },
+      {
+        "screen": 42,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 2
+      },
+      {
+        "screen": 43,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 2
+      },
+      {
+        "screen": 44,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 2
+      },
+      {
+        "screen": 45,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 2
+      },
+      {
+        "screen": 46,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 47,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 2
+      },
+      {
+        "screen": 48,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 2
+      },
+      {
+        "screen": 49,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 2
+      },
+      {
+        "screen": 50,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 2
+      },
+      {
+        "screen": 51,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 3
+      },
+      {
+        "screen": 52,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 3
+      },
+      {
+        "screen": 53,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 54,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 55,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 56,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 3
+      },
+      {
+        "screen": 57,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 3
+      },
+      {
+        "screen": 58,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 3
+      },
+      {
+        "screen": 59,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 60,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 3
+      },
+      {
+        "screen": 61,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 3
+      },
+      {
+        "screen": 62,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 3
+      },
+      {
+        "screen": 63,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 3
+      },
+      {
+        "screen": 64,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 3
+      },
+      {
+        "screen": 65,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 3
+      },
+      {
+        "screen": 66,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 67,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 68,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 3
+      },
+      {
+        "screen": 69,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 3
+      },
+      {
+        "screen": 70,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 3
+      },
+      {
+        "screen": 71,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 4
+      },
+      {
+        "screen": 72,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 73,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 4
+      },
+      {
+        "screen": 74,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 4
+      },
+      {
+        "screen": 75,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 4
+      },
+      {
+        "screen": 76,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 4
+      },
+      {
+        "screen": 77,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 4
+      },
+      {
+        "screen": 78,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 5
+      },
+      {
+        "screen": 79,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 5
+      },
+      {
+        "screen": 80,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 5
+      },
+      {
+        "screen": 81,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 5
+      },
+      {
+        "screen": 82,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 5
+      },
+      {
+        "screen": 83,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 84,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 5
+      },
+      {
+        "screen": 85,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 5
+      },
+      {
+        "screen": 86,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 5
+      },
+      {
+        "screen": 87,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 5
+      },
+      {
+        "screen": 88,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 5
+      },
+      {
+        "screen": 89,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 5
+      },
+      {
+        "screen": 90,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 6
+      },
+      {
+        "screen": 91,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 92,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 6
+      },
+      {
+        "screen": 93,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 6
+      },
+      {
+        "screen": 94,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 6
+      },
+      {
+        "screen": 95,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 6
+      },
+      {
+        "screen": 96,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 6
+      },
+      {
+        "screen": 97,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 6
+      },
+      {
+        "screen": 98,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 99,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 6
+      },
+      {
+        "screen": 100,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 7
+      },
+      {
+        "screen": 101,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 7
+      },
+      {
+        "screen": 102,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 7
+      },
+      {
+        "screen": 103,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 7
+      },
+      {
+        "screen": 104,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 7
+      },
+      {
+        "screen": 105,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 106,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 7
+      },
+      {
+        "screen": 107,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 7
+      },
+      {
+        "screen": 108,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 7
+      },
+      {
+        "screen": 109,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 7
+      },
+      {
+        "screen": 110,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 7
+      },
+      {
+        "screen": 111,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 7
+      },
+      {
+        "screen": 112,
+        "format": "intro",
+        "firstChecks": 10
+      },
+      {
+        "screen": 113,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 7
+      },
+      {
+        "screen": 114,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 7
+      },
+      {
+        "screen": 115,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 8
+      },
+      {
+        "screen": 116,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 8
+      },
+      {
+        "screen": 117,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 8
+      },
+      {
+        "screen": 118,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 8
+      },
+      {
+        "screen": 119,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 8
+      },
+      {
+        "screen": 120,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 8
+      },
+      {
+        "screen": 121,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 122,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 8
+      },
+      {
+        "screen": 123,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 8
+      },
+      {
+        "screen": 124,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 9
+      },
+      {
+        "screen": 125,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 9
+      },
+      {
+        "screen": 126,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 9
+      },
+      {
+        "screen": 127,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 10
+      },
+      {
+        "screen": 128,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 10
+      },
+      {
+        "screen": 129,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 11
+      },
+      {
+        "screen": 130,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 11
+      },
+      {
+        "screen": 131,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 132,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 11
+      },
+      {
+        "screen": 133,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 12
+      },
+      {
+        "screen": 134,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 12
+      },
+      {
+        "screen": 135,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 12
+      },
+      {
+        "screen": 136,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 12
+      },
+      {
+        "screen": 137,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 12
+      },
+      {
+        "screen": 138,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 12
+      },
+      {
+        "screen": 139,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 12
+      },
+      {
+        "screen": 140,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 12
+      },
+      {
+        "screen": 141,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 12
+      },
+      {
+        "screen": 142,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 13
+      },
+      {
+        "screen": 143,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 13
+      },
+      {
+        "screen": 144,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 145,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 13
+      },
+      {
+        "screen": 146,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 13
+      },
+      {
+        "screen": 147,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 14
+      },
+      {
+        "screen": 148,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 14
+      },
+      {
+        "screen": 149,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 14
+      },
+      {
+        "screen": 150,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 14
+      },
+      {
+        "screen": 151,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 14
+      },
+      {
+        "screen": 152,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 14
+      },
+      {
+        "screen": 153,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 154,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 14
+      },
+      {
+        "screen": 155,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 14
+      },
+      {
+        "screen": 156,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 14
+      },
+      {
+        "screen": 157,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 14
+      },
+      {
+        "screen": 158,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 14
+      },
+      {
+        "screen": 159,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 14
+      },
+      {
+        "screen": 160,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 161,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 14
+      },
+      {
+        "screen": 162,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 14
+      },
+      {
+        "screen": 163,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 15
+      },
+      {
+        "screen": 164,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 15
+      },
+      {
+        "screen": 165,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 15
+      },
+      {
+        "screen": 166,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 15
+      },
+      {
+        "screen": 167,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 15
+      },
+      {
+        "screen": 168,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 169,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 15
+      },
+      {
+        "screen": 170,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 15
+      },
+      {
+        "screen": 171,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 15
+      },
+      {
+        "screen": 172,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 15
+      },
+      {
+        "screen": 173,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 15
+      },
+      {
+        "screen": 174,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 15
+      },
+      {
+        "screen": 175,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 16
+      },
+      {
+        "screen": 176,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 177,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 16
+      },
+      {
+        "screen": 178,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 16
+      },
+      {
+        "screen": 179,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 16
+      },
+      {
+        "screen": 180,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 16
+      },
+      {
+        "screen": 181,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 16
+      },
+      {
+        "screen": 182,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 16
+      },
+      {
+        "screen": 183,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 16
+      },
+      {
+        "screen": 184,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 16
+      },
+      {
+        "screen": 185,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 186,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 16
+      },
+      {
+        "screen": 187,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 17
+      },
+      {
+        "screen": 188,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 17
+      },
+      {
+        "screen": 189,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 17
+      },
+      {
+        "screen": 190,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 18
+      },
+      {
+        "screen": 191,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 18
+      },
+      {
+        "screen": 192,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 18
+      },
+      {
+        "screen": 193,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 18
+      },
+      {
+        "screen": 194,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 195,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 18
+      },
+      {
+        "screen": 196,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 18
+      },
+      {
+        "screen": 197,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 18
+      },
+      {
+        "screen": 198,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 18
+      },
+      {
+        "screen": 199,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 18
+      },
+      {
+        "screen": 200,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 18
+      },
+      {
+        "screen": 201,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 18
+      },
+      {
+        "screen": 202,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 19
+      },
+      {
+        "screen": 203,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 19
+      },
+      {
+        "screen": 204,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 19
+      },
+      {
+        "screen": 205,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 19
+      },
+      {
+        "screen": 206,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 207,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 19
+      },
+      {
+        "screen": 208,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 19
+      },
+      {
+        "screen": 209,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 20
+      },
+      {
+        "screen": 210,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 20
+      },
+      {
+        "screen": 211,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 20
+      },
+      {
+        "screen": 212,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 20
+      },
+      {
+        "screen": 213,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 20
+      },
+      {
+        "screen": 214,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 20
+      },
+      {
+        "screen": 215,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 216,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 20
+      },
+      {
+        "screen": 217,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 21
+      },
+      {
+        "screen": 218,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 21
+      },
+      {
+        "screen": 219,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 21
+      },
+      {
+        "screen": 220,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 21
+      },
+      {
+        "screen": 221,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 21
+      },
+      {
+        "screen": 222,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 223,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 21
+      },
+      {
+        "screen": 224,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 22
+      },
+      {
+        "screen": 225,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 22
+      },
+      {
+        "screen": 226,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 22
+      },
+      {
+        "screen": 227,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 23
+      },
+      {
+        "screen": 228,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 23
+      },
+      {
+        "screen": 229,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 23
+      },
+      {
+        "screen": 230,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 23
+      },
+      {
+        "screen": 231,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 232,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 23
+      },
+      {
+        "screen": 233,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 23
+      },
+      {
+        "screen": 234,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 23
+      },
+      {
+        "screen": 235,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 23
+      },
+      {
+        "screen": 236,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 23
+      },
+      {
+        "screen": 237,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 24
+      },
+      {
+        "screen": 238,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 24
+      },
+      {
+        "screen": 239,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 240,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 24
+      },
+      {
+        "screen": 241,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 24
+      },
+      {
+        "screen": 242,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 24
+      },
+      {
+        "screen": 243,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 24
+      },
+      {
+        "screen": 244,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 24
+      },
+      {
+        "screen": 245,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 24
+      },
+      {
+        "screen": 246,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 24
+      },
+      {
+        "screen": 247,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 24
+      },
+      {
+        "screen": 248,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 249,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 24
+      },
+      {
+        "screen": 250,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 24
+      },
+      {
+        "screen": 251,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 24
+      },
+      {
+        "screen": 252,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 24
+      },
+      {
+        "screen": 253,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 24
+      },
+      {
+        "screen": 254,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 25
+      },
+      {
+        "screen": 255,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 25
+      },
+      {
+        "screen": 256,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 25
+      },
+      {
+        "screen": 257,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 25
+      },
+      {
+        "screen": 258,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 259,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 25
+      },
+      {
+        "screen": 260,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 25
+      },
+      {
+        "screen": 261,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 26
+      },
+      {
+        "screen": 262,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 26
+      },
+      {
+        "screen": 263,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 26
+      },
+      {
+        "screen": 264,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 26
+      },
+      {
+        "screen": 265,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 26
+      },
+      {
+        "screen": 266,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 26
+      },
+      {
+        "screen": 267,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 26
+      },
+      {
+        "screen": 268,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 269,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 26
+      },
+      {
+        "screen": 270,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 26
+      },
+      {
+        "screen": 271,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 27
+      },
+      {
+        "screen": 272,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 27
+      },
+      {
+        "screen": 273,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 28
+      },
+      {
+        "screen": 274,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 28
+      },
+      {
+        "screen": 275,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 28
+      },
+      {
+        "screen": 276,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 28
+      },
+      {
+        "screen": 277,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 278,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 28
+      },
+      {
+        "screen": 279,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 28
+      },
+      {
+        "screen": 280,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 28
+      },
+      {
+        "screen": 281,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 28
+      },
+      {
+        "screen": 282,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 28
+      },
+      {
+        "screen": 283,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 28
+      },
+      {
+        "screen": 284,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 28
+      },
+      {
+        "screen": 285,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 286,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 28
+      },
+      {
+        "screen": 287,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 29
+      },
+      {
+        "screen": 288,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 29
+      },
+      {
+        "screen": 289,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 29
+      },
+      {
+        "screen": 290,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 29
+      },
+      {
+        "screen": 291,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 29
+      },
+      {
+        "screen": 292,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 29
+      },
+      {
+        "screen": 293,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 29
+      },
+      {
+        "screen": 294,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 295,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 29
+      },
+      {
+        "screen": 296,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 29
+      },
+      {
+        "screen": 297,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 29
+      },
+      {
+        "screen": 298,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 29
+      },
+      {
+        "screen": 299,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 30
+      },
+      {
+        "screen": 300,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 301,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 30
+      },
+      {
+        "screen": 302,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 30
+      },
+      {
+        "screen": 303,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 30
+      },
+      {
+        "screen": 304,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 30
+      },
+      {
+        "screen": 305,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 30
+      },
+      {
+        "screen": 306,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 30
+      },
+      {
+        "screen": 307,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 30
+      },
+      {
+        "screen": 308,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 30
+      },
+      {
+        "screen": 309,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 310,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 30
+      },
+      {
+        "screen": 311,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 30
+      },
+      {
+        "screen": 312,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 30
+      },
+      {
+        "screen": 313,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 31
+      },
+      {
+        "screen": 314,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 31
+      },
+      {
+        "screen": 315,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 31
+      },
+      {
+        "screen": 316,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 31
+      },
+      {
+        "screen": 317,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 31
+      },
+      {
+        "screen": 318,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 319,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 31
+      },
+      {
+        "screen": 320,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 31
+      },
+      {
+        "screen": 321,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 31
+      },
+      {
+        "screen": 322,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 32
+      },
+      {
+        "screen": 323,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 32
+      },
+      {
+        "screen": 324,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 32
+      },
+      {
+        "screen": 325,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 33
+      },
+      {
+        "screen": 326,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 33
+      },
+      {
+        "screen": 327,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 328,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 33
+      },
+      {
+        "screen": 329,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 33
+      },
+      {
+        "screen": 330,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 33
+      },
+      {
+        "screen": 331,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 33
+      },
+      {
+        "screen": 332,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 333,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 334,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 34
+      },
+      {
+        "screen": 335,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 34
+      },
+      {
+        "screen": 336,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 34
+      },
+      {
+        "screen": 337,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 338,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 339,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 340,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 341,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 342,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 343,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 34
+      },
+      {
+        "screen": 344,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 34
+      },
+      {
+        "screen": 345,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 34
+      },
+      {
+        "screen": 346,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 347,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 348,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 349,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 350,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 351,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 34
+      },
+      {
+        "screen": 352,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 34
+      },
+      {
+        "screen": 353,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 34
+      },
+      {
+        "screen": 354,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 355,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 356,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 357,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 34
+      },
+      {
+        "screen": 358,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 34
+      },
+      {
+        "screen": 359,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 35
+      },
+      {
+        "screen": 360,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 35
+      },
+      {
+        "screen": 361,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 35
+      },
+      {
+        "screen": 362,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 35
+      },
+      {
+        "screen": 363,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 364,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 35
+      },
+      {
+        "screen": 365,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 36
+      },
+      {
+        "screen": 366,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 36
+      },
+      {
+        "screen": 367,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 37
+      },
+      {
+        "screen": 368,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 37
+      },
+      {
+        "screen": 369,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 37
+      },
+      {
+        "screen": 370,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 37
+      },
+      {
+        "screen": 371,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 372,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 37
+      },
+      {
+        "screen": 373,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 37
+      },
+      {
+        "screen": 374,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 37
+      },
+      {
+        "screen": 375,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 37
+      },
+      {
+        "screen": 376,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 37
+      },
+      {
+        "screen": 377,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 38
+      },
+      {
+        "screen": 378,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 38
+      },
+      {
+        "screen": 379,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 38
+      },
+      {
+        "screen": 380,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 381,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 38
+      },
+      {
+        "screen": 382,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 38
+      },
+      {
+        "screen": 383,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 39
+      },
+      {
+        "screen": 384,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 39
+      },
+      {
+        "screen": 385,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 39
+      },
+      {
+        "screen": 386,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 39
+      },
+      {
+        "screen": 387,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 39
+      },
+      {
+        "screen": 388,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 12,
+        "completedDates": 39
+      },
+      {
+        "screen": 389,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 39
+      },
+      {
+        "screen": 390,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 391,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 39
+      },
+      {
+        "screen": 392,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 39
+      },
+      {
+        "screen": 393,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 39
+      },
+      {
+        "screen": 394,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 39
+      },
+      {
+        "screen": 395,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 39
+      },
+      {
+        "screen": 396,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 39
+      },
+      {
+        "screen": 397,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 40
+      },
+      {
+        "screen": 398,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 40
+      },
+      {
+        "screen": 399,
+        "format": "intro",
+        "firstChecks": 11
+      },
+      {
+        "screen": 400,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 40
+      },
+      {
+        "screen": 401,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 15,
+        "completedDates": 40
+      },
+      {
+        "screen": 402,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 15,
+        "completedDates": 40
+      },
+      {
+        "screen": 403,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 14,
+        "completedDates": 40
+      },
+      {
+        "screen": 404,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 14,
+        "completedDates": 41
+      },
+      {
+        "screen": 405,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 13,
+        "completedDates": 41
+      },
+      {
+        "screen": 406,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 13,
+        "completedDates": 42
+      },
+      {
+        "screen": 407,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 12,
+        "completedDates": 42
+      },
+      {
+        "screen": 408,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 11,
+        "completedDates": 42
+      },
+      {
+        "screen": 409,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 11,
+        "completedDates": 42
+      },
+      {
+        "screen": 410,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 11,
+        "completedDates": 42
+      },
+      {
+        "screen": 411,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 10,
+        "completedDates": 42
+      },
+      {
+        "screen": 412,
+        "format": "match",
+        "reason": "bootstrap",
+        "firstChecks": 10,
+        "completedDates": 43
+      },
+      {
+        "screen": 413,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 9,
+        "completedDates": 43
+      },
+      {
+        "screen": 414,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 8,
+        "completedDates": 43
+      },
+      {
+        "screen": 415,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 8,
+        "completedDates": 43
+      },
+      {
+        "screen": 416,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 7,
+        "completedDates": 43
+      },
+      {
+        "screen": 417,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 6,
+        "completedDates": 43
+      },
+      {
+        "screen": 418,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 6,
+        "completedDates": 44
+      },
+      {
+        "screen": 419,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 6,
+        "completedDates": 44
+      },
+      {
+        "screen": 420,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 5,
+        "completedDates": 44
+      },
+      {
+        "screen": 421,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 5,
+        "completedDates": 45
+      },
+      {
+        "screen": 422,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 4,
+        "completedDates": 45
+      },
+      {
+        "screen": 423,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 3,
+        "completedDates": 45
+      },
+      {
+        "screen": 424,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 2,
+        "completedDates": 45
+      },
+      {
+        "screen": 425,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 2,
+        "completedDates": 45
+      },
+      {
+        "screen": 426,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 1,
+        "completedDates": 45
+      },
+      {
+        "screen": 427,
+        "format": "choice",
+        "reason": "bootstrap",
+        "firstChecks": 1,
+        "completedDates": 45
+      },
+      {
+        "screen": 428,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 429,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 430,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 431,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 432,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 433,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 434,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 435,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 436,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 437,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 438,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 45
+      },
+      {
+        "screen": 439,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 440,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 441,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 442,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 443,
+        "format": "match",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 444,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 46
+      },
+      {
+        "screen": 445,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 47
+      },
+      {
+        "screen": 446,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 47
+      },
+      {
+        "screen": 447,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 48
+      },
+      {
+        "screen": 448,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 48
+      },
+      {
+        "screen": 449,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 48
+      },
+      {
+        "screen": 450,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 48
+      },
+      {
+        "screen": 451,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 49
+      },
+      {
+        "screen": 452,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 49
+      },
+      {
+        "screen": 453,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 49
+      },
+      {
+        "screen": 454,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 455,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 456,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 457,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 458,
+        "format": "choice",
+        "reason": "confirmation",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 459,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 460,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 461,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 462,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 463,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 464,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 465,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 466,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 467,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 468,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 469,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 470,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 471,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 472,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 473,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 474,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 475,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 476,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 477,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 478,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 479,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 480,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 481,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 482,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 483,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 484,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 485,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 486,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 487,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 488,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 489,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 490,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 491,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 492,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 493,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 494,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 495,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 496,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 497,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 498,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 499,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      }
+    ]
+  },
+  {
+    "summary": {
+      "name": "learned-mixed",
+      "format": "mixed",
+      "seconds": 10,
+      "seed": true,
+      "count": 200,
+      "counts": {
+        "timeline": 34,
+        "choice": 34,
+        "match": 33,
+        "missing": 35,
+        "recall_reveal": 33,
+        "sort": 31
+      },
+      "firstChronology": 0,
+      "firstChronologyMinutes": 0,
+      "chronology": 100,
+      "totalScreens": 200,
+      "sharePercent": 50
+    },
+    "screens": [
+      {
+        "screen": 0,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 1,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 2,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 3,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 4,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 5,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 6,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 7,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 8,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 9,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 10,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 11,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 12,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 13,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 14,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 15,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 16,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 17,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 18,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 19,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 20,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 21,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 22,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 23,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 24,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 25,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 26,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 27,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 28,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 29,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 30,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 31,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 32,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 33,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 34,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 35,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 36,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 37,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 38,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 39,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 40,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 41,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 42,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 43,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 44,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 45,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 46,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 47,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 48,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 49,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 50,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 51,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 52,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 53,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 54,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 55,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 56,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 57,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 58,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 59,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 60,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 61,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 62,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 63,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 64,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 65,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 66,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 67,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 68,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 69,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 70,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 71,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 72,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 73,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 74,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 75,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 76,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 77,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 78,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 79,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 80,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 81,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 82,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 83,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 84,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 85,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 86,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 87,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 88,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 89,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 90,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 91,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 92,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 93,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 94,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 95,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 96,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 97,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 98,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 99,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 100,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 101,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 102,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 103,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 104,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 105,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 106,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 107,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 108,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 109,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 110,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 111,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 112,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 113,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 114,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 115,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 116,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 117,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 118,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 119,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 120,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 121,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 122,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 123,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 124,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 125,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 126,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 127,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 128,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 129,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 130,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 131,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 132,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 133,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 134,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 135,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 136,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 137,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 138,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 139,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 140,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 141,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 142,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 143,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 144,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 145,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 146,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 147,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 148,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 149,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 150,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 151,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 152,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 153,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 154,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 155,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 156,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 157,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 158,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 159,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 160,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 161,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 162,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 163,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 164,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 165,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 166,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 167,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 168,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 169,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 170,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 171,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 172,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 173,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 174,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 175,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 176,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 177,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 178,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 179,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 180,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 181,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 182,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 183,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 184,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 185,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 186,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 187,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 188,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 189,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 190,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 191,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 192,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 193,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 194,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 195,
+        "format": "match",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 196,
+        "format": "missing",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 197,
+        "format": "recall_reveal",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 198,
+        "format": "sort",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 199,
+        "format": "choice",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      }
+    ]
+  },
+  {
+    "summary": {
+      "name": "learned-timeline",
+      "format": "timeline",
+      "seconds": 10,
+      "seed": true,
+      "count": 80,
+      "counts": {
+        "timeline": 80
+      },
+      "firstChronology": 0,
+      "firstChronologyMinutes": 0,
+      "chronology": 80,
+      "totalScreens": 80,
+      "sharePercent": 100
+    },
+    "screens": [
+      {
+        "screen": 0,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 1,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 2,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 3,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 4,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 5,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 6,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 7,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 8,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 9,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 10,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 11,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 12,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 13,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 14,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 15,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 16,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 17,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 18,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 19,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 20,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 21,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 22,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 23,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 24,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 25,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 26,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 27,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 28,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 29,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 30,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 31,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 32,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 33,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 34,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 35,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 36,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 37,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 38,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 39,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 40,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 41,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 42,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 43,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 44,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 45,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 46,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 47,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 48,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 49,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 50,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 51,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 52,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 53,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 54,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 55,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 56,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 57,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 58,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 59,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 60,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 61,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 62,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 63,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 64,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 65,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 66,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 67,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 68,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 69,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 70,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 71,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 72,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 73,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 74,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 75,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 76,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 77,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 78,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      },
+      {
+        "screen": 79,
+        "format": "timeline",
+        "reason": "game",
+        "firstChecks": 0,
+        "completedDates": 50
+      }
+    ]
+  }
+]

@@ -1,0 +1,104 @@
+[
+  {
+    "count": 6,
+    "completeMs": 13.199999928474426,
+    "profile": [
+      {
+        "stage": "catalog",
+        "ms": 0.10000002384185791
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.40000009536743164
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.10000002384185791
+      },
+      {
+        "stage": "candidates",
+        "ms": 0.7000000476837158
+      },
+      {
+        "stage": "proposals",
+        "ms": 1
+      },
+      {
+        "stage": "selection",
+        "ms": 5.799999952316284
+      },
+      {
+        "stage": "intro.total",
+        "ms": 13.100000023841858
+      }
+    ]
+  },
+  {
+    "count": 60,
+    "completeMs": 31.200000047683716,
+    "profile": [
+      {
+        "stage": "catalog",
+        "ms": 0.3999999761581421
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.5
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.6000000238418579
+      },
+      {
+        "stage": "candidates",
+        "ms": 3.700000047683716
+      },
+      {
+        "stage": "proposals",
+        "ms": 5.799999952316284
+      },
+      {
+        "stage": "selection",
+        "ms": 16.200000047683716
+      },
+      {
+        "stage": "intro.total",
+        "ms": 31.100000023841858
+      }
+    ]
+  },
+  {
+    "count": 300,
+    "completeMs": 124.70000004768372,
+    "profile": [
+      {
+        "stage": "catalog",
+        "ms": 3
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 5.700000047683716
+      },
+      {
+        "stage": "catalog",
+        "ms": 2
+      },
+      {
+        "stage": "candidates",
+        "ms": 20.799999952316284
+      },
+      {
+        "stage": "proposals",
+        "ms": 37.39999997615814
+      },
+      {
+        "stage": "selection",
+        "ms": 75.70000004768372
+      },
+      {
+        "stage": "intro.total",
+        "ms": 124.5
+      }
+    ]
+  }
+]

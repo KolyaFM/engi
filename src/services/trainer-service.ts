@@ -73,15 +73,21 @@ export function createTrainerService(d:EngiDB){return {
  async openMore(id:string,practice=false){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||!s.exhausted)throw Error('Сначала завершите текущую практику');if(practice){s.mode='practice';s.format='mixed'}else{const {newCardsPerDay}=await readStudyPreferences(d);if(!newCardsPerDay)throw Error('Укажите дневной лимит новых карточек в настройках');const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.extraBudget+=newCardsPerDay;await d.appMeta.put({key:'newLearning',value:daily})}return selectNext(d,s)})},
  async saveIntroSelection(id:string,unitId:string,color:Familiarity){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro||!s.intro.unitIds.includes(unitId)||!['red','orange','yellow','green','suspended'].includes(color))throw Error('Свойство больше не доступно');s.intro.selections[unitId]=color;await d.activeSessions.put(s);return s})},
  async saveIntroSelections(id:string,selections:Record<string,Familiarity>){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro)throw Error('Знакомство уже завершено');for(const [unitId,color] of Object.entries(selections)){if(s.intro.unitIds.includes(unitId)&&['red','orange','yellow','green','suspended'].includes(color))s.intro.selections[unitId]=color}await d.activeSessions.put(s);return s})},
- async completeIntro(id:string){return d.transaction('rw',sessionTables(d),async()=>{
-  const s=await d.activeSessions.get(id);if(!s?.intro||s.status!=='active')throw Error('Знакомство уже завершено');const intro=s.intro,b=await getBundle(d),units=canonicalTargets(b).filter(i=>intro.unitIds.includes(i.targetId));
-  for(const i of units)if(!await d.learningState.get(i.targetId))await d.learningState.put(learningRow(triagedMemory(i,intro.selections[i.targetId]??'red',s.id,(s.completedCount??0)+1)));
+ async completeIntro(id:string,decision?:{entityId:string;selections:Record<string,Familiarity>}){return measureFeed('intro.total',()=>d.transaction('rw',sessionTables(d),async()=>{
+  const s=await d.activeSessions.get(id);if(!s||s.status!=='active')throw Error('Знакомство уже завершено');
+  const receiptKey=decision?'studyCore:introReceipt:'+id+':'+decision.entityId:undefined;
+  if(receiptKey&&await d.appMeta.get(receiptKey))return s;
+  if(!s.intro||decision&&decision.entityId!==s.intro.entityId)throw Error('Карточка уже сменилась');
+  const intro=s.intro,b=await getBundle(d),units=canonicalTargets(b).filter(i=>intro.unitIds.includes(i.targetId));
+  if(decision)for(const [unitId,color]of Object.entries(decision.selections)){if(!intro.unitIds.includes(unitId)||!['red','orange','yellow','green','suspended'].includes(color))throw Error('Некорректный выбор');intro.selections[unitId]=color;}
+  const oldRows=await d.learningState.bulkGet(units.map(i=>i.targetId));
+  await d.learningState.bulkPut(units.map((i,n)=>{const color=intro.selections[i.targetId]??'red',m=oldRows[n]?.payload??triagedMemory(i,color,s.id,(s.completedCount??0)+1);m.initialFamiliarity=color;if(color==='green'||color==='suspended'){if(m.status!=='suspended')m.suspendedFrom=m.status??'triaged';m.status='suspended';}else if(m.status==='suspended'){m.status=m.suspendedFrom??'triaged';delete m.suspendedFrom;}return learningRow(m);}));
   const introduced=new Set<string>((await d.appMeta.get('introducedEntities'))?.value??[]);introduced.add(intro.entityId);await d.appMeta.put({key:'introducedEntities',value:[...introduced]});
   if(!intro.newProperty){const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.introducedEntityIds=[...new Set([...daily.introducedEntityIds,intro.entityId])];await d.appMeta.put({key:'newLearning',value:daily})}
   const item=units[0];if(item)s.cooldown=[...s.cooldown??[],{id:'intro:'+crypto.randomUUID(),items:[item],options:[],reason:'intro',recipe:{id:'intro',format:'choice' as const,cue:'name' as const,answerKey:'identity',memoryKey:'intro',diagnostic:false}}].slice(-30);
   const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload));await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
-  s.completedCount=(s.completedCount??0)+1;s.intro=undefined;return selectNext(d,s);
- })},
+  s.completedCount=(s.completedCount??0)+1;s.intro=undefined;if(receiptKey)await d.appMeta.put({key:receiptKey,value:true});return selectNext(d,s);
+ }))},
  async getResumableSession(options:{endless?:boolean;lifecycle?:boolean}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
   if(s.memoryModel!=='goals')return s;
   return d.transaction('rw',sessionTables(d),async()=>{

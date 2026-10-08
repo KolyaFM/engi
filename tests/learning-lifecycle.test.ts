@@ -16,6 +16,32 @@ import {writeFileSync} from 'node:fs';
 import {startStudyTrace,studyTraceReport} from '../src/services/study-selection-trace';
 import {ACQUISITION_CONFIRMATION_MS} from '../src/lib/engi/study-core/acquisition';
 const fixture=(count=6):Bundle=>({entities:Array.from({length:count},(_,n)=>[{id:'s'+n,name:'Объект '+n,type:'s',aliases:[],externalIds:{}},{id:'a'+n,name:'Автор '+n,type:'a',aliases:[],externalIds:{}}]).flat(),facts:Array.from({length:count},(_,n)=>['author','country'].map(key=>({id:key+n,entityId:'s'+n,key,valueKind:'entity' as const,valueEntityId:'a'+n,verification:'user_confirmed' as const,source:{kind:'manual' as const,name:'Test'}}))).flat(),media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'s',name:'Объект'},{id:'a',name:'Ответ'}],properties:['author','country'].map(id=>({id,name:id,valueKind:'entity' as const,cardinality:'one' as const,learnable:true,subjectTypes:['s'],targetTypes:['a']}))});
+test('known intro properties are excluded permanently without synthetic memory; unknown properties alone enter learning',async()=>{
+ const d=new EngiDB('intro-known-'+crypto.randomUUID());try{const b=fixture();await putBundle(d,b);const svc=createTrainerService(d),s=await svc.startGoalFeed('all','choice','daily',{endless:true}),intro=s.intro!;
+ const [known,unknown]=intro.unitIds;await svc.completeIntro(s.id,{entityId:intro.entityId,selections:{[known]:'green',[unknown]:'red'}});
+ assert.equal((await d.learningState.get(known))!.payload.status,'suspended');
+ const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert.equal(ledger.units.filter((u:any)=>u.entityId===intro.entityId).length,1);
+ assert.equal((await svc.getDayPlan('all','choice')).workload!.learning,1);assert.equal((await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).length,0);
+ const before=(await d.activeSessions.get(s.id))!;const duplicate=await svc.completeIntro(s.id,{entityId:intro.entityId,selections:{[known]:'green',[unknown]:'red'}});assert.equal(duplicate.completedCount,before.completedCount);assert.equal(duplicate.intro?.entityId,before.intro?.entityId);
+ const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(b,enabled);assert(catalog.filter(e=>e.targetIds.includes(known)).every(e=>e.suspended));
+ await setUnitSuspended(known,false,d);assert.equal((await d.learningState.get(known))!.payload.status,'triaged');
+ assert.equal((await svc.getDayPlan('all','choice')).workload!.learning,2,'manual return must restore acquisition');
+ await setUnitSuspended(unknown,true,d);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});const restored=await svc.startGoalFeed('all','choice','daily',{endless:true});assert(restored.tasks[0].items.some(i=>i.targetId===known),'restored property must actually be trainable');
+ }finally{d.close();await d.delete();}
+});
+test('knowing every property produces no future review or practice target after restart',async()=>{
+ const d=new EngiDB('intro-all-known-'+crypto.randomUUID());try{const b=fixture();await putBundle(d,b);const svc=createTrainerService(d);let s=await svc.startGoalFeed('all','mixed','daily',{endless:true});
+ for(let n=0;n<6;n++){assert(s.intro);s=await svc.completeIntro(s.id,{entityId:s.intro.entityId,selections:Object.fromEntries(s.intro.unitIds.map(id=>[id,'green' as const]))});}
+ assert.equal((await d.appMeta.get(LIFECYCLE_KEY))!.value.units.length,0);assert.equal((await svc.getDayPlan()).workload!.learning,0);assert.equal((await svc.getDayPlan()).workload!.repeat,0);
+ const resumed=await svc.startGoalFeed('all','mixed','practice',{endless:true});assert.equal(resumed.tasks.length,0);assert.equal(resumed.intro,undefined);
+ }finally{d.close();await d.delete();}
+});
+test('failed intro completion rolls back exclusions and can retry the same decision',async()=>{
+ const d=new EngiDB('intro-rollback-'+crypto.randomUUID());try{await putBundle(d,fixture());const svc=createTrainerService(d),s=await svc.startGoalFeed('all','choice','daily',{endless:true}),intro=s.intro!,decision={entityId:intro.entityId,selections:Object.fromEntries(intro.unitIds.map(id=>[id,'green' as const]))};
+ const fail=(_key:any,row:any)=>{if(row.key.startsWith('studyCore:introReceipt:'))throw Error('test disk failure');};d.appMeta.hook('creating',fail);await assert.rejects(()=>svc.completeIntro(s.id,decision),/test disk failure/);d.appMeta.hook('creating').unsubscribe(fail);
+ assert.equal(await d.learningState.count(),0);assert.equal((await d.activeSessions.get(s.id))!.intro!.entityId,intro.entityId);await svc.completeIntro(s.id,decision);assert.equal((await d.learningState.toArray()).filter(r=>r.payload.status==='suspended').length,intro.unitIds.length);
+ }finally{d.close();await d.delete();}
+});
 async function run(action:(d:EngiDB,svc:ReturnType<typeof createTrainerService>)=>Promise<void>,bundle=fixture()){const d=new EngiDB('lifecycle-'+crypto.randomUUID());try{await putBundle(d,bundle);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});await action(d,createTrainerService(d));}finally{d.close();await d.delete();}}
 test('completed object intro admits both properties immediately and consumes one daily object',()=>run(async(d,svc)=>{
  let session=await svc.startGoalFeed('all','choice','daily',{endless:true});assert(session.intro);
