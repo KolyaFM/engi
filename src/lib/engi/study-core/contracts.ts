@@ -5,7 +5,7 @@ export type ResponseRule =
   | { kind: 'choice'; goalId: string; options: string[]; expected: string }
   | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean; exhaustive?:boolean }
   | { kind: 'set'; goalId: string; options: string[]; expected: string[]; complete: true }
-  | { kind: 'order'; grading?:'position'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[];contextBindings?:{goalId:string;entityId:string}[] }
+  | { kind: 'order'; grading?:'position';direction?:'bottom-up'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[];contextBindings?:{goalId:string;entityId:string}[] }
   | { kind: 'number'; goalId: string; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'practice-choice'; options: string[]; expected: string }
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }

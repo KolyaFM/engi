@@ -98,3 +98,11 @@
 
 /* Entry starts after content and media are ready, not when the loading shell mounts. */
 .study-feed .feed-current{animation:none}
+.chronology-list:after{top:0;bottom:auto;border-top:0;border-bottom:10px solid #b7ad9d}
+.chronology-slot:first-child:before{display:none}.chronology-slot:last-child:before{content:'';position:absolute;left:-23px;bottom:0;width:9px;height:9px;background:#b7ad9d;border-radius:50%}
+.chronology-card{padding-bottom:90px}
+.chronology-floating-action{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));width:min(520px,calc(100vw - 32px));pointer-events:none}
+.chronology-floating-action .sort-submit{pointer-events:auto;background:#c2410c;color:#fff;border:1px solid #c2410c;border-radius:20px;min-height:54px;font-weight:650;box-shadow:0 5px 22px #57412a26;width:100%}
+.feed-options.image-answer-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.image-answer-options .feed-option{display:flex;align-items:center;justify-content:center;min-height:130px;padding:12px;position:relative}.image-answer-options img{width:100%;height:120px;object-fit:contain}.image-answer-options .feed-option>span[aria-hidden]{position:absolute;right:8px;top:8px}
+
+.has-image-answers .feed-cue{height:auto;min-height:0;padding:16px 0}.has-image-answers .feed-cue h1{font-size:28px}

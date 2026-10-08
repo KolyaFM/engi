@@ -1,3 +1,4 @@
+import type {Task} from '../types';
 /** Positions belong to slots, not to the movable objects. */
 export function orderPositions(order:string[],expected:string[]):boolean[]{
  return order.map((id,n)=>id===expected[n]);
@@ -9,3 +10,5 @@ export function moveOrder(order:string[],id:string,to:number,locked:boolean[]=[]
  values.splice(slots.indexOf(from),1);values.splice(slots.indexOf(to),0,id);
  const next=[...order];slots.forEach((slot,n)=>next[slot]=values[n]);return next;
 }
+
+export function chronologyOrder(task:Task):string[]{return task.studyContract?.response.kind==='order'?[...task.studyContract.response.expected]:[...task.items].sort((a,b)=>b.year!-a.year!).map(i=>i.entityId);}

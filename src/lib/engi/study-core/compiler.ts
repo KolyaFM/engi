@@ -11,7 +11,7 @@ export function entityRevision(b: Bundle, id: string) {
 }
 export function factRevision(b: Bundle, f: Fact) {
   if (!trusted(f)) throw Error('Fact is unavailable');
-  return version([f.entityId, f.key, factValue(f)]);
+  const media=f.valueKind==='image'?b.media.find(m=>m.id===f.valueMediaId&&!m.archived):undefined;if(f.valueKind==='image'&&(!media||media.entityId!==f.entityId))throw Error('Property image is unavailable');return version([f.entityId,f.key,factValue(f),...(media?[media.url]:[])]);
 }
 function factFor(b: Bundle, item: Item): Fact {
   const f = b.facts.find(f => f.id === item.factId);
@@ -50,11 +50,13 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(item.factId){const f=factFor(b,item);revisions[`fact:${f.id}`]=factRevision(b,f);
       // The graph may change even while the cached task still contains the old answer.
       const expected=task.recipe.direction==='reverse'?f.entityId:f.valueEntityId;
+      if(f.valueKind==='image'){const m=b.media.find(m=>m.id===f.valueMediaId&&!m.archived);if(item.answerId!==f.entityId||task.recipe.cue==='image'&&item.image!==m?.url||task.recipe.answerPresentation==='image'&&item.answerImage!==m?.url)throw Error('Image answer disagrees with graph');}
       if(f.valueKind==='entity'&&item.answerId!==expected)throw Error('Task answer disagrees with the graph');
     }
     if(item.answerEntityId)revisions[`entity:${item.answerEntityId}`]=entityRevision(b,item.answerEntityId);
     if(item.mediaId){const m=b.media.find(m=>m.id===item.mediaId&&!m.archived);if(!m||m.url!==item.image||m.entityId!==item.entityId)throw Error('Media is unavailable');revisions[`media:${m.id}`]=version([m.entityId,m.url,m.role,m.learningExemplar]);}
   }
+  if(task.recipe.answerPresentation==='image')for(const option of task.options){const media=b.media.find(m=>m.id===option.mediaId&&!m.archived);if(!media||media.url!==option.image||!b.facts.some(f=>trusted(f)&&f.entityId===option.id&&f.key===task.recipe.answerKey&&f.valueMediaId===media.id))throw Error('Image option is unavailable');revisions[`media:${media.id}`]=version([media.entityId,media.url,media.role,media.learningExemplar]);}
   const p=properties(b).find(p=>p.id===task.recipe.answerKey);
   if(p)revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]);
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
@@ -70,7 +72,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }else if(fmt==='sort'){
     if(task.items.some(i=>!Number.isFinite(i.year))||new Set(task.items.map(i=>i.year)).size!==task.items.length)throw Error('Order is not strict');
     if(task.contextual){for(const item of task.items){const g=goalFor(item);(task.contextual.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}}
-    response={kind:'order',grading:'position',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>a.year!-c.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
+    response={kind:'order',grading:'position',direction:'bottom-up',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>c.year!-a.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
   }else if(fmt==='missing'){
     response={kind:'practice-choice',options:task.options.map(o=>o.id),expected:discreteAnswer(task)};actionFamily='select';practice=true;
   }else if(fmt==='timeline'){

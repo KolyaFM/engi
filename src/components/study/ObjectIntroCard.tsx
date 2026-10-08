@@ -1,5 +1,5 @@
 import {useHorizontalSwipe} from './useHorizontalSwipe';
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import type {SessionRow} from '../../db/engi-db';
 import type {Bundle,Familiarity,Fact} from '../../lib/engi/types';
 import {questionPrompt} from '../../lib/engi/questions/question-templates';
@@ -44,11 +44,14 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
  const [selections,setSelections]=useState(intro.selections);
  const writes=useRef<Promise<void>>(Promise.resolve()),latestSelections=useRef(intro.selections),exiting=useRef(false);
  useEffect(()=>{latestSelections.current=intro.selections;setSelections(intro.selections);setSwipeOffset(0);setSwiping(false)},[intro.entityId]);
+ const sheet=useRef<HTMLDivElement>(null),[heroReady,setHeroReady]=useState(false),entered=useRef(false),entryAnimation=useRef<Animation|undefined>(undefined);
+ useLayoutEffect(()=>{if(!heroReady||entered.current||!sheet.current)return;entered.current=true;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;entryAnimation.current=sheet.current.animate([{transform:`translateY(${window.innerHeight*.9}px)`},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,1,.36,1)'});},[heroReady]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
- const items=useMemo(()=>{const ids=new Set(intro.unitIds);return canonicalTargets(bundle).filter(i=>ids.has(i.targetId))},[bundle,intro.unitIds.join('|')]);
+ const items=useMemo(()=>{const ids=new Set(intro.unitIds);const rank=(item:{factId?:string})=>!item.factId?0:bundle.facts.find(f=>f.id===item.factId)?.valueKind==='image'?1:2;return canonicalTargets(bundle).filter(i=>ids.has(i.targetId)).sort((a,b)=>rank(a)-rank(b))},[bundle,intro.unitIds.join('|')]);
  const propertyById=useMemo(()=>new Map(properties(bundle).map(p=>[p.id,p])),[bundle]);
  const mediaList=useMemo(()=>bundle.media.filter(m=>m.entityId===intro.entityId&&!m.archived&&m.learningExemplar!==false&&['primary','portrait','photo','image','artwork','painting'].includes(m.role)),[bundle,intro.entityId]);
  const image=mediaList.find(m=>m.primary||m.role==='primary')??mediaList[0];
+ useEffect(()=>{if(!image)setHeroReady(true)},[image?.url]);
  const disabled=busy||saving;
  const displayError=error||saveError;
  const [swipeOffset,setSwipeOffset]=useState(0),[swiping,setSwiping]=useState(false);
@@ -83,10 +86,12 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
   aria-labelledby="object-intro-heading"
   aria-busy={disabled}
   {...swipe}
+  onPointerDown={e=>{entryAnimation.current?.cancel();swipe.onPointerDown(e)}}
  >
   <div
-   className={`learning22-card-sheet ${swiping?'is-swiping':''}`}
+   ref={sheet} className={`learning22-card-sheet ${swiping?'is-swiping':''}`}
    style={{
+    visibility:heroReady?'visible':'hidden',
     transform:swipeOffset!==0?`translateX(${swipeOffset}px) rotate(${rotation}deg)`:undefined,
     transition:swiping?'none':'transform 220ms cubic-bezier(.22,1,.36,1)',
    }}
@@ -98,7 +103,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
     <section className={`learning22-content ${!image?'no-hero':''}`}>
     {image?(
      <div className="learning22-hero-wrap">
-      <KnowledgeImage src={image.url} alt={entity?.name??'Изображение объекта'} className="learning22-portrait"/>
+      <KnowledgeImage src={image.url} alt={entity?.name??'Изображение объекта'} className="learning22-portrait" onReady={()=>setHeroReady(true)} onFail={()=>setHeroReady(true)}/>
      </div>
     ):(
      <div className="learning22-hero-badge" aria-hidden="true">
@@ -129,7 +134,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
        return <div className={`learning22-property ${known?'is-known':''}`} key={item.targetId}>
         <div className="learning22-prop-meta">
          {!isIdentity&&<span className="learning22-prop-label">{label}</span>}
-         <span className="learning22-value">{val}</span>
+         {fact?.valueKind==='image'?<KnowledgeImage src={bundle.media.find(m=>m.id===fact.valueMediaId&&!m.archived)?.url} alt={label} className="learning22-property-image"/>:<span className="learning22-value">{val}</span>}
         </div>
         <div className="learning22-controls" role="group" aria-label={`Знакомство: ${label}`}>
          <button type="button" className={`learning22-choice ${!known?'is-selected':''}`} aria-label={`${label}: Не знаю`} aria-pressed={!known} disabled={disabled} onClick={()=>void choose(item.targetId,'red')}>Не знаю</button>

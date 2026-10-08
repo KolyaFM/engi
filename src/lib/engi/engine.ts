@@ -1,3 +1,4 @@
+import {chronologyOrder} from './questions/order-feedback';
 import {BUILTIN_PROPERTIES} from './knowledge/properties';
 export {recipes,eligible,canonicalTargets} from './questions/recipe-factory';
 import {fsrs,createEmptyCard,Rating,type Card} from 'ts-fsrs';
@@ -29,7 +30,7 @@ export function assess(t:Task,answer:any){
   return {score:scores.reduce<number>((a,b)=>a+b,0)/scores.length,evidence:[],expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};
  }
  if(['sort','missing'].includes(fmt)){
-  const expected=[...t.items].sort((a,b)=>a.year!-b.year!).map(i=>i.entityId);
+  const expected=fmt==='sort'?chronologyOrder(t):[...t.items].sort((a,b)=>a.year!-b.year!).map(i=>i.entityId);
   if(fmt==='missing')return {score:answer===expected[1]?1:0,evidence:[],expected};
   if(!Array.isArray(answer)||answer.length!==t.items.length||new Set(answer).size!==t.items.length||!expected.every(x=>answer.includes(x)))throw Error('Заполните все позиции');
   const correct=answer.filter((id,n)=>id===expected[n]).length;

@@ -79,3 +79,4 @@
 /* The gesture controller owns touch direction before any scrolling starts. */
 .learning22-screen,.learning22-scroll{touch-action:none}
 .learning22-card-sheet{will-change:transform}
+.learning22-property-image{display:block;width:auto;max-width:100%;max-height:160px;object-fit:contain;border-radius:10px;margin-top:8px}

@@ -14,7 +14,7 @@ import type {Bundle,Task} from '../src/lib/engi/types';
 const b:Bundle={entities:Array.from({length:4},(_,n)=>({id:'e'+n,type:'event',name:'Event '+n,aliases:[],externalIds:{}})),facts:Array.from({length:4},(_,n)=>({id:'f'+n,entityId:'e'+n,key:'year',valueKind:'date',dateStart:String(1700+n*50)+'-01-01',dateEnd:String(1700+n*50)+'-12-31',datePrecision:'year',verification:'user_confirmed',source:{kind:'manual',name:'Test'}})),media:[],tags:[],entityTags:[],missing:[],unresolved:[],properties:[{id:'year',name:'Year',valueKind:'date',cardinality:'one',learnable:true,subjectTypes:['event']}]};
 const proposals=b.facts.map((f,n)=>({recipe:{id:'year-choice',format:'choice' as const,cue:'name' as const,answerKey:'year',memoryKey:'year',diagnostic:false,direction:'forward' as const},goals:[associationGoal(b,f,'recognition')],items:[{entityId:f.entityId,name:'Event '+n,targetId:'t'+n,factId:f.id,answer:String(1700+n*50),answerId:String(1700+n*50),year:1700+n*50,aliases:[],sourceUrl:''}]}));
 test('learning chronology uses eligible targets, one optional support, and alternates order with boundary conveyor',()=>{const t=buildLearningChronology(b,proposals.slice(0,3),[],[],0)!;assert.equal(t.recipe.format,'sort');assert.equal(t.items.length,3);assert.equal(t.contextual!.kind,'order');const next=buildLearningChronology(b,proposals.slice(0,3),[],[t],1)!;assert.equal(next.recipe.format,'categorize');assert.equal(next.options.length,2);assert.equal(next.presentation,'conveyor');const withSupport=buildLearningChronology(b,proposals.slice(0,2),proposals.slice(2,3),[next],2)!;assert.equal(withSupport.contextual!.supportTargetIds.length,1);});
-test('contextual order advances initial exercise without exact-year memory, and cannot advance again',async()=>{const d=new EngiDB('chronology-context-'+crypto.randomUUID());try{const goals=proposals.slice(0,3).map(p=>p.goals[0]);let ledger=emptyLifecycle();for(const g of goals)ledger=admitAcquisition(ledger,b.facts.find(f=>f.id===g.knowledge.key)!.entityId,[g],new Date(0));await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});const t=buildLearningChronology(b,proposals.slice(0,3),[],[],0)!,c=compileTaskContract(b,t),core=createStudyCoreService(d,{lifecycle:true});await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));const a=await core.submit(t.id,t.items.slice().sort((a,b)=>a.year!-b.year!).map(i=>i.entityId),new Date(1000));assert(a.results!.every(r=>r.contextCredit&&!r.credit));assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);const after=(await d.appMeta.get('studyCore:learningLifecycle'))!.value;assert(after.units.every((u:any)=>u.stage==='confirmation'&&u.successes===0&&u.requiredSuccesses===1));
+test('contextual order advances initial exercise without exact-year memory, and cannot advance again',async()=>{const d=new EngiDB('chronology-context-'+crypto.randomUUID());try{const goals=proposals.slice(0,3).map(p=>p.goals[0]);let ledger=emptyLifecycle();for(const g of goals)ledger=admitAcquisition(ledger,b.facts.find(f=>f.id===g.knowledge.key)!.entityId,[g],new Date(0));await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});const t=buildLearningChronology(b,proposals.slice(0,3),[],[],0)!,c=compileTaskContract(b,t),core=createStudyCoreService(d,{lifecycle:true});await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));const a=await core.submit(t.id,t.items.slice().sort((a,b)=>b.year!-a.year!).map(i=>i.entityId),new Date(1000));assert(a.results!.every(r=>r.contextCredit&&!r.credit));assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);const after=(await d.appMeta.get('studyCore:learningLifecycle'))!.value;assert(after.units.every((u:any)=>u.stage==='confirmation'&&u.successes===0&&u.requiredSuccesses===1));
  const t2={...t,id:'again'},c2=compileTaskContract(b,t2);await core.open(c2,t2.id,new Date(400000));await core.submit(t2.id,c.response.kind==='order'?c.response.expected:[],new Date(400001));assert.deepEqual((await d.appMeta.get('studyCore:learningLifecycle'))!.value,after);
  const direct:Task={id:'independent-year',memoryModel:'goals',learningLifecycle:1,recipe:proposals[0].recipe,items:proposals[0].items,options:proposals.map(p=>({id:p.items[0].answerId,name:p.items[0].answer})),reason:'confirmation'},exact=compileTaskContract(b,direct);await core.setContentRevisions(exact.contentRevisions);await core.open(exact,direct.id,new Date(400002));const verified=await core.submit(direct.id,direct.items[0].answerId,new Date(400003));assert(verified.results![0].credit);assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),1);assert(learningLifecycleSchema.parse((await d.appMeta.get('studyCore:learningLifecycle'))!.value).units[0].contextEvidence?.length);
 }finally{d.close();await d.delete();}});
@@ -26,23 +26,23 @@ test('boundary feedback does not pretend to reveal exact years; same-screen corr
 
 test('absolute order accepts correct slots even when other objects cross them',()=>{
  const t=buildLearningChronology(b,proposals,[],[],0)!,c=compileTaskContract(b,t);
- const answer=['e0','e3','e2','e1'],results=gradeResponse(c,answer);assert.equal(assess(t,answer).score,.5);assert.throws(()=>assess(t,[...answer,'e0']));
- for(const p of proposals)assert.equal(results.find(r=>r.goalId===p.goals[0].id)!.correct,['e0','e2'].includes(p.items[0].entityId));
- assert.deepEqual(orderPositions(answer,['e0','e1','e2','e3']),[true,false,true,false]);
- assert.deepEqual(moveOrder(answer,'e3',3,[true,false,true,false]),['e0','e1','e2','e3']);
- assert.deepEqual(moveOrder(answer,'e0',3,[true,false,true,false]),answer);
- assert.deepEqual(moveOrder(answer,'e3',2,[true,false,true,false]),answer);
+ const answer=['e3','e0','e1','e2'],results=gradeResponse(c,answer);assert.equal(assess(t,answer).score,.5);assert.throws(()=>assess(t,[...answer,'e0']));
+ for(const p of proposals)assert.equal(results.find(r=>r.goalId===p.goals[0].id)!.correct,['e3','e1'].includes(p.items[0].entityId));
+ assert.deepEqual(orderPositions(answer,['e3','e2','e1','e0']),[true,false,true,false]);
+ assert.deepEqual(moveOrder(answer,'e0',3,[true,false,true,false]),['e3','e2','e1','e0']);
+ assert.deepEqual(moveOrder(answer,'e3',3,[true,false,true,false]),answer);
+ assert.deepEqual(moveOrder(answer,'e0',2,[true,false,true,false]),answer);
 });
 test('ordering disclosure is recorded only on completed screen; correction never rewrites first answer',async()=>{
  const d=new EngiDB('order-disclosure-'+crypto.randomUUID());try{
  const t=buildLearningChronology(b,proposals,[],[],0)!,c=compileTaskContract(b,t),core=createStudyCoreService(d,{lifecycle:true});
  await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));
- const answer=['e0','e3','e2','e1'];await core.submit(t.id,answer,new Date(1000));
+ const answer=['e3','e0','e1','e2'];await core.submit(t.id,answer,new Date(1000));
  await core.observe(t.id,'feedback','wrong-feedback','start',new Date(1100));
  assert.equal(await d.appMeta.where('key').startsWith('studyCore:exposure:').count(),0);
  await core.observe(t.id,'order-reveal','completed-order','start',new Date(1200));
  const exposures=await d.appMeta.where('key').startsWith('studyCore:exposure:').toArray();for(const g of c.primaryGoals)assert(exposures.some(r=>r.value.goalId===g.id));
- const corrected=await core.submit(t.id,['e0','e1','e2','e3'],new Date(1300));
+ const corrected=await core.submit(t.id,['e3','e2','e1','e0'],new Date(1300));
  assert.deepEqual(corrected.firstAnswer,answer);assert.equal(corrected.results!.filter(r=>r.correct).length,2);
  }finally{d.close();await d.delete();}
 });

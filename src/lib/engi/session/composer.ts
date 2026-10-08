@@ -30,8 +30,10 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   const item={...i},recipe={...r},pool=poolFor(r),exemplar=selectExemplar(b,i.entityId,r,m);if(r.cue==='image'){if(!exemplar)continue;item.image=exemplar.url;item.mediaId=exemplar.id}
   const wrong=distractors(b,item,pool,m,history),twin=r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
+  if(r.answerPresentation==='image')for(const o of options){const candidate=pool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
   const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.name,r.format,r.direction);
   if(r.answerKey==='created_by'&&r.cue==='image'&&!p?.promptTemplates?.forward)recipe.prompt='Кто автор этой работы?';
+  if(p?.valueKind==='image')recipe.prompt=r.answerPresentation==='image'?`Выберите ${p.name.toLowerCase()} для: ${item.name}`:(p.promptTemplates?.forward&&!p.promptTemplates.forward.includes('{subject}')?p.promptTemplates.forward:`Какому объекту принадлежит ${p.name.toLowerCase()}?`);
   if(r.answerKey==='identity')recipe.prompt='Кто или что на изображении?';
   const t:Task={id:crypto.randomUUID(),recipe,items:[item],options,reason:objective?'calibration':'due',pretest:m.attempts===0,discrimination:twin,difficultyStage:stage};
   if(preflight(t))return t;
