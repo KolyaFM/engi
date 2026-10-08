@@ -35,7 +35,7 @@ export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:A
   if(deferCompletion){session.updatedAt=new Date().toISOString();await d.activeSessions.put(session);return {pending:true as const,feedback:null,memories:[],event:undefined,results:session.results,interaction:session.interaction,milestone:undefined};}
   const event:ReviewEventRow={...receipt,payload:{...receipt.payload,metadata:{...receipt.payload.metadata,attemptSequence:[...attemptSequence],attemptCount:attemptSequence.length,wrongChoices:[...new Set(attemptSequence.slice(0,-1))],completedAt:new Date().toISOString()},feedback:{...receipt.payload.feedback,chosen:input.answer,correctionComplete:true}}};
   await d.reviewEvents.add(event);await d.appMeta.delete(reviewReceiptKey(task.id));
-  session.results=[...session.results,event.payload.score].slice(-100);session.interaction=undefined;session.updatedAt=new Date().toISOString();await d.activeSessions.put(session);
+  session.results=[...session.results,event.payload.score].slice(-100);if(task.recipe.format!=='sort')session.interaction=undefined;session.updatedAt=new Date().toISOString();await d.activeSessions.put(session);
   return {pending:false as const,feedback:event.payload.feedback,memories:event.payload.memoryModel==='goals'?[]:await d.learningState.bulkGet(event.targetIds),event,results:session.results,interaction:undefined,milestone:undefined};
  }
  const discrete=isDiscrete(task),first=discrete?attemptSequence[0]:input.answer;
@@ -99,7 +99,7 @@ export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:A
   repair.retryAfter=(session.completedCount??0)+4;session.repairQueue=[...(session.repairQueue??[]).filter(t=>t.items[0].targetId!==repair.items[0].targetId),repair].slice(-12);
  }
  if(deferCompletion)await d.appMeta.put({key:reviewReceiptKey(task.id),value:event});
- else{await d.reviewEvents.add(event);session.results=[...session.results,result.score].slice(-100);session.interaction=undefined;}
+ else{await d.reviewEvents.add(event);session.results=[...session.results,result.score].slice(-100);if(task.recipe.format!=='sort')session.interaction=undefined;}
  session.updatedAt=event.timestamp;session.tasks=[task];session.currentPosition=0;await d.activeSessions.put(session);
  const counter=await d.appMeta.get('reviewsSinceBackup');await d.appMeta.put({key:'reviewsSinceBackup',value:(counter?.value??0)+1});
  let milestone:string|undefined;

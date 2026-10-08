@@ -36,11 +36,11 @@ test('complete set compiler refuses a partial “all answers” task',()=>{
  assert.throws(()=>compileTaskContract(b,t),/partial set/);
  t.answerSet=['a0','a1'];const c=compileTaskContract(b,t);assert.equal(c.response.kind,'set');assert.equal(c.primaryGoals[0].knowledge.kind,'complete-set');
 });
-test('sort compiler creates practice with no date goal and feedback only after an incorrect order',()=>{
+test('sort compiler creates practice with no date goal and year disclosure only on completion',()=>{
  const b=bundle();b.entities.push({id:'s2',type:'artwork',name:'Картина C',aliases:[],externalIds:{}});b.facts.push({id:'d0',entityId:'s0',key:'creation_date',valueKind:'date',dateStart:'1800-01-01',dateEnd:'1800-12-31',datePrecision:'year',verification:'verified',source:{kind:'manual',name:'test'}},{id:'d1',entityId:'s1',key:'creation_date',valueKind:'date',dateStart:'1850-01-01',dateEnd:'1850-12-31',datePrecision:'year',verification:'verified',source:{kind:'manual',name:'test'}},{id:'f2',entityId:'s2',key:'creation_date',valueKind:'date',dateStart:'1900-01-01',dateEnd:'1900-12-31',datePrecision:'year',verification:'verified',source:{kind:'manual',name:'test'}});b.properties!.push({id:'creation_date',name:'Дата',valueKind:'date',cardinality:'one',learnable:true,subjectTypes:['artwork'],inverse:{enabled:false},learning:{forward:true}});
  const base=task();const make=(id:string,year:number,factId:string,entityId:string,name:string)=>({...base.items[0],entityId,name,factId,mediaId:undefined,image:undefined,targetId:id,answerId:String(year),answer:String(year),year});
  const t:Task={...base,id:'sort',recipe:{...base.recipe,id:'sort',format:'sort',answerKey:'creation_date',cue:'name'},items:[make('s0',1800,'d0','s0','Картина A'),make('s1',1850,'d1','s1','Картина B'),make('s2',1900,'f2','s2','Картина C')],options:[],reason:'challenge'};
- const c=compileTaskContract(b,t);assert.equal(c.primaryGoals.length,0);assert.equal(c.practice,true);assert.equal(c.response.kind,'order');assert(c.feedbackClaims.every(x=>x.when==='incorrect'));
+ const c=compileTaskContract(b,t);assert.equal(c.primaryGoals.length,0);assert.equal(c.practice,true);assert.equal(c.response.kind,'order');assert(c.feedbackClaims.every(x=>x.when==='order-complete'));
 });
 test('intro contract exposes shown facts for practice and does not create memory goals',()=>{
  const b=bundle(),c=compileIntroContract(b,{entityId:'s0',unitIds:['ku:fact:f0:forward'],newProperty:true},'session');assert.equal(c.primaryGoals.length,0);assert.equal(c.practice,true);assert(c.shownClaims.some(x=>x.key==='fact:f0'));

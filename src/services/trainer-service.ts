@@ -119,7 +119,7 @@ export function createTrainerService(d:EngiDB){return {
    return core.observe(contract.id,'question',episodeId,event);
   });
  },
- async observeVisibility(sessionId:string,taskId:string,phase:'question'|'feedback'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
+ async observeVisibility(sessionId:string,taskId:string,phase:'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
   return d.transaction('rw',sessionTables(d),async()=>{
    const session=await d.activeSessions.get(sessionId),task=session?.tasks[session.currentPosition];
    if(!task||task.id!==taskId||session?.status!=='active'){if(event==='end'&&(session?.tasks.some(t=>t.id===taskId)||session?.cooldown?.some(t=>t.id===taskId)))return feedStudyCore(d).observe(taskId,phase,episodeId,event);return;}
@@ -132,12 +132,14 @@ export function createTrainerService(d:EngiDB){return {
  async getFeedback(taskId:string){return (await d.reviewEvents.get(taskId))?.payload.feedback??null},
  async answerMatchPair(input:MatchPairInput){return d.transaction('rw',sessionTables(d),()=>answerMatchPair(d,input))},
  async saveInteraction(sessionId:string,taskId:string,delta:Partial<Omit<InteractionDraft,'taskId'|'attemptSequence'>>){return d.transaction('rw',d.activeSessions,d.reviewEvents,d.appMeta,async()=>{
-  const s=await d.activeSessions.get(sessionId),t=s?.tasks[s.currentPosition];if(!s||s.status!=='active'||!t||t.id!==taskId)throw Error('Карточка уже сменилась');if(await d.reviewEvents.get(taskId))return s.interaction;
+  const s=await d.activeSessions.get(sessionId),t=s?.tasks[s.currentPosition];if(!s||s.status!=='active'||!t||t.id!==taskId)throw Error('Карточка уже сменилась');if(await d.reviewEvents.get(taskId)&&t.recipe.format!=='sort')return s.interaction;
   const draft:InteractionDraft=s.interaction?.taskId===taskId?{...s.interaction}:{taskId,attemptSequence:[]};
   if(delta.recallElapsedMs!==undefined){if(!Number.isFinite(delta.recallElapsedMs))throw Error('Некорректное время');draft.recallElapsedMs=Math.min(5000,Math.max(draft.recallElapsedMs??0,delta.recallElapsedMs))}
   if(delta.revealed){if(t.recipe.format!=='recall_reveal'||(draft.recallElapsedMs??0)<5000&&!delta.earlyReveal)throw Error('Ещё есть время вспомнить');draft.revealed=true;draft.earlyReveal=!!delta.earlyReveal;if(delta.earlyReveal&&t.studyContract)await feedStudyCore(d).hint(t.id,'early-answer')}
   if(delta.timelineValue!==undefined){const scale=t.timeline;if(!scale||!Number.isInteger(delta.timelineValue)||delta.timelineValue<scale.min||delta.timelineValue>scale.max)throw Error('Значение вне шкалы');draft.timelineValue=delta.timelineValue}
-  if(delta.sortOrder){if(delta.sortOrder.length!==t.items.length||new Set(delta.sortOrder).size!==t.items.length||!t.items.every(i=>delta.sortOrder!.includes(i.entityId)))throw Error('Некорректный порядок');draft.sortOrder=delta.sortOrder}
+  if(delta.sortOrder){if(t.recipe.format!=='sort'||delta.sortOrder.length!==t.items.length||new Set(delta.sortOrder).size!==t.items.length||!t.items.every(i=>delta.sortOrder!.includes(i.entityId)))throw Error('Некорректный порядок');draft.sortOrder=delta.sortOrder}
+  if(delta.sortCheckedOrder){if(t.recipe.format!=='sort'||delta.sortCheckedOrder.length!==t.items.length||new Set(delta.sortCheckedOrder).size!==t.items.length||!t.items.every(i=>delta.sortCheckedOrder!.includes(i.entityId)))throw Error('Некорректная проверка порядка');draft.sortCheckedOrder=[...delta.sortCheckedOrder];}
+  if(delta.sortDirtySlots){if(t.recipe.format!=='sort'||delta.sortDirtySlots.some(n=>!Number.isInteger(n)||n<0||n>=t.items.length))throw Error('Некорректные изменённые позиции');draft.sortDirtySlots=[...new Set(delta.sortDirtySlots)];}
   if(delta.mapping){const values=Object.values(delta.mapping);if(!isMapping(t)||Object.entries(delta.mapping).some(([key,value])=>!t.items.some(i=>i.entityId===key)||!t.options.some(o=>o.id===value))||t.recipe.format==='match'&&new Set(values).size!==values.length)throw Error('Некорректное сопоставление');draft.mapping={...delta.mapping};}
   s.interaction=draft;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);return draft;
  })},

@@ -1,11 +1,11 @@
 import { defineGoal, type LearningGoal } from './goals';
-export type Claim = { key: string; revision: string; revealsGoalIds: string[]; when?: 'incorrect' };
+export type Claim = { key: string; revision: string; revealsGoalIds: string[]; when?: 'incorrect'|'order-complete' };
 export type Binding = { responseKey: string; goalId: string; expected: string; support?:boolean };
 export type ResponseRule =
   | { kind: 'choice'; goalId: string; options: string[]; expected: string }
   | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean; exhaustive?:boolean }
   | { kind: 'set'; goalId: string; options: string[]; expected: string[]; complete: true }
-  | { kind: 'order'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[];contextBindings?:{goalId:string;entityId:string}[] }
+  | { kind: 'order'; grading?:'position'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[];contextBindings?:{goalId:string;entityId:string}[] }
   | { kind: 'number'; goalId: string; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'practice-choice'; options: string[]; expected: string }
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }
@@ -98,7 +98,7 @@ export function gradeResponse(contract: TaskContract, answer: unknown): GoalResu
   }
   if (rule.kind === 'order') {
     if (!Array.isArray(answer) || !permutation(answer, rule.entities)) throw Error('Submit the complete order');
-    if(rule.contextBindings)return rule.contextBindings.map(b=>result(b.goalId,rule.entities.every(id=>id===b.entityId||(answer.indexOf(b.entityId)<answer.indexOf(id))===(rule.expected.indexOf(b.entityId)<rule.expected.indexOf(id)))));
+    if(rule.contextBindings)return rule.contextBindings.map(b=>result(b.goalId,rule.grading==='position'?answer.indexOf(b.entityId)===rule.expected.indexOf(b.entityId):rule.entities.every(id=>id===b.entityId||(answer.indexOf(b.entityId)<answer.indexOf(id))===(rule.expected.indexOf(b.entityId)<rule.expected.indexOf(id)))));
     return rule.relations.map(r => result(r.goalId, answer.indexOf(r.before) < answer.indexOf(r.after)));
   }
   if (rule.kind === 'number' || rule.kind === 'practice-number') {

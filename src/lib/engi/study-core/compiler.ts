@@ -70,7 +70,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }else if(fmt==='sort'){
     if(task.items.some(i=>!Number.isFinite(i.year))||new Set(task.items.map(i=>i.year)).size!==task.items.length)throw Error('Order is not strict');
     if(task.contextual){for(const item of task.items){const g=goalFor(item);(task.contextual.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}}
-    response={kind:'order',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>a.year!-c.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
+    response={kind:'order',grading:'position',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>a.year!-c.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
   }else if(fmt==='missing'){
     response={kind:'practice-choice',options:task.options.map(o=>o.id),expected:discreteAnswer(task)};actionFamily='select';practice=true;
   }else if(fmt==='timeline'){
@@ -87,7 +87,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   for(const g of goals)revisions[g.semanticKey]=g.revision;
   const shownClaims:Claim[]=[];
   // The feed shows a text cue unless it displays an image or a sorting/missing cue.
-  if(fmt==='sort')task.items.forEach(i=>shownClaims.push(addClaim(claimForName(b,i.entityId))));
+  if(fmt==='sort')task.items.filter(i=>task.recipe.cue!=='image'||!i.image).forEach(i=>shownClaims.push(addClaim(claimForName(b,i.entityId))));
   else if(fmt==='missing')task.sequence?.filter(i=>!!i).forEach(i=>shownClaims.push(addClaim(claimForName(b,i!.entityId))));
  else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
    for(const item of task.items)if(task.recipe.cue==='name'||!item.image)shownClaims.push(addClaim(claimForName(b,item.entityId)));
@@ -99,10 +99,10 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(fmt!=='missing'&&task.contextual?.kind!=='boundary')for(const item of task.items){
     if(item.factId){
       const fact=factFor(b,item),claim=claimForFact(b,fact);
-      // Diagnostic UI shows years, not full day/month answers. Correct sorts show no years.
+      // Ordering reveals years only after the player completes the screen.
       if(fmt==='sort'||fmt==='timeline'){
         if(fact.valueKind==='date'&&fact.datePrecision&&fact.datePrecision!=='year')claim.revealsGoalIds=[];
-        if(fmt==='sort')claim.when='incorrect';
+        if(fmt==='sort')claim.when='order-complete';
       }
       feedbackClaims.push(addClaim(claim));
     }else feedbackClaims.push(addClaim(claimForName(b,item.entityId)));

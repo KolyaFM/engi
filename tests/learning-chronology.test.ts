@@ -6,6 +6,9 @@ import {compileTaskContract,associationGoal} from '../src/lib/engi/study-core/co
 import {createStudyCoreService} from '../src/services/study-core-service';
 import {admitAcquisition,emptyLifecycle} from '../src/lib/engi/study-core/acquisition';
 import {buildLearningChronology} from '../src/services/learning-chronology';
+import {assess} from '../src/lib/engi/engine';
+import {gradeResponse} from '../src/lib/engi/study-core/contracts';
+import {moveOrder,orderPositions} from '../src/lib/engi/questions/order-feedback';
 import {learningLifecycleSchema} from '../src/lib/engi/study-core/acquisition';
 import type {Bundle,Task} from '../src/lib/engi/types';
 const b:Bundle={entities:Array.from({length:4},(_,n)=>({id:'e'+n,type:'event',name:'Event '+n,aliases:[],externalIds:{}})),facts:Array.from({length:4},(_,n)=>({id:'f'+n,entityId:'e'+n,key:'year',valueKind:'date',dateStart:String(1700+n*50)+'-01-01',dateEnd:String(1700+n*50)+'-12-31',datePrecision:'year',verification:'user_confirmed',source:{kind:'manual',name:'Test'}})),media:[],tags:[],entityTags:[],missing:[],unresolved:[],properties:[{id:'year',name:'Year',valueKind:'date',cardinality:'one',learnable:true,subjectTypes:['event']}]};
@@ -19,3 +22,33 @@ test('support participates in order but never receives context or independent me
 test('equal-year alternatives cannot displace the highest-priority target from a chronology group',()=>{const ready=proposals.slice(0,3).map((p,n)=>n===1?{...p,items:[{...p.items[0],year:1700}]}:p),t=buildLearningChronology(b,ready,proposals.slice(3),[{recipe:{format:'categorize'}} as Task],0)!;assert(t.items.some(i=>i.entityId===ready[0].items[0].entityId));assert.equal(new Set(t.items.map(i=>i.year)).size,t.items.length);});
 test('boundary feedback does not pretend to reveal exact years; same-screen correction gives no context credit',async()=>{const d=new EngiDB('boundary-evidence-'+crypto.randomUUID());try{let ledger=emptyLifecycle();for(const p of proposals)ledger=admitAcquisition(ledger,p.items[0].entityId,p.goals,new Date(0));await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});const t=buildLearningChronology(b,proposals,[],[{recipe:{format:'sort'}} as Task],0)!,c=compileTaskContract(b,t);assert.equal(c.feedbackClaims.length,0);const core=createStudyCoreService(d,{lifecycle:true});await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));const item=t.items[0],wrong=item.answerId==='before'?'after':'before';await core.submitPair(t.id,item.entityId,wrong,'wrong',new Date(1000));const correction=await core.submitPair(t.id,item.entityId,item.answerId,'correct',new Date(2000));assert.equal(correction.firstResult,undefined);assert.equal((await d.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>u.goal.id===associationGoal(b,b.facts.find(f=>f.id===item.factId)!,'recognition').id).stage,'first-check');assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);
  }finally{d.close();await d.delete();}});
+
+
+test('absolute order accepts correct slots even when other objects cross them',()=>{
+ const t=buildLearningChronology(b,proposals,[],[],0)!,c=compileTaskContract(b,t);
+ const answer=['e0','e3','e2','e1'],results=gradeResponse(c,answer);assert.equal(assess(t,answer).score,.5);assert.throws(()=>assess(t,[...answer,'e0']));
+ for(const p of proposals)assert.equal(results.find(r=>r.goalId===p.goals[0].id)!.correct,['e0','e2'].includes(p.items[0].entityId));
+ assert.deepEqual(orderPositions(answer,['e0','e1','e2','e3']),[true,false,true,false]);
+ assert.deepEqual(moveOrder(answer,'e3',3,[true,false,true,false]),['e0','e1','e2','e3']);
+ assert.deepEqual(moveOrder(answer,'e0',3,[true,false,true,false]),answer);
+ assert.deepEqual(moveOrder(answer,'e3',2,[true,false,true,false]),answer);
+});
+test('ordering disclosure is recorded only on completed screen; correction never rewrites first answer',async()=>{
+ const d=new EngiDB('order-disclosure-'+crypto.randomUUID());try{
+ const t=buildLearningChronology(b,proposals,[],[],0)!,c=compileTaskContract(b,t),core=createStudyCoreService(d,{lifecycle:true});
+ await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));
+ const answer=['e0','e3','e2','e1'];await core.submit(t.id,answer,new Date(1000));
+ await core.observe(t.id,'feedback','wrong-feedback','start',new Date(1100));
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:exposure:').count(),0);
+ await core.observe(t.id,'order-reveal','completed-order','start',new Date(1200));
+ const exposures=await d.appMeta.where('key').startsWith('studyCore:exposure:').toArray();for(const g of c.primaryGoals)assert(exposures.some(r=>r.value.goalId===g.id));
+ const corrected=await core.submit(t.id,['e0','e1','e2','e3'],new Date(1300));
+ assert.deepEqual(corrected.firstAnswer,answer);assert.equal(corrected.results!.filter(r=>r.correct).length,2);
+ }finally{d.close();await d.delete();}
+});
+
+test('image chronology uses pictures without pretending to display names or revealing years',()=>{
+ const ready=proposals.map(p=>({...p,items:p.items.map(i=>({...i,image:'https://example.org/'+i.entityId+'.png'}))}));
+ const t=buildLearningChronology(b,ready,[],[],0)!,c=compileTaskContract(b,t);
+ assert.equal(t.recipe.cue,'image');assert.equal(c.shownClaims.length,0);assert(c.feedbackClaims.every(c=>c.when==='order-complete'));
+});

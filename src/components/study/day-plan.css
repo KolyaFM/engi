@@ -15,3 +15,11 @@
 .day-plan-number.repeat{color:#24744f}.day-plan-number.reinforce{color:#184be7}
 .dark .day-plan-number.repeat{color:#8ed3ab}.dark .day-plan-number.reinforce{color:#93b0ff}
 @media(max-width:360px){.day-plan-inline{gap:4px}.day-plan-inline>.day-plan-mistakes{min-width:36px}}
+/* Same compact counters across all practice formats. */
+.day-plan-inline{gap:10px}
+.day-plan-inline>.day-plan-number,.day-plan-inline>.day-plan-mistakes{min-width:44px;height:44px;min-height:44px;padding:8px 12px;border:0;border-radius:14px;font-family:inherit;line-height:1;background:#ffe2db;color:#b33428;cursor:pointer}
+.day-plan-inline>.reinforce{background:#e0eafb;color:#1855ba}.day-plan-inline>.repeat{background:#e1efdc;color:#24744f}
+.day-plan-inline strong{font-size:19px;font-weight:700}.day-plan-inline>.day-plan-number:hover,.day-plan-inline>.day-plan-mistakes:hover{filter:brightness(.97)}
+.day-plan-inline button:focus-visible{outline:3px solid #a88b70;outline-offset:3px}
+.day-plan-mistakes-help{border-color:#e5dfd7;background:#fff;color:#292524;box-shadow:0 8px 24px #78645014}.day-plan-mistakes-help small{color:#78716c}.day-plan-mistakes-help button{background:#efe9df;color:#57534e}
+@media(max-width:360px){.day-plan-inline{gap:6px}.day-plan-inline>.day-plan-number,.day-plan-inline>.day-plan-mistakes{padding:8px;min-width:40px}}

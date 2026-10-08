@@ -49,19 +49,20 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         return attempt;
       });
     },
-    async observe(attemptId: string, phase: 'question'|'feedback'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
+    async observe(attemptId: string, phase: 'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
       event: 'start'|'refresh'|'end', now=new Date()) {
       return db.transaction('rw', db.appMeta, async()=>{
         const row=await db.appMeta.get(key('attempt',attemptId));
         if(!row)throw Error('Attempt not found');
         const contract=(await db.appMeta.get(key('contract',row.value.taskId)))!.value as TaskContract;
         if((phase==='answer-reveal'||phase==='early-answer')&&contract.response.kind!=='self-report')throw Error('Not a recall task');
+        if(phase==='order-reveal'&&(contract.response.kind!=='order'||row.value.phase!=='submitted'))throw Error('Order reveal is not available');
         if(phase==='feedback'&&row.value.phase!=='submitted')throw Error('Feedback is not available');
         let claims=phase==='question'?contract.shownClaims:phase==='details'?contract.hintClaims.filter(c=>c.key.startsWith('details:')):
           phase==='source'?contract.hintClaims.filter(c=>c.key==='source'):contract.feedbackClaims;
         const correct=contract.response.kind==='order'?JSON.stringify(row.value.firstAnswer)===JSON.stringify(contract.response.expected):
           (row.value.results?.length?row.value.results.every((r:{correct:boolean})=>r.correct):true);
-        claims=claims.filter(c=>c.when!=='incorrect'||!correct);
+        claims=claims.filter(c=>(c.when!=='incorrect'||!correct)&&(c.when!=='order-complete'||phase==='order-reveal'));
         const old=(await db.appMeta.get(key('episode',episodeId)))?.value as ExposureEpisode|undefined;
         // A heartbeat/cleanup reports the screen originally opened, not a newly graded screen.
         if(old&&event!=='start'&&old.attemptId===attemptId&&old.phase===phase)claims=old.claims;

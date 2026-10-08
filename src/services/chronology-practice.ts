@@ -11,7 +11,7 @@ export function chronologyPractice(b:Bundle,enabled:Memory[],facts:Set<string>,p
  const rank=(t:Task)=>Number(owners(t).some(id=>last.has(id)))*100+history.slice(-5).filter(h=>h.recipe.format===t.recipe.format).length*5;
  tasks.sort((a,c)=>rank(a)-rank(c)||selectionTie(seed+a.recipe.format)-selectionTie(seed+c.recipe.format));
  for(const task of tasks){if(!task.items.every(i=>enabled.some(m=>m.id===i.targetId&&!m.legacyOf&&m.status!=='suspended')))continue;
-  try{task.memoryModel='goals';task.learningLifecycle=1;task.intent='practice';task.practice=true;task.reason='game';
+  try{if(task.recipe.format==='sort'&&task.items.every(i=>!!i.image))task.recipe={...task.recipe,cue:'image'};task.memoryModel='goals';task.learningLifecycle=1;task.intent='practice';task.practice=true;task.reason='game';
    const contract=compileTaskContract(b,task);
    if([...contract.shownClaims,...contract.feedbackClaims].some(c=>c.revealsGoalIds.some(id=>protectedGoals.has(id))))continue;
    return task;

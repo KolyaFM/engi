@@ -31,9 +31,9 @@ export function assess(t:Task,answer:any){
  if(['sort','missing'].includes(fmt)){
   const expected=[...t.items].sort((a,b)=>a.year!-b.year!).map(i=>i.entityId);
   if(fmt==='missing')return {score:answer===expected[1]?1:0,evidence:[],expected};
-  if(!Array.isArray(answer)||new Set(answer).size!==t.items.length||!expected.every(x=>answer.includes(x)))throw Error('Заполните все позиции');
-  let correct=0,total=0;for(let i=0;i<answer.length;i++)for(let j=i+1;j<answer.length;j++){total++;if(expected.indexOf(answer[i])<expected.indexOf(answer[j]))correct++}
-  return {score:correct/total,evidence:[],expected};
+  if(!Array.isArray(answer)||answer.length!==t.items.length||new Set(answer).size!==t.items.length||!expected.every(x=>answer.includes(x)))throw Error('Заполните все позиции');
+  const correct=answer.filter((id,n)=>id===expected[n]).length;
+  return {score:correct/expected.length,evidence:[],expected};
  }
  for(const item of t.items){const val=['match','categorize'].includes(fmt)?(typeof answer==='object'?answer?.[item.entityId]:answer):answer;const ok=fmt==='recall_reveal'?val===true:val===item.answerId;evidence.push({item,correct:ok,chosen:String(val??''),level:t.recipe.evidence?.level??'direct'})}
  return {score:evidence.filter(e=>e.correct).length/evidence.length,evidence,expected:t.items.map(i=>({id:i.entityId,answer:i.answer,year:i.year}))};
