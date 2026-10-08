@@ -35,7 +35,7 @@ test('learning introduces another object instead of chaining properties of the f
 test('learning alternates objects whenever another object has an eligible property',async()=>{
  const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
  try{await run(async(d,svc)=>{
-  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});for(let n=0;n<3;n++)s=await svc.completeIntro(s.id);
+  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});while(s.intro)s=await svc.completeIntro(s.id);
   mock.timers.setTime(at+15000);const q=s.tasks[0],owner=q.items[0].entityId,ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;
   // Other objects are at confirmation, while the last object's sibling is still at first-check.
   for(const u of ledger.units)if(u.entityId!==owner){u.successes=1;u.stage='confirmation';}
@@ -133,13 +133,27 @@ test('editing an introduced property admits the new revision without spending a 
  const entry=buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload)).find(e=>e.goal.knowledge.key===fact.id&&e.goal.skill==='recognition')!;
  assert(after.units.some((u:any)=>u.goal.id===entry.goal.id&&u.stage!=='completed'));assert.equal(after.cards.filter((c:any)=>c.entityId===owner).length,1);
 }));
-test('a narrow waiting queue parks a protected question rather than showing its answer in filler',async()=>{
+test('a fresh queue supplies immediately answerable training without a deadline or practice filler',async()=>{
  const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
  try{await run(async(d,svc)=>{
-  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});s=await svc.completeIntro(s.id);s=await svc.completeIntro(s.id);s=await svc.completeIntro(s.id);
-  const q=s.tasks[0];assert(q);assert.equal(q.intent,'learn');assert(q.readyAt);assert.equal(q.reason,'bootstrap');
-  mock.timers.setTime(at+11000);await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
+  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});while(s.intro)s=await svc.completeIntro(s.id);
+  const q=s.tasks[0];assert(q);assert.equal(q.intent,'learn');assert.equal(q.readyAt,undefined);assert.equal(q.reason,'bootstrap');
+  await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
   const attempt=(await d.appMeta.get('studyCore:attempt:'+q.id))!.value;assert.equal(attempt.results[0].acquisitionCredit,true);
+ });}finally{mock.timers.reset();}
+});
+test('continuous correct answers finish every property without advancing the wall clock',async()=>{
+ mock.timers.enable({apis:['Date'],now:new Date(2026,9,8,10).getTime()});
+ try{await run(async(d,svc)=>{
+  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});
+  for(let n=0;n<60;n++){
+   if(s.intro){s=await svc.completeIntro(s.id);continue;}
+   const q=s.tasks[0];assert(q,'feed must continue');assert.equal(q.readyAt,undefined);
+   if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});
+   await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});s=await svc.advanceFeed(s.id,false,q.id);
+  }
+  const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert.equal(ledger.cards.length,6);assert.equal(ledger.units.length,12);assert(ledger.units.every((u:any)=>u.stage==='completed'));assert.equal((await svc.getDayPlan()).workload!.learning,0);
+  for(const u of ledger.units){const m=(await d.appMeta.get('studyCore:memory:'+u.goal.id))!.value;assert.equal(m.card.reps,1);assert(new Date(m.card.due).getTime()>Date.now());}
  });}finally{mock.timers.reset();}
 });
 test('a recall-only introduction trains the chosen skill and normal reveal permits labeled acquisition evidence',async()=>{

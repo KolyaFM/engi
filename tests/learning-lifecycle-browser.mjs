@@ -14,13 +14,13 @@ try{
   await saveKnowledge(b);await resetLearningProgress();await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});
  });
  await page.reload();await page.locator('.feed-home').waitFor();await page.getByLabel('Формат',{exact:true}).selectOption('choice');await page.getByRole('button',{name:'Начать',exact:true}).click();
- for(let n=0;n<3;n++){await page.getByRole('button',{name:'Готово',exact:true}).waitFor();await page.getByRole('button',{name:'Готово',exact:true}).click();}
- await page.locator('.study-feed.state-ready').waitFor();let session=await current(),first=session.tasks[0];assert.equal(first.intent,'learn');assert(first.readyAt);
+ while(await page.locator('.feed-current').count()===0){const old=await page.locator('#object-intro-heading').textContent();await page.getByRole('button',{name:'Готово',exact:true}).click();await page.waitForFunction(name=>document.querySelector('.feed-current')||document.querySelector('#object-intro-heading')?.textContent!==name&&!document.querySelector('.learning22-primary')?.disabled,old);}
+ await page.locator('.study-feed.state-ready').waitFor();let session=await current(),first=session.tasks[0];assert.equal(first.intent,'learn');assert.equal(first.readyAt,undefined);
  assert.equal(await page.locator('.day-plan-inline strong').count(),3);assert.equal(await page.locator('.day-plan-inline .new').count(),0);
  assert.equal(await page.locator('.day-plan-inline .repeat').evaluate(el=>getComputedStyle(el).color),'rgb(36, 116, 79)');
- let button=page.getByRole('button',{name:first.options.find(o=>o.id===first.items[0].answerId).name,exact:true});assert.equal(await button.isDisabled(),true);
- await page.getByText(/Вопрос откроется через/).waitFor();await button.click();
- console.log('PASS parked question automatically unlocks with no stop screen');
+ const firstOption=first.options.find(o=>o.id===first.items[0].answerId).name;
+ let button=page.getByRole('button',{name:firstOption,exact:true});await button.waitFor();assert.equal(await button.isEnabled(),true);assert.equal(await page.locator('.feed-learning-pause').count(),0);await button.click();
+ console.log('PASS first question is immediately playable without a pause or stop screen');
  await page.waitForFunction(async old=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.id!==old;},first.id);
  let drained=false;
  for(let n=0;n<18;n++){
@@ -34,4 +34,10 @@ try{
  assert(drained);assert.equal(await page.locator('.learning22-stop').count(),0);assert.deepEqual(errors,[]);
  await page.screenshot({path:'artifacts/learning-lifecycle-mobile.png',fullPage:true});console.log('PASS actual UI answers complete properties and reduce learning workload');
  await page.setViewportSize({width:320,height:740});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);console.log('PASS 320px layout');
+ await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts');await resetLearningProgress();});await page.reload();
+ await page.getByLabel('Формат',{exact:true}).selectOption('recall_reveal');await page.getByRole('button',{name:'Начать',exact:true}).click();
+ while(await page.locator('.feed-current').count()===0){const old=await page.locator('#object-intro-heading').textContent();await page.getByRole('button',{name:'Готово',exact:true}).click();await page.waitForFunction(name=>document.querySelector('.feed-current')||document.querySelector('#object-intro-heading')?.textContent!==name&&!document.querySelector('.learning22-primary')?.disabled,old);}
+ assert.equal(await page.locator('.feed-learning-pause').count(),0);
+ await page.getByRole('progressbar',{name:'Время вспомнить'}).waitFor();assert(Number(await page.getByRole('progressbar',{name:'Время вспомнить'}).getAttribute('aria-valuenow'))>=4);assert.equal(await page.locator('.revealed-answer').count(),0);
+ assert.deepEqual(errors,[]);console.log('PASS recall thinking starts immediately with the answer hidden');
 }finally{await context.close();await browser.close();}

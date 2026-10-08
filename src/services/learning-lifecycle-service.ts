@@ -3,7 +3,8 @@ import type {GoalCatalogEntry} from '../lib/engi/knowledge/goal-progress';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import type {GoalDayPlan} from '../lib/engi/study-core/day-plan';
 import {dayBoundary} from '../lib/engi/study-core/day-plan';
-import {ACQUISITION_GAP_MS,acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
+import {acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
+import {INTRO_DISCLOSURE_COOLDOWN_MS} from '../lib/engi/study-core/exposure';
 import {readStudyPreferences} from './study-preferences-service';
 export const LIFECYCLE_KEY='studyCore:learningLifecycle';
 export async function readLifecycle(db:EngiDB):Promise<LearningLifecycle|undefined>{const row=await db.appMeta.get(LIFECYCLE_KEY);return row?learningLifecycleSchema.parse(row.value):undefined;}
@@ -11,6 +12,7 @@ export async function readLifecycle(db:EngiDB):Promise<LearningLifecycle|undefin
 export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=new Date()){
  let ledger=await readLifecycle(db);if(ledger){
   for(const unit of ledger.units.filter(u=>u.stage!=='completed')){
+   if(new Date(unit.availableAt)>now)unit.availableAt=now.toISOString();
    const candidates=catalog.filter(e=>!e.suspended&&acquisitionKey(e.goal)===unit.key);
    if(candidates.length&&!candidates.some(e=>e.goal.id===unit.goal.id)){
     unit.goal=(candidates.find(e=>e.goal.skill===unit.goal.skill)??candidates[0]).goal;
@@ -70,6 +72,6 @@ export async function acceptLifecycleIntro(db:EngiDB,catalog:GoalCatalogEntry[],
  const next=admitAcquisition(ledger,entityId,entries.map(e=>e.goal),now,dailyCount<newCardsPerDay?'daily':'extra',skill);
  for(const u of next.units){const memory=known.find(m=>m.goalId===u.goal.id);if(memory&&Number(memory.card.state)===2){u.stage='completed';u.successes=u.requiredSuccesses;u.completedAt=new Date(memory.card.last_review??now).toISOString();}}
  await db.appMeta.put({key:LIFECYCLE_KEY,value:next});
- for(const id of shown)await db.appMeta.put({key:'studyCore:exposure:'+id,value:{goalId:id,lastVisibleAt:now.toISOString(),episodeId:'accepted:'+entityId+':'+now.toISOString(),cooldownMs:ACQUISITION_GAP_MS}});
+ for(const id of shown)await db.appMeta.put({key:'studyCore:exposure:'+id,value:{goalId:id,lastVisibleAt:now.toISOString(),episodeId:'accepted:'+entityId+':'+now.toISOString(),cooldownMs:INTRO_DISCLOSURE_COOLDOWN_MS}});
  return next;
 }

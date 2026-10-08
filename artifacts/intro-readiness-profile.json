@@ -1,0 +1,875 @@
+[
+  {
+    "scenario": {
+      "format": "choice",
+      "count": 6
+    },
+    "fromLastDoneToScreenMs": 77.29999995231628,
+    "fromScreenToClickableMs": 0,
+    "nextScreenToClickableMs": 0,
+    "profile": {
+      "start": 190.80000007152557,
+      "lastDone": 506.2000000476837,
+      "samples": [
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 583.5,
+          "state": "study-feed state-ready",
+          "imageReady": false,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 591.2000000476837,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 607,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 654.8999999761581,
+          "state": "study-feed state-saving",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 675.5,
+          "state": "study-feed state-feedback",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "995223e9-7570-451d-a34e-c7b722113927",
+          "at": 831,
+          "state": "study-feed state-exiting",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "f887c7c1-65d0-4006-9886-0e0611b7e170",
+          "at": 1023,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        }
+      ],
+      "performance": [
+        {
+          "stage": "bundle.read",
+          "ms": 1.5
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.10000002384185791
+        },
+        {
+          "stage": "selection",
+          "ms": 6.5
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 1.2999999523162842
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.19999992847442627
+        },
+        {
+          "stage": "candidates",
+          "ms": 0.3999999761581421
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.6999999284744263
+        },
+        {
+          "stage": "candidates",
+          "ms": 6.100000023841858
+        },
+        {
+          "stage": "catalog",
+          "ms": 6.700000047683716
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 0.5999999046325684
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "candidates",
+          "ms": 2
+        },
+        {
+          "stage": "proposals",
+          "ms": 2.6999999284744263
+        },
+        {
+          "stage": "selection",
+          "ms": 10.200000047683716
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.19999992847442627
+        },
+        {
+          "stage": "candidates",
+          "ms": 0.6000000238418579
+        },
+        {
+          "stage": "proposals",
+          "ms": 1
+        },
+        {
+          "stage": "candidates",
+          "ms": 6.899999976158142
+        },
+        {
+          "stage": "catalog",
+          "ms": 7.399999976158142
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 0.5
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "candidates",
+          "ms": 1.5
+        },
+        {
+          "stage": "proposals",
+          "ms": 1.899999976158142
+        },
+        {
+          "stage": "materialize",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "selection",
+          "ms": 8.100000023841858
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 5.100000023841858
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 84.20000004768372
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.19999992847442627
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 11.300000071525574
+        },
+        {
+          "stage": "candidates",
+          "ms": 1.0999999046325684
+        },
+        {
+          "stage": "proposals",
+          "ms": 1.7000000476837158
+        },
+        {
+          "stage": "ui.answer.writeQueue",
+          "ms": 1.5
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.10000002384185791
+        },
+        {
+          "stage": "answer.total",
+          "ms": 16.100000023841858
+        },
+        {
+          "stage": "ui.submit",
+          "ms": 17.90000009536743
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "ui.advance.writeQueue",
+          "ms": 0.09999990463256836
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 0.6000000238418579
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "materialize",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "selection",
+          "ms": 7.700000047683716
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 3.100000023841858
+        },
+        {
+          "stage": "advance.total",
+          "ms": 17
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 9.600000023841858
+        },
+        {
+          "stage": "proposals",
+          "ms": 0
+        }
+      ]
+    }
+  },
+  {
+    "scenario": {
+      "format": "choice",
+      "count": 60
+    },
+    "fromLastDoneToScreenMs": 212.79999995231628,
+    "fromScreenToClickableMs": 24.899999976158142,
+    "nextScreenToClickableMs": 0,
+    "profile": {
+      "start": 345.5,
+      "lastDone": 718.9000000953674,
+      "samples": [
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 931.7000000476837,
+          "state": "study-feed state-ready",
+          "imageReady": false,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 939.6000000238419,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 956.6000000238419,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 1006.1000000238419,
+          "state": "study-feed state-saving",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 1036.3000000715256,
+          "state": "study-feed state-feedback",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "3c17f43e-2374-4470-8f53-1919caa59fd9",
+          "at": 1195.6000000238419,
+          "state": "study-feed state-exiting",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "a547ea49-f30c-4576-a8cb-80f29ffc28f3",
+          "at": 1388.4000000953674,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        }
+      ],
+      "performance": [
+        {
+          "stage": "bundle.read",
+          "ms": 2.100000023841858
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.7999999523162842
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "selection",
+          "ms": 14.299999952316284
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 1
+        },
+        {
+          "stage": "catalog",
+          "ms": 1
+        },
+        {
+          "stage": "candidates",
+          "ms": 3.399999976158142
+        },
+        {
+          "stage": "proposals",
+          "ms": 6.900000095367432
+        },
+        {
+          "stage": "candidates",
+          "ms": 104.89999997615814
+        },
+        {
+          "stage": "catalog",
+          "ms": 108.69999992847443
+        },
+        {
+          "stage": "browser.longtask",
+          "ms": 109
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 2.399999976158142
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.5999999046325684
+        },
+        {
+          "stage": "candidates",
+          "ms": 5.799999952316284
+        },
+        {
+          "stage": "proposals",
+          "ms": 9.700000047683716
+        },
+        {
+          "stage": "selection",
+          "ms": 27
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.7999999523162842
+        },
+        {
+          "stage": "candidates",
+          "ms": 4.600000023841858
+        },
+        {
+          "stage": "proposals",
+          "ms": 10.200000047683716
+        },
+        {
+          "stage": "candidates",
+          "ms": 99.69999992847443
+        },
+        {
+          "stage": "catalog",
+          "ms": 103.10000002384186
+        },
+        {
+          "stage": "browser.longtask",
+          "ms": 103
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 2.100000023841858
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.3000000715255737
+        },
+        {
+          "stage": "candidates",
+          "ms": 5.799999952316284
+        },
+        {
+          "stage": "proposals",
+          "ms": 10.5
+        },
+        {
+          "stage": "materialize",
+          "ms": 0.6999999284744263
+        },
+        {
+          "stage": "selection",
+          "ms": 24.399999976158142
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 2.9000000953674316
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 215.79999995231628
+        },
+        {
+          "stage": "catalog",
+          "ms": 1
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 22.299999952316284
+        },
+        {
+          "stage": "candidates",
+          "ms": 4.699999928474426
+        },
+        {
+          "stage": "proposals",
+          "ms": 8.100000023841858
+        },
+        {
+          "stage": "ui.answer.writeQueue",
+          "ms": 1.3000000715255737
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.399999976158142
+        },
+        {
+          "stage": "answer.total",
+          "ms": 29.800000071525574
+        },
+        {
+          "stage": "ui.submit",
+          "ms": 31.700000047683716
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.2999999523162842
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.30000007152557373
+        },
+        {
+          "stage": "ui.advance.writeQueue",
+          "ms": 0
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 1.600000023841858
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.8000000715255737
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.20000004768371582
+        },
+        {
+          "stage": "materialize",
+          "ms": 0.5
+        },
+        {
+          "stage": "selection",
+          "ms": 11.600000023841858
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 2.8000000715255737
+        },
+        {
+          "stage": "advance.total",
+          "ms": 20.299999952316284
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.399999976158142
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 18
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.6000000238418579
+        }
+      ]
+    }
+  },
+  {
+    "scenario": {
+      "format": "choice",
+      "count": 6,
+      "cpuRate": 4
+    },
+    "fromLastDoneToScreenMs": 377,
+    "fromScreenToClickableMs": 0,
+    "nextScreenToClickableMs": 67.70000004768372,
+    "profile": {
+      "start": 203.70000004768372,
+      "lastDone": 1020.6000000238419,
+      "samples": [
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1397.6000000238419,
+          "state": "study-feed state-ready",
+          "imageReady": false,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1421,
+          "state": "study-feed state-ready",
+          "imageReady": false,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1446.7000000476837,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1471.2000000476837,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1661.7000000476837,
+          "state": "study-feed state-saving",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1806.2000000476837,
+          "state": "study-feed state-feedback",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "01e99d6d-26ad-49ec-9466-65c0e477d3f8",
+          "at": 1930.8000000715256,
+          "state": "study-feed state-exiting",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "0f61c83b-03b9-4ad8-a316-c2a1413e2292",
+          "at": 2118.899999976158,
+          "state": "study-feed state-exiting",
+          "imageReady": false,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "0f61c83b-03b9-4ad8-a316-c2a1413e2292",
+          "at": 2136.899999976158,
+          "state": "study-feed state-ready",
+          "imageReady": false,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "0f61c83b-03b9-4ad8-a316-c2a1413e2292",
+          "at": 2159.100000023842,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": false,
+          "intervalPending": false,
+          "scrollTop": 0
+        },
+        {
+          "taskId": "0f61c83b-03b9-4ad8-a316-c2a1413e2292",
+          "at": 2186.600000023842,
+          "state": "study-feed state-ready",
+          "imageReady": true,
+          "buttonsReady": true,
+          "intervalPending": false,
+          "scrollTop": 0
+        }
+      ],
+      "performance": [
+        {
+          "stage": "bundle.read",
+          "ms": 5.799999952316284
+        },
+        {
+          "stage": "catalog",
+          "ms": 0.7999999523162842
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.40000009536743164
+        },
+        {
+          "stage": "selection",
+          "ms": 29.299999952316284
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 6.899999976158142
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.1999999284744263
+        },
+        {
+          "stage": "candidates",
+          "ms": 1.6999999284744263
+        },
+        {
+          "stage": "proposals",
+          "ms": 3.3000000715255737
+        },
+        {
+          "stage": "candidates",
+          "ms": 25.699999928474426
+        },
+        {
+          "stage": "catalog",
+          "ms": 28.699999928474426
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 2.9000000953674316
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.7999999523162842
+        },
+        {
+          "stage": "candidates",
+          "ms": 23.699999928474426
+        },
+        {
+          "stage": "proposals",
+          "ms": 29.5
+        },
+        {
+          "stage": "selection",
+          "ms": 109.89999997615814
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.100000023841858
+        },
+        {
+          "stage": "candidates",
+          "ms": 5.5
+        },
+        {
+          "stage": "proposals",
+          "ms": 7.799999952316284
+        },
+        {
+          "stage": "candidates",
+          "ms": 27.100000023841858
+        },
+        {
+          "stage": "catalog",
+          "ms": 29.5
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 4.399999976158142
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.100000023841858
+        },
+        {
+          "stage": "candidates",
+          "ms": 11.899999976158142
+        },
+        {
+          "stage": "proposals",
+          "ms": 14.700000047683716
+        },
+        {
+          "stage": "materialize",
+          "ms": 2.299999952316284
+        },
+        {
+          "stage": "selection",
+          "ms": 45.90000009536743
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 22.899999976158142
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 386.5
+        },
+        {
+          "stage": "browser.longtask",
+          "ms": 59
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.4000000953674316
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 80.5
+        },
+        {
+          "stage": "candidates",
+          "ms": 6.300000071525574
+        },
+        {
+          "stage": "proposals",
+          "ms": 8.600000023841858
+        },
+        {
+          "stage": "ui.answer.writeQueue",
+          "ms": 18.200000047683716
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.0999999046325684
+        },
+        {
+          "stage": "answer.total",
+          "ms": 93.10000002384186
+        },
+        {
+          "stage": "ui.submit",
+          "ms": 113.40000009536743
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.399999976158142
+        },
+        {
+          "stage": "proposals",
+          "ms": 0.5
+        },
+        {
+          "stage": "ui.advance.writeQueue",
+          "ms": 0.2999999523162842
+        },
+        {
+          "stage": "bundle.read",
+          "ms": 12.300000071525574
+        },
+        {
+          "stage": "catalog",
+          "ms": 1
+        },
+        {
+          "stage": "proposals",
+          "ms": 1.100000023841858
+        },
+        {
+          "stage": "materialize",
+          "ms": 1.2000000476837158
+        },
+        {
+          "stage": "selection",
+          "ms": 39.799999952316284
+        },
+        {
+          "stage": "task.prepare",
+          "ms": 21.90000009536743
+        },
+        {
+          "stage": "advance.total",
+          "ms": 112.39999997615814
+        },
+        {
+          "stage": "catalog",
+          "ms": 1.1999999284744263
+        },
+        {
+          "stage": "ui.cardLoad",
+          "ms": 69.60000002384186
+        }
+      ]
+    }
+  }
+]

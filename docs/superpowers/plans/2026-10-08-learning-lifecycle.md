@@ -13,7 +13,7 @@
 - No personal data reset, migration of existing FSRS parameters or history rewriting.
 - All first-answer changes are transactional and idempotent, including matching pairs.
 - New daily budget counts objects; all accepted properties enter acquisition independently of remaining budget.
-- Two independent successes complete new acquisition; one fresh confirmation for migrated successful Learning. Minimum exposure gap 10 seconds for acquisition only.
+- Two fresh eligible successes complete new acquisition; one fresh confirmation for migrated successful Learning. Initial acquisition uses object interleaving without mandatory time gaps; established memory retains exposure protection and FSRS deadlines.
 - Preserve separate recognition/recall goals and pending old tasks on resume.
 - Test changed content, suspension, backup, midnight, insufficient content and repeated submissions.
 
@@ -47,3 +47,12 @@
 - Header now contains only learning (blue), due repeat (green) and errors (red). Daily new objects remain in the home plan and preference, outside the header.
 - Regressions reproduce sibling-first selection with different acquisition stages and an underfilled queue. Counter regression checks two properties of one object with recognition/recall memory: two repeats, one error for the same failed knowledge across skills.
 - Follow-up verification: all 322 tests passed; production build passed; lifecycle browser checks (3) and goal UI scenarios (9) passed. Header appearance checked in the captured mobile screenshot.
+
+## Follow-up: seamless initial learning
+
+- User explicitly rejected countdowns and idle screens. The attempted countdown UI was removed; acquisition no longer imposes a ten-second deadline after introductions or answers.
+- Selection still rotates objects, admits new objects into a bounded queue, drains errors, and continues through completed knowledge when the available content is exhausted. Old acquisition deadlines are normalized on adoption; saved tasks no longer disable UI through `readyAt`.
+- The evidence distinction remains: hints and same-task corrections do not advance acquisition, duplicate submissions do not count twice, two fresh eligible successes complete a property, and only the final actual answer initializes FSRS. Existing FSRS schedules and established-memory exposure restrictions are retained.
+- Added an end-to-end service simulation with a frozen clock: 12 properties of six objects complete through continuous answers; each new memory has one FSRS review and a future due date.
+- Browser checks cover immediately playable choices without scrolling on six/sixty objects and a CPU slowed fourfold. Recall thinking starts immediately; its five-second answer timer remains part of that mechanic, not a feed waiting period.
+- Final verification: 323/323 tests passed; production build passed; acquisition UI, three profiled touch scenarios, nine goal UI scenarios and recall regression passed. After screen attachment, first choices became usable within the first sample or 25 ms; the old ten-second block is absent.

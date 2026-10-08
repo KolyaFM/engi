@@ -3,14 +3,13 @@ import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {TaskContract} from '../lib/engi/study-core/contracts';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import {graduateGoalMemory} from '../lib/engi/study-core/memory';
-import {advanceAcquisition,ACQUISITION_GAP_MS,acquisitionKey} from '../lib/engi/study-core/acquisition';
+import {advanceAcquisition} from '../lib/engi/study-core/acquisition';
 import {readLifecycle,LIFECYCLE_KEY} from './learning-lifecycle-service';
 export async function acquisitionBlocks(db:EngiDB,goalIds:string[],now:Date,selfReportAttemptId?:string){
  const ledger=await readLifecycle(db),active=new Map(ledger?.units.filter(u=>u.stage!=='completed').map(u=>[u.goal.id,u]));
- const rows=await db.appMeta.bulkGet(goalIds.map(id=>'studyCore:exposure:'+id));
- if(selfReportAttemptId)for(let i=0;i<rows.length;i++){const exposure=rows[i];if(!exposure)continue;const episode=(await db.appMeta.get('studyCore:episode:'+exposure.value.episodeId))?.value;if(episode?.attemptId===selfReportAttemptId&&episode.phase==='answer-reveal')rows[i]=undefined;}
-
- return {active,blocked:goalIds.filter((id,i)=>{const unit=active.get(id);return unit&&Math.max(new Date(unit.availableAt).getTime(),rows[i]?new Date(rows[i]!.value.lastVisibleAt).getTime()+ACQUISITION_GAP_MS:0)>now.getTime();})};
+ // Training progresses through fresh attempts immediately. Hints and same-task
+ // corrections remain ineligible; established FSRS keeps its exposure restrictions.
+ return {active,blocked:[] as string[]};
 }
 /** Acquisition, FSRS and error rights are distinct. Only a real final answer seeds new memory. */
 export async function applyAcquisitionEvidence(db:EngiDB,attempt:Attempt,contract:TaskContract,previous:GoalMemory[]){

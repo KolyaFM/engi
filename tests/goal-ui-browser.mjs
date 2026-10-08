@@ -21,13 +21,13 @@ async function start(page){await page.getByLabel('Формат',{exact:true}).se
 async function current(page){return page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const s=(await db.activeSessions.where('status').equals('active').toArray()).at(-1);return {s,t:s.tasks[0]};});}
 async function check(name,run){const context=await browser.newContext({viewport:{width:393,height:852}}),page=await context.newPage();page.setDefaultTimeout(16000);try{await seed(page);await run(page);console.log('PASS '+name);}finally{await context.close();}}
 try{
- await check('first intro pause keeps a protected question on screen and unlocks it automatically',async page=>{
+ await check('first training question is immediately playable after introduction',async page=>{
   await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');await resetLearningProgress();await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:3}});});
   await page.reload();await page.locator('.feed-home').waitFor();await start(page);await page.getByRole('button',{name:'Готово',exact:true}).waitFor();
   const first=(await current(page)).s;
-  for(let n=0;n<3;n++){const old=(await current(page)).s.intro.entityId;await page.getByRole('button',{name:'Готово',exact:true}).click();await page.waitForFunction(async id=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.intro?.entityId!==id;},old);}
-  await page.locator('.study-feed.state-ready').waitFor();const game=(await current(page)).t;assert.equal(game.intent,'learn');assert(game.readyAt);assert.equal(game.items[0].entityId,first.intro.entityId);
-  assert.equal(await page.locator('.learning22-stop').count(),0);await page.waitForTimeout(11000);
+  while(await page.locator('.feed-current').count()===0){const old=(await current(page)).s.intro.entityId;await page.getByRole('button',{name:'Готово',exact:true}).click();await page.waitForFunction(async id=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.intro?.entityId!==id;},old);}
+  await page.locator('.study-feed.state-ready').waitFor();const game=(await current(page)).t;assert.equal(game.intent,'learn');assert.equal(game.readyAt,undefined);assert.equal(game.items[0].entityId,first.intro.entityId);
+  assert.equal(await page.locator('.learning22-stop').count(),0);assert.equal(await page.locator('.feed-learning-pause').count(),0);
   await page.getByRole('button',{name:game.options.find(o=>o.id===game.items[0].answerId).name,exact:true}).click();
   await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.intent==='learn';});
   assert.equal(await page.getByText('Exposure episode is immutable',{exact:true}).count(),0);

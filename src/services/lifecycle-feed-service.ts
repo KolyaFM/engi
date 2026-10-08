@@ -37,8 +37,10 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   const next=pickFeed(b,configuration,{...s,repairQueue:[],mode:'daily'},{...daily,extraBudget:0,introducedEntityIds:[]},introduced,1);
   if(next.intro&&(next.intro.newProperty||plan.newBudget>0)){s.playRound=undefined;return next;}
  };
+ const nextIntroduction=introduce();
+ if(nextIntroduction?.intro?.newProperty)return nextIntroduction;
  // Fill the bounded queue when ready work would otherwise chain the last object's properties.
- if(eligible.length&&eligible.every(p=>objectRank(p)>=3)){const next=introduce();if(next&&!lastObjects.has(next.intro!.entityId))return next;}
+ if(eligible.length&&eligible.every(p=>objectRank(p)>=3)&&nextIntroduction&&!lastObjects.has(nextIntroduction.intro!.entityId))return nextIntroduction;
  const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(eligible,new Set(memories.keys()),3).filter(p=>!s.format||s.format==='mixed'||p.recipe.format===s.format):[];
  const proposals=[...eligible,...groups];
  proposals.sort((a,c)=>{
@@ -47,7 +49,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  });
  for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',s.cooldown??[],false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=p.goals.some(g=>active.has(acquisitionKey(g)))?'bootstrap':'due';return {task,intro:undefined};}}
  const remainingRepair=await selectRepairWork(db,b,enabled,s,memories,false);if(remainingRepair){remainingRepair.learningLifecycle=1;return {task:remainingRepair,intro:undefined};}
- const nextIntro=introduce();if(nextIntro)return nextIntro;
+ if(nextIntroduction)return nextIntroduction;
  const protectedGoals=new Set([...active.values()].map(u=>u.goal.id)),knownKeys=new Set([...ledger.units.map(u=>u.key),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>acquisitionKey(e.goal))]);
  const games=pool.proposals.filter(p=>p.goals.every(g=>knownKeys.has(acquisitionKey(g))));
  games.sort((a,c)=>objectRank(a)-objectRank(c)||Number(a.goals.some(g=>recent.includes(g.id)))-Number(c.goals.some(g=>recent.includes(g.id))));
@@ -56,9 +58,6 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   task.learningLifecycle=1;task.intent='practice';task.reason='game';const contract=compileTaskContract(b,task);
   if(![...contract.shownClaims,...contract.feedbackClaims].some(c=>c.revealsGoalIds.some(id=>protectedGoals.has(id))))return {task,intro:undefined};
  }
- // Keep the next question on screen during the real disclosure gap, without answer-revealing filler.
- const waiting=pool.proposals.filter(p=>p.goals.length===1&&active.get(acquisitionKey(p.goals[0]))?.goal.id===p.goals[0].id&&activeIds.has(p.goals[0].id)&&at(p.goals[0].id)>now).sort((a,c)=>at(a.goals[0].id)-at(c.goals[0].id));
- for(const p of waiting){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',s.cooldown??[],false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason='bootstrap';task.readyAt=new Date(at(p.goals[0].id)).toISOString();return {task,intro:undefined};}}
  const dates=[...active.values()].filter(u=>activeIds.has(u.goal.id)).map(u=>at(u.goal.id)).filter(t=>t>now);
  return {task:undefined,intro:undefined,exhausted:true as const,waitingUntil:dates.length?new Date(Math.min(...dates)).toISOString():undefined};
 }
