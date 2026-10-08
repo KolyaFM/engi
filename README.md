@@ -2,6 +2,12 @@
 
 Локальный тренажёр знаний: React + TypeScript + Vite, Dexie / IndexedDB, Cache Storage, FSRS и PWA. Версия 3.0 вводит декларативные пакеты, общую базу сущностей и самостоятельные колоды.
 
+Последние исправления задержки ответа и перехода, измерения и инструкция по трассировке: [FEED_PERFORMANCE.md](FEED_PERFORMANCE.md).
+
+Полноценные групповые сопоставления и распределение по категориям: [STUDY_CORE_GROUPS.md](STUDY_CORE_GROUPS.md).
+
+Выбор из описаний и сборка только выбранной карточки: [STUDY_CORE_LAZY_POOL.md](STUDY_CORE_LAZY_POOL.md).
+
 ## Запуск
 
 Node.js 22.13+ и pnpm 10.30.1:

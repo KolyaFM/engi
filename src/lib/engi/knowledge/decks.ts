@@ -4,6 +4,7 @@ import {progress} from './progress';
 import {canonicalTargets} from '../questions/recipe-factory';
 import {retention} from '../engine';
 import {entityTypes} from './properties';
+import {scopedGoals,summarizeGoals} from './goal-progress';
 
 export const UNTAGGED_TAG_ID = '__untagged__';
 
@@ -71,6 +72,7 @@ export function getDeckSampleImages(bundle: Bundle, entityIds: string[], limit =
 }
 
 export function progressForEntities(s: Snapshot, entityIds: Set<string>): DeckStats {
+  if(s.goalCatalog)return summarizeGoals(s,s.goalCatalog.filter(e=>e.entityIds.some(id=>entityIds.has(id))));
   const allUnits = canonicalTargets(s.bundle, 'all');
   const units = allUnits.filter(u => entityIds.has(u.entityId));
   const ids = new Set(units.map(i => i.targetId));
@@ -197,6 +199,11 @@ export type EntityMasterySummary = {
 };
 
 export function getEntityLearningStatus(entityId: string, snapshot: Snapshot,scope='all'): 'learned' | 'in_progress' | 'unlearned' {
+  if(snapshot.goalCatalog){
+    const entries=scopedGoals(snapshot,scope).filter(e=>e.entityIds.includes(entityId)&&!e.suspended),memory=new Map(snapshot.goalMemories?.map(m=>[m.goalId,m]));
+    if(entries.length&&entries.every(e=>{const m=memory.get(e.goal.id);return m&&m.independentSuccesses>0&&m.lastCorrect!==false&&m.card.stability>=7}))return 'learned';
+    return entries.some(e=>(memory.get(e.goal.id)?.independentAttempts??0)>0)?'in_progress':'unlearned';
+  }
   const b = snapshot.bundle;
   const units=canonicalTargets(b,scope).filter(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId===entityId:i.entityId===entityId);
   const eligibleIds=new Set(units.map(i=>i.targetId));
@@ -258,6 +265,16 @@ export function calculateDeckEntityCounts(entityIds: string[], snapshot: Snapsho
 }
 
 export function getEntityMasterySummary(entityId: string, snapshot: Snapshot): EntityMasterySummary {
+  if(snapshot.goalCatalog){
+    const entries=snapshot.goalCatalog.filter(e=>e.entityIds.includes(entityId)),active=entries.filter(e=>!e.suspended),memory=new Map(snapshot.goalMemories?.map(m=>[m.goalId,m]));
+    if(entries.length&&!active.length)return {color:'suspended',mark:'★',label:'★ Не учу'};
+    const checked=active.map(e=>memory.get(e.goal.id)).filter(m=>!!m);
+    if(!checked.length)return {color:'unseen',mark:'⚪',label:'Не начато'};
+    if(checked.some(m=>m.lastCorrect===false))return {color:'red',mark:'🔴',label:'Нужно укрепить'};
+    if(checked.some(m=>new Date(m.card.due).getTime()<=Date.now()))return {color:'orange',mark:'⏳',label:'Пора повторить'};
+    if(checked.length===active.length&&checked.every(m=>m.independentSuccesses>0&&m.card.stability>=30))return {color:'green',mark:'🟢',label:'Закреплено'};
+    return {color:'orange',mark:'🟠',label:checked.length<active.length?'Часть целей проверена':'Учусь'};
+  }
   const b = snapshot.bundle;
   const entityFactIds = new Set(b.facts.filter(f => f.entityId === entityId && !f.archived).map(f => f.id));
   const memories = snapshot.memories.filter(m => {

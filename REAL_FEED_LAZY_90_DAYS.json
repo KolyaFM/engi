@@ -1,0 +1,2919 @@
+{
+  "virtualClock": true,
+  "days": 90,
+  "seed": 1,
+  "results": [
+    {
+      "kind": "paintings",
+      "profile": "steady",
+      "minutes": 15,
+      "maxAnswers": 16,
+      "days": 90,
+      "seed": 1,
+      "visitedDays": 90,
+      "answers": 256,
+      "skips": 14,
+      "hints": 4,
+      "intros": 0,
+      "waits": 157,
+      "credits": 259,
+      "failures": 43,
+      "corrections": 16,
+      "objectRepeats": 35,
+      "formatRepeats": 116,
+      "pairs": 255,
+      "maxLearning": 3,
+      "newAdmitted": 14,
+      "formats": {
+        "choice": 91,
+        "recall_reveal": 159,
+        "match": 3,
+        "categorize": 3
+      },
+      "interactions": {
+        "choice": 91,
+        "recall_reveal": 159,
+        "match": 3,
+        "categorize": 3
+      },
+      "firstLearningAges": [
+        0.9994907407407407,
+        0.999837962962963,
+        1.0075347222222222,
+        0.0077777777777777776,
+        0.9917939814814815,
+        0.9993171296296296,
+        0.007071759259259259,
+        0.007071759259259259,
+        0.007245370370370371,
+        0.007013888888888889,
+        0.0071875,
+        0.0077777777777777776,
+        0.007013888888888889,
+        1.0003587962962963
+      ],
+      "daily": [
+        {
+          "day": 0,
+          "answers": 16,
+          "new": 3,
+          "learning": 3,
+          "relearning": 2,
+          "review": 12,
+          "newHeld": true
+        },
+        {
+          "day": 1,
+          "answers": 13,
+          "new": 3,
+          "learning": 2,
+          "relearning": 0,
+          "review": 18,
+          "newHeld": false
+        },
+        {
+          "day": 2,
+          "answers": 10,
+          "new": 3,
+          "learning": 0,
+          "relearning": 0,
+          "review": 23,
+          "newHeld": false
+        },
+        {
+          "day": 3,
+          "answers": 6,
+          "new": 3,
+          "learning": 0,
+          "relearning": 0,
+          "review": 26,
+          "newHeld": false
+        },
+        {
+          "day": 4,
+          "answers": 13,
+          "new": 2,
+          "learning": 1,
+          "relearning": 2,
+          "review": 25,
+          "newHeld": false
+        },
+        {
+          "day": 5,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 6,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 7,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 8,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 9,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 10,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 11,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 12,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 13,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 14,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 15,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 26,
+          "newHeld": false
+        },
+        {
+          "day": 16,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 17,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 18,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 19,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 20,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 21,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 22,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 23,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 24,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 25,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 26,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 27,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 28,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 29,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 30,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 31,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 32,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 33,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 34,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 35,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 36,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 37,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 38,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 39,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 40,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 41,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 42,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 43,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 44,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 45,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 46,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 47,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 48,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 49,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 50,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 51,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 52,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 53,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 54,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 55,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 56,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 57,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 58,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 59,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 60,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 61,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 62,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 63,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 64,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 65,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 66,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 67,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 68,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 69,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 70,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 71,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 72,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 73,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 74,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 75,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 76,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 77,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 78,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 79,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 80,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 81,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 27,
+          "newHeld": false
+        },
+        {
+          "day": 82,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 83,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 84,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 85,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 86,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 87,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 88,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        },
+        {
+          "day": 89,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 28,
+          "newHeld": false
+        }
+      ],
+      "catalogGoals": 28,
+      "uncheckedGoals": 0,
+      "stillLearning": 0,
+      "oldestFirstLearningDays": 0,
+      "wallMs": 8674
+    },
+    {
+      "kind": "people",
+      "profile": "short",
+      "minutes": 3,
+      "maxAnswers": 10,
+      "days": 90,
+      "seed": 1,
+      "visitedDays": 90,
+      "answers": 368,
+      "skips": 20,
+      "hints": 6,
+      "intros": 0,
+      "waits": 120,
+      "credits": 368,
+      "failures": 66,
+      "corrections": 29,
+      "objectRepeats": 33,
+      "formatRepeats": 143,
+      "pairs": 367,
+      "maxLearning": 3,
+      "newAdmitted": 22,
+      "formats": {
+        "choice": 167,
+        "recall_reveal": 197,
+        "categorize": 1,
+        "match": 3
+      },
+      "interactions": {
+        "choice": 167,
+        "recall_reveal": 197,
+        "categorize": 1,
+        "match": 3
+      },
+      "firstLearningAges": [
+        1.9993171296296297,
+        1.0005324074074073,
+        2.999837962962963,
+        1.9987962962962964,
+        2.000185185185185,
+        0.9987962962962963,
+        0.9996643518518519,
+        1.999837962962963,
+        0.9991435185185186,
+        1.0001851851851853,
+        0.999837962962963,
+        0.9994907407407407,
+        0.9991435185185186,
+        0.9991435185185186,
+        0.9994907407407407,
+        1.9986226851851852,
+        2.000185185185185,
+        1.9993171296296297,
+        0.9991435185185186,
+        1.0003587962962963,
+        0.9994907407407407,
+        0.9991435185185186
+      ],
+      "daily": [
+        {
+          "day": 0,
+          "answers": 10,
+          "new": 2,
+          "learning": 2,
+          "relearning": 3,
+          "review": 19,
+          "newHeld": false
+        },
+        {
+          "day": 1,
+          "answers": 10,
+          "new": 1,
+          "learning": 3,
+          "relearning": 1,
+          "review": 21,
+          "newHeld": true
+        },
+        {
+          "day": 2,
+          "answers": 10,
+          "new": 2,
+          "learning": 3,
+          "relearning": 1,
+          "review": 23,
+          "newHeld": true
+        },
+        {
+          "day": 3,
+          "answers": 7,
+          "new": 1,
+          "learning": 3,
+          "relearning": 1,
+          "review": 24,
+          "newHeld": true
+        },
+        {
+          "day": 4,
+          "answers": 10,
+          "new": 2,
+          "learning": 3,
+          "relearning": 0,
+          "review": 27,
+          "newHeld": true
+        },
+        {
+          "day": 5,
+          "answers": 9,
+          "new": 3,
+          "learning": 3,
+          "relearning": 1,
+          "review": 29,
+          "newHeld": true
+        },
+        {
+          "day": 6,
+          "answers": 9,
+          "new": 3,
+          "learning": 3,
+          "relearning": 0,
+          "review": 33,
+          "newHeld": true
+        },
+        {
+          "day": 7,
+          "answers": 10,
+          "new": 3,
+          "learning": 3,
+          "relearning": 1,
+          "review": 35,
+          "newHeld": true
+        },
+        {
+          "day": 8,
+          "answers": 9,
+          "new": 1,
+          "learning": 3,
+          "relearning": 1,
+          "review": 36,
+          "newHeld": true
+        },
+        {
+          "day": 9,
+          "answers": 9,
+          "new": 2,
+          "learning": 3,
+          "relearning": 1,
+          "review": 38,
+          "newHeld": true
+        },
+        {
+          "day": 10,
+          "answers": 9,
+          "new": 2,
+          "learning": 2,
+          "relearning": 0,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 11,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 12,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 13,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 14,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 15,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 16,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 17,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 18,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 19,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 20,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 21,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 22,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 23,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 24,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 25,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 26,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 27,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 28,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 29,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 41,
+          "newHeld": false
+        },
+        {
+          "day": 30,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 31,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 32,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 33,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 34,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 35,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 36,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 37,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 38,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 39,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 40,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 41,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 42,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 43,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 44,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 45,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 46,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 47,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 48,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 49,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 50,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 51,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 52,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 53,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 54,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 55,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 56,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 57,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 58,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 59,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 60,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 61,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 62,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 63,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 64,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 65,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 41,
+          "newHeld": false
+        },
+        {
+          "day": 66,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 67,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 68,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 69,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 70,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 71,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 72,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 73,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 74,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 75,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 76,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 77,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 78,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 79,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 80,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 81,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 82,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 83,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 84,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 85,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 86,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        },
+        {
+          "day": 87,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 43,
+          "newHeld": false
+        },
+        {
+          "day": 88,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 44,
+          "newHeld": false
+        },
+        {
+          "day": 89,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 42,
+          "newHeld": false
+        }
+      ],
+      "catalogGoals": 44,
+      "uncheckedGoals": 0,
+      "stillLearning": 0,
+      "oldestFirstLearningDays": 0,
+      "wallMs": 10130
+    },
+    {
+      "kind": "sets",
+      "profile": "errors",
+      "minutes": 15,
+      "maxAnswers": 16,
+      "days": 90,
+      "seed": 1,
+      "visitedDays": 90,
+      "answers": 998,
+      "skips": 55,
+      "hints": 58,
+      "intros": 0,
+      "waits": 304,
+      "credits": 940,
+      "failures": 614,
+      "corrections": 0,
+      "objectRepeats": 28,
+      "formatRepeats": 997,
+      "pairs": 997,
+      "maxLearning": 3,
+      "newAdmitted": 4,
+      "formats": {
+        "multi_choice": 998
+      },
+      "interactions": {
+        "multi_choice": 998
+      },
+      "firstLearningAges": [
+        3.9996643518518518,
+        3.9993171296296297,
+        5.006666666666667,
+        3.007013888888889
+      ],
+      "daily": [
+        {
+          "day": 0,
+          "answers": 16,
+          "new": 3,
+          "learning": 3,
+          "relearning": 1,
+          "review": 3,
+          "newHeld": true
+        },
+        {
+          "day": 1,
+          "answers": 16,
+          "new": 0,
+          "learning": 3,
+          "relearning": 0,
+          "review": 4,
+          "newHeld": true
+        },
+        {
+          "day": 2,
+          "answers": 16,
+          "new": 0,
+          "learning": 3,
+          "relearning": 3,
+          "review": 1,
+          "newHeld": true
+        },
+        {
+          "day": 3,
+          "answers": 16,
+          "new": 0,
+          "learning": 3,
+          "relearning": 1,
+          "review": 3,
+          "newHeld": true
+        },
+        {
+          "day": 4,
+          "answers": 15,
+          "new": 1,
+          "learning": 2,
+          "relearning": 1,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 5,
+          "answers": 16,
+          "new": 0,
+          "learning": 1,
+          "relearning": 3,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 6,
+          "answers": 12,
+          "new": 0,
+          "learning": 1,
+          "relearning": 3,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 7,
+          "answers": 14,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 8,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 9,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 10,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 11,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 12,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 13,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 14,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 6,
+          "review": 2,
+          "newHeld": false
+        },
+        {
+          "day": 15,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 16,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 17,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 18,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 19,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 20,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 21,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 22,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 23,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 24,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 25,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 26,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 27,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 28,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 29,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 30,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 31,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 8,
+          "newHeld": false
+        },
+        {
+          "day": 32,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 33,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 34,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 35,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 36,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 37,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 38,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 39,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 40,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 41,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 42,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 6,
+          "review": 2,
+          "newHeld": false
+        },
+        {
+          "day": 43,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 44,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 45,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 46,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 47,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 48,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 49,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 50,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 51,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 52,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 53,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 54,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 55,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 56,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 57,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 58,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 59,
+          "answers": 14,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 60,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 61,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 62,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 63,
+          "answers": 14,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 64,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 65,
+          "answers": 9,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 66,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 67,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 68,
+          "answers": 15,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 69,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 70,
+          "answers": 14,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 71,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 72,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 73,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 74,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 75,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 6,
+          "review": 2,
+          "newHeld": false
+        },
+        {
+          "day": 76,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 77,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 78,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 79,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 80,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 81,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": false
+        },
+        {
+          "day": 82,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 83,
+          "answers": 11,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 84,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 85,
+          "answers": 14,
+          "new": 0,
+          "learning": 0,
+          "relearning": 5,
+          "review": 3,
+          "newHeld": false
+        },
+        {
+          "day": 86,
+          "answers": 12,
+          "new": 0,
+          "learning": 0,
+          "relearning": 3,
+          "review": 5,
+          "newHeld": false
+        },
+        {
+          "day": 87,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 7,
+          "newHeld": false
+        },
+        {
+          "day": 88,
+          "answers": 7,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        },
+        {
+          "day": 89,
+          "answers": 13,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 4,
+          "newHeld": false
+        }
+      ],
+      "catalogGoals": 8,
+      "uncheckedGoals": 0,
+      "stillLearning": 0,
+      "oldestFirstLearningDays": 0,
+      "wallMs": 28650
+    },
+    {
+      "kind": "scarce",
+      "profile": "irregular",
+      "minutes": 6,
+      "maxAnswers": 12,
+      "days": 90,
+      "seed": 1,
+      "visitedDays": 30,
+      "answers": 101,
+      "skips": 5,
+      "hints": 2,
+      "intros": 0,
+      "waits": 16,
+      "credits": 103,
+      "failures": 18,
+      "corrections": 5,
+      "objectRepeats": 3,
+      "formatRepeats": 37,
+      "pairs": 100,
+      "maxLearning": 3,
+      "newAdmitted": 8,
+      "formats": {
+        "recall_reveal": 63,
+        "categorize": 38
+      },
+      "interactions": {
+        "recall_reveal": 63,
+        "choice": 34,
+        "categorize": 4
+      },
+      "firstLearningAges": [
+        2.9993171296296297,
+        2.998969907407407,
+        3.000775462962963,
+        2.999490740740741,
+        3.0002546296296297,
+        2.999490740740741,
+        2.999247685185185,
+        5.9994907407407405
+      ],
+      "daily": [
+        {
+          "day": 0,
+          "answers": 10,
+          "new": 3,
+          "learning": 3,
+          "relearning": 2,
+          "review": 6,
+          "newHeld": true
+        },
+        {
+          "day": 3,
+          "answers": 7,
+          "new": 3,
+          "learning": 3,
+          "relearning": 0,
+          "review": 11,
+          "newHeld": true
+        },
+        {
+          "day": 6,
+          "answers": 7,
+          "new": 2,
+          "learning": 2,
+          "relearning": 0,
+          "review": 14,
+          "newHeld": false
+        },
+        {
+          "day": 9,
+          "answers": 5,
+          "new": 0,
+          "learning": 1,
+          "relearning": 0,
+          "review": 15,
+          "newHeld": false
+        },
+        {
+          "day": 12,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 15,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 18,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 14,
+          "newHeld": false
+        },
+        {
+          "day": 21,
+          "answers": 8,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 14,
+          "newHeld": false
+        },
+        {
+          "day": 24,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 27,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 30,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 33,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 36,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 39,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 42,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 14,
+          "newHeld": false
+        },
+        {
+          "day": 45,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 2,
+          "review": 14,
+          "newHeld": false
+        },
+        {
+          "day": 48,
+          "answers": 5,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 51,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 54,
+          "answers": 10,
+          "new": 0,
+          "learning": 0,
+          "relearning": 4,
+          "review": 12,
+          "newHeld": false
+        },
+        {
+          "day": 57,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 60,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 63,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 15,
+          "newHeld": false
+        },
+        {
+          "day": 66,
+          "answers": 4,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 69,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 72,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 75,
+          "answers": 1,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 78,
+          "answers": 3,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 81,
+          "answers": 6,
+          "new": 0,
+          "learning": 0,
+          "relearning": 1,
+          "review": 15,
+          "newHeld": false
+        },
+        {
+          "day": 84,
+          "answers": 2,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        },
+        {
+          "day": 87,
+          "answers": 0,
+          "new": 0,
+          "learning": 0,
+          "relearning": 0,
+          "review": 16,
+          "newHeld": false
+        }
+      ],
+      "catalogGoals": 16,
+      "uncheckedGoals": 0,
+      "stillLearning": 0,
+      "oldestFirstLearningDays": 0,
+      "wallMs": 1425
+    }
+  ],
+  "pool": []
+}

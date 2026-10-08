@@ -12,6 +12,7 @@
     "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/*.test.ts",
     "pack:build": "node --import tsx scripts/build-engi-pack.mjs",
     "test:browser": "node tests/browser.mjs",
+    "test:browser:goals": "node tests/goal-ui-browser.mjs",
     "test:production": "node tests/production.mjs",
     "test:recall": "node tests/recall22-browser.mjs",
     "test:browser:v3": "node tests/browser-v3.mjs"

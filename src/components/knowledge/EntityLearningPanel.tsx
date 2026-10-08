@@ -8,6 +8,7 @@ import {retention} from '../../lib/engi/engine';
 import {textValue} from '../../lib/engi/knowledge/properties';
 import {setUnitSuspended} from '../../services/learning-service';
 import './entity-learning.css';
+import {GoalEntityLearningPanel} from './GoalEntityLearningPanel';
 
 const marks:Record<string,string>={red:'🔴',orange:'🟠',yellow:'🟡',green:'🟢',suspended:'★'};
 const numeric=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1});
@@ -39,6 +40,7 @@ export function EntityLearningPanel({entityId,snapshot,onReload}:{entityId:strin
   return hasVisual?`${base} · ${item.targetId.endsWith(':visual')?'по изображению':'по имени'}`:base;
  }
  const selected=items.find(item=>item.targetId===selectedId);
+ if(snapshot.goalCatalog)return <GoalEntityLearningPanel entityId={entityId} snapshot={snapshot} onReload={onReload}/>;
  if(!items.length)return null;
  return <section className="entity-learning" aria-label="Обучение по свойствам">
   <h3>Обучение по свойствам</h3>

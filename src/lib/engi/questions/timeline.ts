@@ -14,5 +14,6 @@ export function timelineContext(pool:Item[]):NonNullable<Task['timeline']> {
  const initial=hits(midpoint)<values.length/2?midpoint:hits(min)<=hits(max)?min:max;
  return {min,max,initial};
 }
-export function isDiscrete(task:Task){return ['choice','match','categorize','missing'].includes(task.recipe.format)}
+export function isMapping(task:Task){return ['match','categorize'].includes(task.recipe.format)&&task.items.length>1}
+export function isDiscrete(task:Task){return !isMapping(task)&&['choice','match','categorize','missing'].includes(task.recipe.format)}
 export function discreteAnswer(task:Task){return task.recipe.format==='missing'?[...task.items].sort((a,b)=>a.year!-b.year!)[1]?.entityId:task.items[0].answerId}

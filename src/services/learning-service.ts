@@ -20,6 +20,7 @@ export async function resetLearningProgress(d:EngiDB=db){
   await d.activeSessions.clear();
   await d.targetMappings.clear();
   await d.appMeta.bulkDelete(['dailyLearning','newLearning','introducedEntities','reviewsSinceBackup']);
+  await d.appMeta.where('key').startsWith('studyCore:').delete();
  });
 }
 export async function clearAllData(d:EngiDB=db){

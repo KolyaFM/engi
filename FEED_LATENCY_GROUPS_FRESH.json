@@ -1,0 +1,398 @@
+[
+  {
+    "size": 32,
+    "fresh": true,
+    "mixed": true,
+    "goals": 64,
+    "runs": [
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 10.169682999999964,
+        "advanceMs": 51.145352
+      },
+      {
+        "format": "recall_reveal",
+        "items": 1,
+        "answerMs": 5.568146000000013,
+        "advanceMs": 28.010706000000027
+      },
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 5.126112999999918,
+        "advanceMs": 14.201127000000042
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 0.41563299999995706
+      },
+      {
+        "stage": "answer.total",
+        "ms": 10.065707000000032
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.9413010000000099
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.6608510000000365
+      },
+      {
+        "stage": "candidates",
+        "ms": 31.876940999999988
+      },
+      {
+        "stage": "groups",
+        "ms": 7.7332210000000146
+      },
+      {
+        "stage": "selection",
+        "ms": 46.575672
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.1194469999999797
+      },
+      {
+        "stage": "advance.total",
+        "ms": 51.080404999999985
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.3438150000000064
+      },
+      {
+        "stage": "answer.total",
+        "ms": 5.5587920000000395
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.32901300000003175
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.6441460000000347
+      },
+      {
+        "stage": "candidates",
+        "ms": 21.684182999999962
+      },
+      {
+        "stage": "groups",
+        "ms": 0.13891799999998966
+      },
+      {
+        "stage": "selection",
+        "ms": 25.18280599999997
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.4491620000000012
+      },
+      {
+        "stage": "advance.total",
+        "ms": 28.003315000000043
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.34667000000001735
+      },
+      {
+        "stage": "answer.total",
+        "ms": 5.119144000000006
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.323154000000045
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.37922900000000936
+      },
+      {
+        "stage": "candidates",
+        "ms": 5.349228000000039
+      },
+      {
+        "stage": "groups",
+        "ms": 0.003776000000016211
+      },
+      {
+        "stage": "selection",
+        "ms": 12.823210999999901
+      },
+      {
+        "stage": "advance.total",
+        "ms": 14.194867000000045
+      }
+    ]
+  },
+  {
+    "size": 128,
+    "fresh": true,
+    "mixed": true,
+    "goals": 256,
+    "runs": [
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 12.222038999999995,
+        "advanceMs": 135.64551900000004
+      },
+      {
+        "format": "recall_reveal",
+        "items": 1,
+        "answerMs": 10.20662900000002,
+        "advanceMs": 127.67809699999998
+      },
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 11.766055999999935,
+        "advanceMs": 22.607185999999956
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 2.5928159999999707
+      },
+      {
+        "stage": "answer.total",
+        "ms": 12.21174300000007
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.817154999999957
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.792917999999986
+      },
+      {
+        "stage": "candidates",
+        "ms": 113.69480699999997
+      },
+      {
+        "stage": "groups",
+        "ms": 9.715311999999813
+      },
+      {
+        "stage": "selection",
+        "ms": 132.05622900000003
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.4557819999999992
+      },
+      {
+        "stage": "advance.total",
+        "ms": 135.63924900000006
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.7315550000000712
+      },
+      {
+        "stage": "answer.total",
+        "ms": 10.199468000000024
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.8245759999999791
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.6116960000001654
+      },
+      {
+        "stage": "candidates",
+        "ms": 114.99851199999989
+      },
+      {
+        "stage": "groups",
+        "ms": 0.28957400000012967
+      },
+      {
+        "stage": "selection",
+        "ms": 124.04153500000007
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.0768840000000637
+      },
+      {
+        "stage": "advance.total",
+        "ms": 127.67166700000007
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.455360000000155
+      },
+      {
+        "stage": "answer.total",
+        "ms": 11.758094000000028
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.3670689999999013
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.351615000000038
+      },
+      {
+        "stage": "candidates",
+        "ms": 10.20667800000001
+      },
+      {
+        "stage": "groups",
+        "ms": 0.0023229999999330175
+      },
+      {
+        "stage": "selection",
+        "ms": 19.09001400000011
+      },
+      {
+        "stage": "advance.total",
+        "ms": 22.599744999999984
+      }
+    ]
+  },
+  {
+    "size": 256,
+    "fresh": true,
+    "mixed": true,
+    "goals": 512,
+    "runs": [
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 20.036273000000165,
+        "advanceMs": 419.3989670000001
+      },
+      {
+        "format": "recall_reveal",
+        "items": 1,
+        "answerMs": 13.655698999999913,
+        "advanceMs": 407.20301199999994
+      },
+      {
+        "format": "choice",
+        "items": 1,
+        "answerMs": 13.626815000000079,
+        "advanceMs": 23.657811000000038
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 4.900445000000218
+      },
+      {
+        "stage": "answer.total",
+        "ms": 20.02501600000005
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 2.6565220000002228
+      },
+      {
+        "stage": "catalog",
+        "ms": 4.5592939999996815
+      },
+      {
+        "stage": "candidates",
+        "ms": 384.3356710000003
+      },
+      {
+        "stage": "groups",
+        "ms": 8.38418700000011
+      },
+      {
+        "stage": "selection",
+        "ms": 412.71872399999984
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8120770000000448
+      },
+      {
+        "stage": "advance.total",
+        "ms": 419.391216
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.5205590000000484
+      },
+      {
+        "stage": "answer.total",
+        "ms": 13.64924800000017
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 2.0015699999999015
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.548009000000093
+      },
+      {
+        "stage": "candidates",
+        "ms": 386.407381
+      },
+      {
+        "stage": "groups",
+        "ms": 0.5014820000001237
+      },
+      {
+        "stage": "selection",
+        "ms": 402.0740039999996
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8513060000000223
+      },
+      {
+        "stage": "advance.total",
+        "ms": 407.19645100000025
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.4939180000001215
+      },
+      {
+        "stage": "answer.total",
+        "ms": 13.597240000000056
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.4105640000002495
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.4783649999999398
+      },
+      {
+        "stage": "candidates",
+        "ms": 10.277975999999853
+      },
+      {
+        "stage": "groups",
+        "ms": 0.0014519999999720312
+      },
+      {
+        "stage": "selection",
+        "ms": 19.97787500000004
+      },
+      {
+        "stage": "advance.total",
+        "ms": 23.651340999999775
+      }
+    ]
+  }
+]

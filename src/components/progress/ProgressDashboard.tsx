@@ -6,8 +6,10 @@ import {properties} from '../../lib/engi/knowledge/properties';
 import {conflicts} from '../../services/knowledge-service';
 import {saveBackup} from '../../services/backup-service';
 import {ConflictResolver} from '../knowledge/ConflictResolver';
+import {GoalProgressDashboard} from './GoalProgressDashboard';
 
 export function ProgressDashboard({snapshot,onStudy,onReload}:{snapshot:Snapshot;onStudy:()=>void;onReload:()=>Promise<void>}){
+ if(snapshot.goalCatalog)return <GoalProgressDashboard snapshot={snapshot} onStudy={onStudy} onReload={onReload}/>;
  const s=snapshot,p=progress(s),today=todayLearning(s),b=s.bundle,targets=canonicalTargets(b),problem=conflicts(b);
  const targetById=new Map(targets.map(t=>[t.targetId,t]));
  return <><div className="page-heading"><h1>Что остаётся в памяти?</h1><button className="button outline" onClick={()=>void saveBackup()}>Сохранить копию</button></div>

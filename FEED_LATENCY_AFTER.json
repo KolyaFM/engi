@@ -1,0 +1,674 @@
+[
+  {
+    "size": 32,
+    "goals": 64,
+    "runs": [
+      {
+        "answerMs": 11.047330000000045,
+        "advanceMs": 9.102233999999953
+      },
+      {
+        "answerMs": 7.688375000000008,
+        "advanceMs": 6.201426000000026
+      },
+      {
+        "answerMs": 6.223147999999981,
+        "advanceMs": 9.241023000000041
+      },
+      {
+        "answerMs": 4.841907999999989,
+        "advanceMs": 6.593234000000052
+      },
+      {
+        "answerMs": 4.658622999999977,
+        "advanceMs": 7.196367000000009
+      },
+      {
+        "answerMs": 4.531071999999938,
+        "advanceMs": 6.05114100000003
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 0.34547800000001416
+      },
+      {
+        "stage": "answer.total",
+        "ms": 10.945095999999978
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.6546020000000112
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.37113699999997607
+      },
+      {
+        "stage": "candidates",
+        "ms": 2.8000069999999937
+      },
+      {
+        "stage": "selection",
+        "ms": 5.588066000000026
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.6432229999999777
+      },
+      {
+        "stage": "advance.total",
+        "ms": 9.032460000000015
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.5535589999999502
+      },
+      {
+        "stage": "answer.total",
+        "ms": 7.680333000000019
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.5261390000000006
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.551085999999998
+      },
+      {
+        "stage": "candidates",
+        "ms": 1.6318160000000148
+      },
+      {
+        "stage": "selection",
+        "ms": 4.091392999999982
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.7837539999999876
+      },
+      {
+        "stage": "advance.total",
+        "ms": 6.196288000000038
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.4516370000000052
+      },
+      {
+        "stage": "answer.total",
+        "ms": 6.219532999999956
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.41733499999998
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.3854679999999462
+      },
+      {
+        "stage": "candidates",
+        "ms": 2.763121999999953
+      },
+      {
+        "stage": "selection",
+        "ms": 7.113482999999974
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.9241349999999784
+      },
+      {
+        "stage": "advance.total",
+        "ms": 9.237015999999983
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.31571300000001656
+      },
+      {
+        "stage": "answer.total",
+        "ms": 4.838131999999973
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.3065589999999929
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.5542500000000246
+      },
+      {
+        "stage": "candidates",
+        "ms": 2.0610490000000254
+      },
+      {
+        "stage": "selection",
+        "ms": 4.119374999999991
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.264756000000034
+      },
+      {
+        "stage": "advance.total",
+        "ms": 6.588936999999987
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.3106859999999756
+      },
+      {
+        "stage": "answer.total",
+        "ms": 4.655358999999976
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.31851699999998573
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.348041999999964
+      },
+      {
+        "stage": "candidates",
+        "ms": 1.800369000000046
+      },
+      {
+        "stage": "selection",
+        "ms": 4.863078999999971
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.9416710000000421
+      },
+      {
+        "stage": "advance.total",
+        "ms": 7.192211000000043
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.314371000000051
+      },
+      {
+        "stage": "answer.total",
+        "ms": 4.526695000000018
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.30515700000000834
+      },
+      {
+        "stage": "catalog",
+        "ms": 0.3652480000000651
+      },
+      {
+        "stage": "candidates",
+        "ms": 1.6683309999999665
+      },
+      {
+        "stage": "selection",
+        "ms": 3.6866059999999834
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.9298039999999901
+      },
+      {
+        "stage": "advance.total",
+        "ms": 6.047256000000061
+      }
+    ]
+  },
+  {
+    "size": 128,
+    "goals": 256,
+    "runs": [
+      {
+        "answerMs": 10.79860599999995,
+        "advanceMs": 15.359161000000086
+      },
+      {
+        "answerMs": 11.626046000000088,
+        "advanceMs": 18.30147199999999
+      },
+      {
+        "answerMs": 9.09744599999999,
+        "advanceMs": 11.980768000000012
+      },
+      {
+        "answerMs": 10.13788599999998,
+        "advanceMs": 26.90897300000006
+      },
+      {
+        "answerMs": 11.787328000000002,
+        "advanceMs": 12.908799000000045
+      },
+      {
+        "answerMs": 9.51393100000007,
+        "advanceMs": 11.051613999999972
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 1.8127769999999828
+      },
+      {
+        "stage": "answer.total",
+        "ms": 10.792806999999925
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 4.062198999999964
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.2319969999999785
+      },
+      {
+        "stage": "candidates",
+        "ms": 4.086565000000064
+      },
+      {
+        "stage": "selection",
+        "ms": 8.972259000000008
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.7513259999999491
+      },
+      {
+        "stage": "advance.total",
+        "ms": 15.353634000000056
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.2587670000000344
+      },
+      {
+        "stage": "answer.total",
+        "ms": 11.620907999999986
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.3585560000000214
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.7291619999999739
+      },
+      {
+        "stage": "candidates",
+        "ms": 4.734706999999958
+      },
+      {
+        "stage": "selection",
+        "ms": 13.901918000000023
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.036574000000087
+      },
+      {
+        "stage": "advance.total",
+        "ms": 18.29557299999999
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.3227219999999988
+      },
+      {
+        "stage": "answer.total",
+        "ms": 9.091307000000029
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.8035340000000133
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.3970940000000382
+      },
+      {
+        "stage": "candidates",
+        "ms": 4.0694200000000365
+      },
+      {
+        "stage": "selection",
+        "ms": 9.10920400000009
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.6954319999999825
+      },
+      {
+        "stage": "advance.total",
+        "ms": 11.974769000000038
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.500699999999938
+      },
+      {
+        "stage": "answer.total",
+        "ms": 10.13098500000001
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.0415510000000268
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.4412800000000061
+      },
+      {
+        "stage": "candidates",
+        "ms": 6.080804000000057
+      },
+      {
+        "stage": "selection",
+        "ms": 22.907695999999987
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 1.5204289999999219
+      },
+      {
+        "stage": "advance.total",
+        "ms": 26.90362600000003
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.6088419999999815
+      },
+      {
+        "stage": "answer.total",
+        "ms": 11.779365999999982
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.7876709999999321
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.3697630000000345
+      },
+      {
+        "stage": "candidates",
+        "ms": 4.279464999999959
+      },
+      {
+        "stage": "selection",
+        "ms": 9.661501999999928
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8177160000000185
+      },
+      {
+        "stage": "advance.total",
+        "ms": 12.902669999999944
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.4413500000000568
+      },
+      {
+        "stage": "answer.total",
+        "ms": 9.50915299999997
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 0.7168639999999868
+      },
+      {
+        "stage": "catalog",
+        "ms": 1.2638640000000123
+      },
+      {
+        "stage": "candidates",
+        "ms": 3.5851940000000013
+      },
+      {
+        "stage": "selection",
+        "ms": 8.089825000000019
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8893229999999903
+      },
+      {
+        "stage": "advance.total",
+        "ms": 11.047567999999956
+      }
+    ]
+  },
+  {
+    "size": 256,
+    "goals": 512,
+    "runs": [
+      {
+        "answerMs": 18.20573800000011,
+        "advanceMs": 26.78665000000001
+      },
+      {
+        "answerMs": 17.279579999999896,
+        "advanceMs": 21.824032000000216
+      },
+      {
+        "answerMs": 23.207155000000057,
+        "advanceMs": 20.64871100000005
+      },
+      {
+        "answerMs": 15.820623000000069,
+        "advanceMs": 26.827502000000095
+      },
+      {
+        "answerMs": 16.00787400000013,
+        "advanceMs": 21.648648999999978
+      },
+      {
+        "answerMs": 16.151870000000145,
+        "advanceMs": 25.888093000000026
+      }
+    ],
+    "trace": [
+      {
+        "stage": "catalog",
+        "ms": 2.9543189999999413
+      },
+      {
+        "stage": "answer.total",
+        "ms": 18.199550000000045
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 6.732151000000158
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.659295999999813
+      },
+      {
+        "stage": "candidates",
+        "ms": 6.334945999999945
+      },
+      {
+        "stage": "selection",
+        "ms": 16.840883000000076
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8160739999998441
+      },
+      {
+        "stage": "advance.total",
+        "ms": 26.78160200000002
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.6749889999998686
+      },
+      {
+        "stage": "answer.total",
+        "ms": 17.274392999999918
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.6778249999999844
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.5403579999999693
+      },
+      {
+        "stage": "candidates",
+        "ms": 6.961994999999888
+      },
+      {
+        "stage": "selection",
+        "ms": 17.115354000000025
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.9663779999998496
+      },
+      {
+        "stage": "advance.total",
+        "ms": 21.81894299999999
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.885054000000082
+      },
+      {
+        "stage": "answer.total",
+        "ms": 23.20192700000007
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.429192999999941
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.563081999999895
+      },
+      {
+        "stage": "candidates",
+        "ms": 6.9732020000001285
+      },
+      {
+        "stage": "selection",
+        "ms": 16.481183999999985
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.6625629999998637
+      },
+      {
+        "stage": "advance.total",
+        "ms": 20.64392399999997
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.589101000000028
+      },
+      {
+        "stage": "answer.total",
+        "ms": 15.815153999999893
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.4186369999999897
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.8312329999998838
+      },
+      {
+        "stage": "candidates",
+        "ms": 7.039310999999998
+      },
+      {
+        "stage": "selection",
+        "ms": 22.410892000000104
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.7737799999999879
+      },
+      {
+        "stage": "advance.total",
+        "ms": 26.822264000000132
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.7327060000000074
+      },
+      {
+        "stage": "answer.total",
+        "ms": 16.00261599999999
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.3444150000000263
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.6962410000001
+      },
+      {
+        "stage": "candidates",
+        "ms": 7.042005000000017
+      },
+      {
+        "stage": "selection",
+        "ms": 17.07013700000016
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.7870390000000498
+      },
+      {
+        "stage": "advance.total",
+        "ms": 21.64280100000019
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.618836000000101
+      },
+      {
+        "stage": "answer.total",
+        "ms": 16.146342000000004
+      },
+      {
+        "stage": "bundle.read",
+        "ms": 1.7387659999999414
+      },
+      {
+        "stage": "catalog",
+        "ms": 2.5073989999998503
+      },
+      {
+        "stage": "candidates",
+        "ms": 6.357499000000189
+      },
+      {
+        "stage": "selection",
+        "ms": 20.76200999999992
+      },
+      {
+        "stage": "task.prepare",
+        "ms": 0.8406800000000203
+      },
+      {
+        "stage": "advance.total",
+        "ms": 25.882726000000048
+      }
+    ]
+  }
+]
