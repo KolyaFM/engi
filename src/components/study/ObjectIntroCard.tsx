@@ -1,4 +1,5 @@
-import {useEffect,useRef,useState} from 'react';
+import {useHorizontalSwipe} from './useHorizontalSwipe';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import type {SessionRow} from '../../db/engi-db';
 import type {Bundle,Familiarity,Fact} from '../../lib/engi/types';
 import {questionPrompt} from '../../lib/engi/questions/question-templates';
@@ -44,65 +45,14 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
  const writes=useRef<Promise<void>>(Promise.resolve()),latestSelections=useRef(intro.selections),exiting=useRef(false);
  useEffect(()=>{latestSelections.current=intro.selections;setSelections(intro.selections);setSwipeOffset(0);setSwiping(false)},[intro.entityId]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
- const unitIds=new Set(intro.unitIds);
- const items=canonicalTargets(bundle).filter(i=>unitIds.has(i.targetId));
- const propertyById=new Map(properties(bundle).map(p=>[p.id,p]));
- const mediaList=bundle.media.filter(m=>m.entityId===intro.entityId&&!m.archived&&m.learningExemplar!==false&&['primary','portrait','photo','image','artwork','painting'].includes(m.role));
+ const items=useMemo(()=>{const ids=new Set(intro.unitIds);return canonicalTargets(bundle).filter(i=>ids.has(i.targetId))},[bundle,intro.unitIds.join('|')]);
+ const propertyById=useMemo(()=>new Map(properties(bundle).map(p=>[p.id,p])),[bundle]);
+ const mediaList=useMemo(()=>bundle.media.filter(m=>m.entityId===intro.entityId&&!m.archived&&m.learningExemplar!==false&&['primary','portrait','photo','image','artwork','painting'].includes(m.role)),[bundle,intro.entityId]);
  const image=mediaList.find(m=>m.primary||m.role==='primary')??mediaList[0];
  const disabled=busy||saving;
  const displayError=error||saveError;
  const [swipeOffset,setSwipeOffset]=useState(0),[swiping,setSwiping]=useState(false);
- const swipeGesture=useRef<{x:number;y:number;time:number;width:number;dx:number;dy:number;pointerId:number;locked?:boolean}|null>(null);
- const tippedRef=useRef(false);
-
- function handlePointerDown(e:React.PointerEvent){
-  if(disabled||!e.isPrimary)return;
-  if((e.target as HTMLElement).closest('button,input,textarea,select,.learning22-gauge'))return;
-  if(e.clientX<24||e.clientX>window.innerWidth-24)return;
-  tippedRef.current=false;
-  swipeGesture.current={x:e.clientX,y:e.clientY,time:Date.now(),width:e.currentTarget.getBoundingClientRect().width,dx:0,dy:0,pointerId:e.pointerId};
-  try{e.currentTarget.setPointerCapture(e.pointerId)}catch{}
- }
- function handlePointerMove(e:React.PointerEvent){
-  const g=swipeGesture.current;if(!g||g.pointerId!==e.pointerId)return;
-  g.dx=e.clientX-g.x;g.dy=e.clientY-g.y;
-  const absX=Math.abs(g.dx),absY=Math.abs(g.dy);
-  if(!g.locked){
-   if(absY>8&&absY>absX*1.1){
-    swipeGesture.current=null;
-    try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
-    setSwiping(false);setSwipeOffset(0);
-    return;
-   }
-   if(absX>8&&absX>absY*1.1){g.locked=true;setSwiping(true)}
-  }
-  if(g.locked){
-   setSwipeOffset(Math.max(-g.width*.35,Math.min(g.width*.35,g.dx)));
-   const threshold=Math.min(100,g.width*.22);
-   if(absX>=threshold&&!tippedRef.current){tippedRef.current=true;try{navigator.vibrate?.(8)}catch{}}
-   else if(absX<threshold){tippedRef.current=false}
-  }
- }
- function handlePointerUp(e:React.PointerEvent){
-  const g=swipeGesture.current;swipeGesture.current=null;
-  try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
-  if(!g||!g.locked){setSwiping(false);setSwipeOffset(0);return}
-  const distance=Math.abs(g.dx),duration=Math.max(20,Date.now()-g.time),velocity=distance/duration;
-  if(distance>=g.width*.22||(distance>=45&&velocity>=.45)){
-   try{navigator.vibrate?.(12)}catch{}
-   setSwiping(false);
-   const exitOffset=g.dx>0?(window.innerWidth||400)*1.3:-(window.innerWidth||400)*1.3;
-   setSwipeOffset(exitOffset);
-   void finish(Object.fromEntries(items.map(item=>[item.targetId,g.dx>0?'green':'red'])),true);
-  }else{
-   setSwiping(false);
-   setSwipeOffset(0);
-  }
- }
- function handlePointerCancel(e:React.PointerEvent){
-  if(exiting.current)return;swipeGesture.current=null;setSwiping(false);setSwipeOffset(0);
-  try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
- }
+ const swipe=useHorizontalSwipe({disabled:disabled||exiting.current,onOffset:setSwipeOffset,onDragging:setSwiping,onSwipe:side=>{setSwipeOffset((side===1?1:-1)*window.innerWidth*1.3);void finish(Object.fromEntries(items.map(item=>[item.targetId,side===1?'green':'red'])),true);}});
 
  const rotation=Math.max(-10,Math.min(10,swipeOffset/20));
  const stampOpacity=Math.min(1,Math.max(0,(Math.abs(swipeOffset)-15)/60));
@@ -132,16 +82,13 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
   className="learning22-screen"
   aria-labelledby="object-intro-heading"
   aria-busy={disabled}
-  onPointerDown={handlePointerDown}
-  onPointerMove={handlePointerMove}
-  onPointerUp={handlePointerUp}
-  onPointerCancel={handlePointerCancel}
+  {...swipe}
  >
   <div
    className={`learning22-card-sheet ${swiping?'is-swiping':''}`}
    style={{
     transform:swipeOffset!==0?`translateX(${swipeOffset}px) rotate(${rotation}deg)`:undefined,
-    transition:swiping?'none':'transform 260ms cubic-bezier(0.175, 0.885, 0.32, 1.15)',
+    transition:swiping?'none':'transform 220ms cubic-bezier(.22,1,.36,1)',
    }}
   >
    <button type="button" className="learning22-close" onClick={onExit} disabled={disabled} aria-label="Закончить знакомство">✕</button>

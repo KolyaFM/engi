@@ -5,7 +5,7 @@ import {ConveyorCard} from './ConveyorCard';
 import {useStudyVisibility} from './useStudyVisibility';
 import {DayPlanPanel} from './DayPlanPanel';
 import {dayPlanSummary,type GoalDayPlan} from '../../lib/engi/study-core/day-plan';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState} from 'react';
 import type {SessionRow,InteractionDraft} from '../../db/engi-db';
 import {trainerService} from '../../services/trainer-service';
 import {isDiscrete,isMapping,discreteAnswer} from '../../lib/engi/questions/timeline';
@@ -75,6 +75,8 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
  }
  const visibilityError=(e:Error)=>{if(alive.current)setError(e.message)};
  const rendered=!!task&&state!=='loading'&&state!=='exiting'&&!imageFailed&&mediaReady&&!feedback?.invalidContent;
+ const taskContent=useRef<HTMLDivElement>(null),enteredTask=useRef<string|undefined>(undefined);
+ useLayoutEffect(()=>{const node=taskContent.current;if(!rendered||!node||enteredTask.current===task.id)return;enteredTask.current=task.id;const viewport=node.closest('.feed-viewport');if(viewport)viewport.scrollTop=0;if(reduced)return;const animation=node.animate([{transform:`translateY(${Math.round((viewport?.clientHeight??window.innerHeight)*.9)}px)`},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,1,.36,1)'});return()=>animation.cancel();},[rendered,task?.id,reduced]);
  useEffect(()=>{if(rendered&&cardLoadReadyTask.current===task?.id||!task){cardLoadEnd.current?.();cardLoadEnd.current=undefined;}},[rendered,task?.id]);
  useStudyVisibility(task?.id+':question',rendered&&!details,(id,event)=>observe('question',id,event),visibilityError);
  const sortComplete=task?.recipe.format==='sort'&&!!feedback&&(draft?.sortCheckedOrder?draft.sortCheckedOrder.every((id,n)=>id===[...task.items].sort((a,b)=>a.year!-b.year!)[n].entityId):feedback.score===1);
@@ -110,7 +112,7 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
    if(result.pending){setDraft(result.interaction);setState('ready');lock.current=false;return}
    setFeedback(result.feedback);setState('feedback');
    if(result.feedback.score===1){playSuccess(preferences.sound);try{navigator.vibrate?.(10)}catch{}}
-   if(result.feedback.mistakeResolved)showNotice(result.feedback.mistakeResolved>1?'Ошибки разобраны':'Ошибка разобрана');else if(result.milestone)showNotice(result.milestone);scheduleNext(result.feedback);
+   scheduleNext(result.feedback);
   }catch(e){if(alive.current){setDraft(previous);setError((e as Error).message);setState('ready');lock.current=false}}finally{end();}
  }
  async function submitPair(pair:{entityId:string;answerId:string},requestId:string){
@@ -121,7 +123,7 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
    const result=await trainerService.answerMatchPair({sessionId:session.id,taskId:task.id,...pair,requestId});
    if(alive.current){setDraft(result.interaction);matchingResult.current=result;setState('ready');void loadDayPlan().catch(visibilityError);
     if(result.correct){playSuccess(preferences.sound);try{navigator.vibrate?.(10)}catch{}}
-    if(result.mistakeResolved)showNotice('Ошибка разобрана');else if(result.milestone)showNotice(result.milestone);
+
     if(result.feedback?.invalidContent){setFeedback(result.feedback);setState('feedback');scheduleNext(result.feedback)}
    }
    return result;
@@ -147,12 +149,11 @@ export function StudyFeed({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   onPointerUp={e=>{if(touch.current!==null&&touch.current-e.clientY>65&&feedback&&task.recipe.diagnostic&&(task.recipe.format!=='sort'||sortComplete)&&!['saving','exiting'].includes(state))void advance();touch.current=null}}>
   {(state==='loading'||!mediaReady)&&!imageFailed&&<p className="feed-game-status" role="status">Готовим вопрос…</p>}
   {task?.reason==='game'&&<p className="feed-game-status">{task.recipe.diagnostic?'Разминка':dayPlan&&(dayPlan.dailyTarget??dayPlan.newTarget)>0&&dayPlan.newGoalIds.length>=(dayPlan.dailyTarget??dayPlan.newTarget)?'План нового выполнен · играем дальше':'Играем и закрепляем'}</p>}
-  <div className="feed-task-content" hidden={state==='loading'||!mediaReady}>
+  <div ref={taskContent} className="feed-task-content" hidden={state==='loading'||!mediaReady}>
   {feedback?.invalidContent?<div className="feed-question"><p role="status">Содержание изменилось. Подготовим другой вопрос.</p></div>:task&&(isMapping(task)?<div className="feed-question">{task.memoryModel!=='goals'&&<h2>{prompt}</h2>}{task.memoryModel==='goals'?(task.presentation==='conveyor'?<ConveyorCard key={task.id} task={task} progress={draft?.matching} busy={busy} onPair={submitPair} onComplete={completeMatching} onMediaReady={setMediaReady} onMediaFail={()=>setImageFailed(true)}/>: <MatchingPairsCard key={task.id} task={task} progress={draft?.matching} busy={busy} onPair={submitPair} onComplete={completeMatching} onMediaReady={setMediaReady} onMediaFail={()=>setImageFailed(true)}/>):<MappingCard key={task.id} task={task} initial={draft?.mapping} feedback={feedback} busy={busy} onPersist={mapping=>{void persist({mapping}).catch(()=>{})}} onSubmit={v=>void submit(v)} onNext={()=>void advance()} onMediaReady={setMediaReady} onMediaFail={()=>setImageFailed(true)}/>}</div>:task.recipe.format==='recall_reveal'?<RecallRevealCard task={task} cue={cue} draft={draft} paused={details||headerHelp||!mediaReady||imageFailed||state==='loading'} busy={state!=='ready'||headerHelp} reducedMotion={reduced} accessible={preferences.accessibleRecall} onPersist={persist} onSubmit={v=>void submit(v)}/>:
    <div className="feed-question">{cue}<div className="feed-actions">{task.recipe.format==='sort'?<div className="sort-heading"><h2>Хронология</h2><p>{task.recipe.label??prompt}</p></div>:<h2>{prompt}</h2>}{task.recipe.format==='multi_choice'?<MultiChoiceCard key={task.id} task={task} feedback={feedback} busy={busy} onSubmit={v=>void submit(v)} onNext={()=>void advance()}/>:isDiscrete(task)?<ChoiceCard task={task} attempts={draft?.attemptSequence??[]} feedback={feedback} busy={busy} onChoose={v=>void submit(v)}/>:task.recipe.format==='timeline'?<TimelineCard task={task} initialValue={draft?.timelineValue} feedback={feedback} busy={state==='saving'||state==='exiting'||state==='loading'||challengeIntro} onPersist={v=>{void persist({timelineValue:v}).catch(()=>{})}} onSubmit={v=>void submit(v)} onNext={()=>void advance()}/>:<SortChallengeCard task={task} initialOrder={draft?.sortOrder} initialCheckedOrder={draft?.sortCheckedOrder} initialDirtySlots={draft?.sortDirtySlots} feedback={feedback} busy={state==='saving'||state==='exiting'||state==='loading'||challengeIntro||details||headerHelp||!mediaReady} onMediaReady={setMediaReady} onMediaFail={()=>setImageFailed(true)} onPersist={(v,checked,dirty)=>{void persist({sortOrder:v,...(checked?{sortCheckedOrder:checked}:{}),...(dirty?{sortDirtySlots:dirty}:{})}).catch(()=>{})}} onSubmit={v=>void submit(v)} onNext={()=>void advance()}/>}</div></div>)}
   </div>
   {feedback?.encoding&&<div className="encoding-moment" role="status"><strong>{task.items[0].name}</strong><span>{task.recipe.label} → {task.items[0].answer}</span>{task.items[0].summary&&<p>{task.items[0].summary.split(/(?<=[.!?])\s+/).slice(0,2).join(' ')}</p>}<small>Вернёмся к этому чуть позже</small></div>}
-  {feedback?.repairResolved&&<div className="repair-closure" role="status">Разобрано ✓</div>}
   <span className="sr-only" role="status" aria-live="polite">{feedback?(feedback.invalidContent?'Вопрос пропущен без оценки':feedback.score===1?'Верно':'Связь уточнена'):draft?.attemptSequence.length?'Этот вариант не подходит. Попробуйте другой.':''}</span>
   {challengeIntro&&<div className="challenge-intro" aria-live="polite"><span>Проверим связи</span><strong>{task.recipe.format==='sort'?'Порядок':task.recipe.format==='timeline'?'Хронология':'Последовательность'}</strong></div>}
   {error&&<p className="feed-error" role="alert">{error}</p>}

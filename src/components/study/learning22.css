@@ -76,3 +76,6 @@
  .learning22-content,.learning22-footer{padding-left:14px;padding-right:14px}
  .learning22-pill{font-size:11px;padding:4px 1px}
 }
+/* The gesture controller owns touch direction before any scrolling starts. */
+.learning22-screen,.learning22-scroll{touch-action:none}
+.learning22-card-sheet{will-change:transform}
