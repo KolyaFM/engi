@@ -11,7 +11,7 @@ export type MatchPairInput={sessionId:string;taskId:string;entityId:string;answe
 export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  const session=await d.activeSessions.get(input.sessionId),task=session?.tasks[session.currentPosition];
  if(!session||session.status!=='active'||task?.id!==input.taskId||task.memoryModel!=='goals'||!['match','categorize'].includes(task.recipe.format)||task.items.length<2)throw Error('Текущая карточка соотнесения не найдена');
- const now=new Date(),bundle=await getBundle(d),core=feedStudyCore(d,'goals');
+ const now=new Date(),bundle=await getBundle(d),core=feedStudyCore(d,'goals',task.learningLifecycle);
  const completed=await d.reviewEvents.get(task.id);
  if(completed?.payload.feedback.invalidContent)return {correct:false,complete:true,interaction:session.interaction,feedback:completed.payload.feedback,milestone:undefined};
  if(!task.studyContract&&!task.studyContractIssue)await prepareStudyTask(d,bundle,task,now);
@@ -23,7 +23,7 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  }
  const catalog=buildGoalCatalog(bundle,(await d.learningState.toArray()).map(r=>r.payload));
  const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
- await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),now);
+ await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),now,session);
  const before=rows.filter(r=>!!r).map(r=>r!.value);
  const {attempt,pair,firstResult}=await core.submitPair(task.id,input.entityId,input.answerId,input.requestId,now);
  let milestone:string|undefined,mistakeResolved=0;

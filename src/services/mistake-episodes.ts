@@ -42,7 +42,8 @@ export async function recordMistakeOutcome(db:EngiDB,attempt:Attempt,contract:Ta
   let episode=ledger.episodes.find(e=>e.key===key&&(e.status==='open'||e.status==='unavailable'));
   if(episode?.attemptIds.includes(attempt.id))continue;
   const repair=contract.intent==='repair'&&result.repairEligible===true&&!!episode&&contract.repairEpisodeIds?.includes(episode.id);
-  if(!result.credit&&!repair)continue;
+  const gameFailure=contract.game&&contract.practice&&contract.intent==='practice'&&!result.correct&&!attempt.hintedGoalIds?.includes(goal.id)&&!contract.shownClaims.some(c=>c.revealsGoalIds.includes(goal.id));
+  if(!result.credit&&!result.acquisitionCredit&&!repair&&!gameFailure)continue;
   if(!result.correct){
    if(!episode){episode={id:crypto.randomUUID(),key,goal,status:'open',failedAt:attempt.submittedAt!,openedAt:attempt.submittedAt!,lastAttemptAt:attempt.submittedAt!,attemptIds:[]};ledger.episodes.push(episode);}
    episode.failedAt=attempt.submittedAt!;

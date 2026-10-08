@@ -1,10 +1,11 @@
 import type {GoalMemory} from './memory';
 import type {Attempt} from './attempts';
+import type {StudyWorkload} from './workload';
 import {applyMistakes,synchronizeMistakes,type KnowledgeMistake} from './mistakes';
 export const DEFAULT_NEW_GOALS_PER_DAY=3;
 export type DayObligation={goalId:string;dueAt:string;status:'pending'|'done'|'excluded'|'deferred';reason:'review'|'learning'|'mistake'};
-export type GoalDayPlan={scopeLabel?:string;nextAvailabilityAt?:string;day:string;endsAt:string;newBudget:number;newTarget:number;newGoalIds:string[];learningGoalIds?:string[];mistakes?:KnowledgeMistake[];unavailableMistakes?:number;available?:{repeat:number;reinforce:number;new:number};repeat:DayObligation[];reinforce:DayObligation[];processedAttemptIds:string[]};
-export function newAdmission(plan:GoalDayPlan){const active=new Set(plan.learningGoalIds??[]).size,limit=plan.newBudget;return {active,limit,available:Math.max(0,limit-active),held:active>=limit};}
+export type GoalDayPlan={lifecycle?:boolean;admissionGoalIds?:string[];workload?:StudyWorkload;dailyTarget?:number;learningLimit?:number;scopeLabel?:string;nextAvailabilityAt?:string;day:string;endsAt:string;newBudget:number;newTarget:number;newGoalIds:string[];learningGoalIds?:string[];mistakes?:KnowledgeMistake[];unavailableMistakes?:number;available?:{repeat:number;reinforce:number;new:number};repeat:DayObligation[];reinforce:DayObligation[];processedAttemptIds:string[]};
+export function newAdmission(plan:GoalDayPlan){const active=new Set(plan.admissionGoalIds??plan.learningGoalIds??[]).size,limit=plan.learningLimit??plan.newBudget;return {active,limit,available:Math.max(0,limit-active),held:active>=limit};}
 export function dayBoundary(now:Date){
  const day=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
  const end=new Date(now);end.setHours(24,0,0,0);return {day,endsAt:end.toISOString()};
@@ -50,6 +51,7 @@ export function applyDayAttempt(previous:GoalDayPlan,attempt:Attempt,after:GoalM
   }
   const m=memory.get(result.goalId);if(!m)throw Error('Credited answer has no goal memory');
   const learning=new Set(plan.learningGoalIds??[]);if(Number(m.card.state)===1)learning.add(m.goalId);else learning.delete(m.goalId);plan.learningGoalIds=[...learning];
+  if(plan.admissionGoalIds){const unresolved=new Set(plan.admissionGoalIds);if(Number(m.card.state)===1&&!m.independentSuccesses&&!result.correct)unresolved.add(m.goalId);else unresolved.delete(m.goalId);plan.admissionGoalIds=[...unresolved];}
   if(Number(m.card.state)===2&&result.correct){if(reinforce)reinforce.status='done';}
   else{
    const row:DayObligation={goalId:result.goalId,dueAt:new Date(m.card.due).toISOString(),status:new Date(m.card.due).getTime()<new Date(plan.endsAt).getTime()?'pending':'deferred',reason:result.correct?'learning':'mistake'};

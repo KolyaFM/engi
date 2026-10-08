@@ -11,6 +11,7 @@ import {localDay} from '../lib/engi/knowledge/motivation';
 import {studyEvidence} from './study-core-bridge';
 import {recordDayAttempt} from './day-plan-service';
 import {recordMistakeOutcome} from './mistake-episodes';
+import {traceStudyAnswer} from './study-selection-trace';
 
 export type AnswerInput={sessionId:string;taskId:string;answer:unknown;confidence?:string;latencyMs?:number};
 function calibrate(m:Memory,t:Task,correct:boolean){
@@ -89,7 +90,7 @@ export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:A
  const metadata={firstAttemptLatencyMs:session.interaction?.firstAttemptLatencyMs??input.latencyMs??0,earlyReveal:!!session.interaction?.earlyReveal,revealElapsedMs:session.interaction?.recallElapsedMs,difficultyStage:task.difficultyStage,practice:!!task.practice,repair:!!task.retryOf,attemptSequence,wrongChoices,attemptCount:discrete?attemptSequence.length:1,firstTryCorrect:result.score===1,stabilityTransitions};
  const event:ReviewEventRow={id:task.id,timestamp:new Date().toISOString(),recipe:task.recipe.id,level:creditBlocked?'practice':task.retryOf?'repair':task.practice?'practice':task.recipe.diagnostic?'diagnostic':task.recipe.evidence?.level??'direct',targetIds:task.items.map(i=>i.targetId),payload:{studyCore:audited?{mode:'eligibility-gate',attempt:audited}:undefined,score:result.score,reason:task.reason,pretest:isNewFailure,selfReport:task.recipe.format==='recall_reveal',fsrsEnabled:fsrsUpdated.size>0,metadata,targets:result.evidence.map(e=>({targetId:e.item.targetId,correct:e.correct,independent:studyEvidence(task,audited,e.item).credit,chosen:discrete?attemptSequence[0]:e.chosen,level:e.level,fsrsUpdated:fsrsUpdated.has(e.item.targetId)})),latencyMs:Math.min(3600000,Math.max(0,input.latencyMs??0)),confidence,feedback}};
  if(task.memoryModel==='goals'){
-  if(audited){await recordDayAttempt(d,audited);feedback.mistakeResolved=await recordMistakeOutcome(d,audited,task.studyContract!);}
+  if(audited){await recordDayAttempt(d,audited,!!task.learningLifecycle);feedback.mistakeResolved=await recordMistakeOutcome(d,audited,task.studyContract!);await traceStudyAnswer(d,task.studyContract!,audited,goalBefore);}
   event.targetIds=goalResults.map(r=>r.goalId);
   event.payload.memoryModel='goals';
   event.payload.targets=goalResults.map(r=>({targetId:r.goalId,correct:r.correct,independent:r.credit,selfReported:r.selfReported,level:'direct',fsrsUpdated:r.credit}));

@@ -7,6 +7,7 @@ import {prepareDue} from './helpers22';
 import {createTrainerService} from '../src/services/trainer-service';
 import {dayPlanSummary} from '../src/lib/engi/study-core/day-plan';
 import {DAY_PLAN_KEY} from '../src/services/day-plan-service';
+import {studyWorkload} from '../src/lib/engi/study-core/workload';
 import type {Bundle} from '../src/lib/engi/types';
 import {createEmptyCard,State} from 'ts-fsrs';
 import {readFileSync} from 'node:fs';
@@ -77,7 +78,7 @@ test('a mature review failure closes Repeat, then a delayed independent success 
 }));
 test('actual daily panel distinguishes a pending deadline from a completed plan',()=>{
  const code=ts.transpileModule(readFileSync(new URL('../src/components/study/DayPlanPanel.tsx',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,exports:Record<string,any>={};
- vm.runInNewContext(code,{exports,require:(id:string)=>id==='react'?React:id==='react/jsx-runtime'?jsxRuntime:id.includes('day-plan')?{dayPlanSummary,dayBoundary}:{},Date,setInterval,clearInterval});
+ vm.runInNewContext(code,{exports,require:(id:string)=>id==='react'?React:id==='react/jsx-runtime'?jsxRuntime:id.includes('day-plan')?{dayPlanSummary,dayBoundary}:id.includes('workload')?{studyWorkload}:{},Date,setInterval,clearInterval});
  const p=synchronizeDayPlan(undefined,[],[],new Date());p.reinforce.push({goalId:'g',dueAt:new Date(Date.now()+60000).toISOString(),status:'pending',reason:'mistake'});
  const render=()=>renderToStaticMarkup(React.createElement(exports.DayPlanPanel,{plan:p}));
  assert(render().includes('Следующая проверка по сроку'));assert(!render().includes('План на сегодня выполнен'));

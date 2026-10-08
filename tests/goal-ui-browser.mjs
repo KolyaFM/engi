@@ -11,30 +11,43 @@ async function seed(page){
   await saveKnowledge(b);
   const {canonicalTargets}=await import('/engi/src/lib/engi/questions/recipe-factory.ts'),{triagedMemory}=await import('/engi/src/lib/engi/learning/bootstrap.ts'),{learningRow}=await import('/engi/src/db/repositories.ts');
   for(const item of canonicalTargets(b)){const m=triagedMemory(item,'red','',0);m.card.due=new Date('2099-01-01');await db.learningState.put(learningRow(m));}
+  const {trainerService}=await import('/engi/src/services/trainer-service.ts');
+  await db.appMeta.delete('studyCore:learningLifecycle');
+  await db.appMeta.put({key:'introducedEntities',value:b.entities.filter(e=>e.type==='subject').map(e=>e.id)});
+  for(const e of (await trainerService.getGoalSnapshot()).goalCatalog.filter(e=>e.goal.skill==='recognition'))await db.appMeta.put({key:'studyCore:memory:'+e.goal.id,value:{goalId:e.goal.id,goal:e.goal,lastCorrect:true,card:{due:new Date(Date.now()-1000),stability:10,difficulty:5,elapsed_days:0,scheduled_days:0,reps:1,lapses:0,state:2,learning_steps:0,last_review:new Date(Date.now()-86400000)},independentAttempts:1,independentSuccesses:1}});
  });await page.reload();await page.locator('.feed-home').waitFor();
 }
 async function start(page){await page.getByLabel('Формат',{exact:true}).selectOption('choice');await page.getByRole('button',{name:'Начать',exact:true}).click();}
 async function current(page){return page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const s=(await db.activeSessions.where('status').equals('active').toArray()).at(-1);return {s,t:s.tasks[0]};});}
-async function check(name,run){const context=await browser.newContext({viewport:{width:393,height:852}}),page=await context.newPage();page.setDefaultTimeout(6000);try{await seed(page);await run(page);console.log('PASS '+name);}finally{await context.close();}}
+async function check(name,run){const context=await browser.newContext({viewport:{width:393,height:852}}),page=await context.newPage();page.setDefaultTimeout(16000);try{await seed(page);await run(page);console.log('PASS '+name);}finally{await context.close();}}
 try{
- await check('first new object is automatically tested after a ten-second intro pause',async page=>{
-  await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');await resetLearningProgress();await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});});
+ await check('first intro pause keeps a protected question on screen and unlocks it automatically',async page=>{
+  await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');await resetLearningProgress();await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:3}});});
   await page.reload();await page.locator('.feed-home').waitFor();await start(page);await page.getByRole('button',{name:'Готово',exact:true}).waitFor();
-  const before=Date.now(),first=(await current(page)).s;await page.getByRole('button',{name:'Готово',exact:true}).click();await page.locator('.learning22-stop').waitFor();
-  await page.getByRole('button',{name:'Добавить новых карточек: 1',exact:true}).waitFor();
-  await page.locator('.study-feed.state-ready').waitFor({timeout:15000});const {t}=await current(page);assert.equal(t.items[0].entityId,first.intro.entityId);assert(Date.now()-before<15000);
+  const first=(await current(page)).s;
+  for(let n=0;n<3;n++){const old=(await current(page)).s.intro.entityId;await page.getByRole('button',{name:'Готово',exact:true}).click();await page.waitForFunction(async id=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.intro?.entityId!==id;},old);}
+  await page.locator('.study-feed.state-ready').waitFor();const game=(await current(page)).t;assert.equal(game.intent,'learn');assert(game.readyAt);assert.equal(game.items[0].entityId,first.intro.entityId);
+  assert.equal(await page.locator('.learning22-stop').count(),0);await page.waitForTimeout(11000);
+  await page.getByRole('button',{name:game.options.find(o=>o.id===game.items[0].answerId).name,exact:true}).click();
+  await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.intent==='learn';});
   assert.equal(await page.getByText('Exposure episode is immutable',{exact:true}).count(),0);
  });
- await check('extra new-card button displays and adds the configured daily batch',async page=>{
+ await check('after the daily target the feed continues without a stop screen or speculative budget',async page=>{
   await page.evaluate(async()=>{
    const {trainerService}=await import('/engi/src/services/trainer-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');
-   await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:10}});
+   await db.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});
    for(const e of (await trainerService.getGoalSnapshot()).goalCatalog.filter(e=>e.goal.skill==='recognition'))await db.appMeta.put({key:'studyCore:memory:'+e.goal.id,value:{goalId:e.goal.id,goal:e.goal,lastCorrect:true,card:{due:new Date('2099-01-01'),stability:10,difficulty:5,elapsed_days:0,scheduled_days:0,reps:1,lapses:0,state:2,learning_steps:0,last_review:new Date()},independentAttempts:1,independentSuccesses:1}});
+   for(const e of (await trainerService.getGoalSnapshot()).goalCatalog.filter(e=>e.goal.skill==='recognition'&&['f6','f7'].includes(e.goal.knowledge.key)))await db.appMeta.delete('studyCore:memory:'+e.goal.id);
+   for(const e of (await trainerService.getGoalSnapshot()).goalCatalog.filter(e=>['f6','f7'].includes(e.goal.knowledge.key)))await db.learningState.bulkDelete(e.targetIds);
+   const ledger=(await db.appMeta.get('studyCore:learningLifecycle')).value;ledger.cards=ledger.cards.filter(c=>!['s6','s7'].includes(c.entityId));ledger.units=ledger.units.filter(u=>!['s6','s7'].includes(u.entityId));await db.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});
+   await db.appMeta.put({key:'introducedEntities',value:['s0','s1','s2','s3','s4','s5']});
   });
-  await page.reload();await page.locator('.feed-home').waitFor();await start(page);await page.locator('.learning22-stop').waitFor();
-  await page.getByRole('button',{name:'Добавить новых карточек: 10',exact:true}).click();
-  await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.get('newLearning'))?.value.extraBudget===10;});
-  assert.equal(await page.evaluate(async()=>{const {trainerService}=await import('/engi/src/services/trainer-service.ts');return (await trainerService.getDayPlan()).newBudget;}),20);
+  await page.reload();await page.locator('.feed-home').waitFor();await start(page);for(let n=0;n<2;n++){await page.getByRole('button',{name:'Готово',exact:true}).click();}await page.locator('.study-feed.state-ready').waitFor();const first=(await current(page)).t;
+  await page.getByRole('button',{name:first.options.find(o=>o.id===first.items[0].answerId).name,exact:true}).click();
+  await page.waitForFunction(async id=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.id!==id;},first.id);
+  await page.locator('.study-feed.state-ready, .learning22-card-sheet').first().waitFor();assert.equal(await page.locator('.learning22-stop').count(),0);
+  const budget=await page.evaluate(async()=>{const {trainerService}=await import('/engi/src/services/trainer-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');return {plan:await trainerService.getDayPlan(),extra:(await db.appMeta.get('newLearning'))?.value};});
+  assert.equal(budget.plan.newBudget,1+(budget.extra?.extraBudget??0));assert((budget.extra?.extraBudget??0)<=1);
  });
  await check('reset then Done survives a delayed intro heartbeat without changing its owner',async page=>{
   await page.evaluate(async()=>{
@@ -60,14 +73,15 @@ try{
    for(const [n,e] of entries.entries())await db.appMeta.put({key:'studyCore:memory:'+e.goal.id,value:{goalId:e.goal.id,goal:e.goal,lastCorrect:true,card:{due:n===0?new Date(Date.now()+4000):new Date('2099-01-01'),stability:10,difficulty:5,elapsed_days:0,scheduled_days:0,reps:1,lapses:0,state:n===0?3:2,learning_steps:0,last_review:new Date()},independentAttempts:1,independentSuccesses:1}});
   });
   await page.reload();await page.locator('.feed-home').waitFor();
-  const block=page.locator('.day-plan-counts>div').nth(1);await block.getByText('Доступно сейчас: 0',{exact:true}).waitFor();await block.getByText('Доступно сейчас: 1',{exact:true}).waitFor();
+  const block=page.locator('.day-plan-counts>div').nth(0);await block.getByText('Доступно сейчас: 0',{exact:true}).waitFor();await block.getByText('Доступно сейчас: 1',{exact:true}).waitFor();
  });
  await check('daily new-card setting persists, refreshes the home plan and supports zero',async page=>{
+  await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts');await resetLearningProgress();});await page.reload();await page.locator('.feed-home').waitFor();
   await page.getByRole('button',{name:'Настройки',exact:true}).click();
   const input=page.getByLabel('Новых карточек в день',{exact:true});await input.waitFor();await page.waitForFunction(()=>!document.querySelector('#daily-new-cards').disabled);
   await input.fill('12');await page.getByRole('button',{name:'Сохранить',exact:true}).click();await page.getByText('Сохранено',{exact:true}).waitFor();
   assert.equal(await page.evaluate(async()=>{const {trainerService}=await import('/engi/src/services/trainer-service.ts');return (await trainerService.getDayPlan()).newBudget;}),12);
-  await page.getByRole('button',{name:'Учиться',exact:true}).click();assert.equal(await page.locator('.day-plan-counts>div').nth(2).locator('strong').textContent(),'0 / 12');
+  await page.getByRole('button',{name:'Учиться',exact:true}).click();assert.equal(await page.locator('.day-plan-counts>div').nth(2).locator('strong').textContent(),'0 / 8');
   await page.reload();await page.locator('.feed-home').waitFor();await page.getByRole('button',{name:'Настройки',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#daily-new-cards')?.value==='12');
   await input.fill('-1');await page.getByRole('button',{name:'Сохранить',exact:true}).click();await page.getByText('Укажите целое число от 0 до 100',{exact:true}).waitFor();
   await input.fill('0');await page.getByRole('button',{name:'Сохранить',exact:true}).click();await page.getByText('Сохранено',{exact:true}).waitFor();
@@ -83,20 +97,19 @@ try{
   await page.getByRole('button',{name:t.options.find(o=>o.id===t.items[0].answerId).name,exact:true}).click();
   await page.waitForFunction(async id=>{const {db}=await import('/engi/src/db/engi-db.ts');return !!await db.reviewEvents.get(id);},t.id);
   const data=await page.evaluate(async goalId=>{const {db}=await import('/engi/src/db/engi-db.ts');return {m:(await db.appMeta.get('studyCore:memory:'+goalId)).value,old:await db.learningState.toArray()};},t.studyContract.primaryGoals[0].id);
-  assert.equal(data.m.independentAttempts,1);assert.equal(data.m.card.reps,1);assert(data.old.every(r=>r.payload.attempts===0));
+  assert.equal(data.m.independentAttempts,2);assert.equal(data.m.card.reps,2);assert(data.old.every(r=>r.payload.attempts===0));
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  });
- await check('waiting screen resumes without buying extra new-object budget',async page=>{
+ await check('a future review stays playable without buying extra new-object budget',async page=>{
   await page.evaluate(async()=>{
    const {trainerService}=await import('/engi/src/services/trainer-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');
    const snapshot=await trainerService.getGoalSnapshot(),due=new Date(Date.now()+4000);
    for(const e of snapshot.goalCatalog.filter(e=>e.goal.skill==='recognition'))await db.appMeta.put({key:'studyCore:memory:'+e.goal.id,value:{goalId:e.goal.id,goal:e.goal,card:{due,stability:10,difficulty:5,elapsed_days:0,scheduled_days:0,reps:1,lapses:0,state:2,learning_steps:0,last_review:new Date()},independentAttempts:1,independentSuccesses:1}});
   });
-  await start(page);await page.getByRole('heading',{name:'Следующая проверка после паузы',exact:true}).waitFor();
-  await page.locator('.study-feed.state-ready').waitFor();assert.equal((await current(page)).s.completedCount,0);
+  await start(page);await page.locator('.study-feed.state-ready').waitFor();assert.equal((await current(page)).s.completedCount,0);assert.equal((await current(page)).t.intent,'practice');assert.equal(await page.locator('.learning22-stop').count(),0);
   assert.equal(await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return !!await db.appMeta.get('newLearning');}),false);
  });
- await check('blue header counts available reinforcement, excluding an exposed overdue goal',async page=>{
+ await check('header shows three property workloads and keeps exposed learning visible',async page=>{
   await page.evaluate(async()=>{
    const {trainerService}=await import('/engi/src/services/trainer-service.ts'),{db}=await import('/engi/src/db/engi-db.ts');
    const snapshot=await trainerService.getGoalSnapshot(),entries=snapshot.goalCatalog.filter(e=>e.goal.skill==='recognition');
@@ -105,7 +118,10 @@ try{
    const plan=(await db.appMeta.get('studyCore:dayPlan')).value;delete plan.mistakes;await db.appMeta.put({key:'studyCore:dayPlan',value:plan});await db.appMeta.delete('studyCore:mistakeEpisodes');
   });
   await start(page);await page.locator('.study-feed.state-ready').waitFor();assert.equal((await current(page)).t.intent,'repair');
-  await page.getByLabel('Закрепить: 0',{exact:true}).waitFor();await page.getByRole('button',{name:'Неразобранные ошибки: 1',exact:true}).waitFor();
+  await page.getByLabel('В обучении: 0',{exact:true}).waitFor();await page.getByRole('button',{name:'Неразобранные ошибки: 1',exact:true}).waitFor();
+  assert.equal(await page.locator('.day-plan-inline strong').count(),3);await page.setViewportSize({width:320,height:760});
+  const bounds=await page.locator('.day-plan-inline').evaluate(el=>({width:el.scrollWidth,available:el.clientWidth}));assert(bounds.width<=bounds.available,'header overflows at 320px');
+  await page.screenshot({path:'artifacts/study-header.png'});
   const pending=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.get('studyCore:dayPlan')).value.reinforce.filter(r=>r.status==='pending').length;});assert.equal(pending,1);
  });
  await check('three mistakes drain seamlessly without a waiting screen or extra budget',async page=>{

@@ -6,7 +6,7 @@ import {getBundle} from '../db/repositories';
 import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {Item} from '../lib/engi/types';
 /** Contract eligibility gates the legacy commit, without two competing live schedules. */
-export const feedStudyCore=(db:EngiDB,model?:'goals')=>createStudyCoreService(db,{applyMemory:model==='goals'});
+export const feedStudyCore=(db:EngiDB,model?:'goals',lifecycle?:1)=>createStudyCoreService(db,{applyMemory:model==='goals',lifecycle:!!lifecycle});
 export async function prepareStudyTask(db:EngiDB,b:Bundle,task:Task,now=new Date()){
   if(task.studyContract||task.studyContractIssue)return;
   let contract;
@@ -14,7 +14,7 @@ export async function prepareStudyTask(db:EngiDB,b:Bundle,task:Task,now=new Date
     contract=compileTaskContract(b,task);
   }catch(error){task.studyContractIssue=(error as Error).message;return;}
   // Storage failures must abort the transaction, rather than masquerade as bad content.
-  const core=feedStudyCore(db,task.memoryModel);
+  const core=feedStudyCore(db,task.memoryModel,task.learningLifecycle);
   await core.setContentRevisions(contract.contentRevisions);
   await core.open(contract,task.id,now);
   task.studyContract=contract;
@@ -22,7 +22,7 @@ export async function prepareStudyTask(db:EngiDB,b:Bundle,task:Task,now=new Date
 export async function auditStudyAnswer(db:EngiDB,task:Task,answer:unknown,now=new Date()){
   const b=await getBundle(db);await prepareStudyTask(db,b,task,now);
   if(!task.studyContract)return undefined;
-  const core=feedStudyCore(db,task.memoryModel);
+  const core=feedStudyCore(db,task.memoryModel,task.learningLifecycle);
   const current=taskContentRevisions(b,task,task.studyContract);
   await core.setContentRevisions(current);
   if(Object.entries(task.studyContract.contentRevisions).some(([key,revision])=>current[key]!==revision)){
@@ -38,7 +38,7 @@ export function studyEvidence(task:Task,attempt:Attempt|undefined,item:Item){
   const goalId=rule?.kind==='mapping'?rule.bindings.find(b=>b.responseKey===item.entityId)?.goalId:
     rule&&'goalId' in rule?rule.goalId:undefined;
   const result=attempt.results?.find(r=>r.goalId===goalId);
-  return {credit:attempt.phase==='submitted'&&!!result?.credit,
+  return {credit:attempt.phase==='submitted'&&!!(result?.credit||result?.acquisitionCredit),
     correct:rule?.kind==='set'?result?.correct:undefined};
 }
 export async function commitInvalidStudyTask(db:EngiDB,s:SessionRow,t:Task){

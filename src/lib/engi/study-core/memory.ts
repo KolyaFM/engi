@@ -19,3 +19,9 @@ export function updateGoalMemories(previous: GoalMemory[], attempt: Attempt): Go
   }
   return [...memories.values()];
 }
+
+/** The final real acquisition answer starts long-term scheduling, without synthetic learning reviews. */
+export function graduateGoalMemory(goal:LearningGoal,at:Date):GoalMemory{
+ const card=fsrs({request_retention:0.9,enable_fuzz:false,learning_steps:[]}).next(createEmptyCard(at),at,Rating.Good).card;
+ return {goalId:goal.id,goal,card,lastCorrect:true,independentAttempts:1,independentSuccesses:1};
+}

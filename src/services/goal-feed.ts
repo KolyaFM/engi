@@ -19,7 +19,7 @@ export async function pickGoalFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Session
  if(['timeline','sort','missing'].includes(s.format??''))return pickGoalFeedEager(db,b,enabled,s,daily,introduced,now);
  const catalog=buildGoalCatalog(b,enabled),rows=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
  const memory=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory])),known=new Set(memory.keys());
- const plan=await ensureDayPlan(db,catalog,[...memory.values()],new Date(now));
+ const plan=await ensureDayPlan(db,catalog,[...memory.values()],new Date(now),s);
  const mistakes=new Set(plan.mistakes?.map(m=>m.key));
  const pool=goalProposalPool(b,enabled,s.tag,s.format),ids=[...new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id)))];
  const exposureRows=await db.appMeta.bulkGet(ids.map(id=>'studyCore:exposure:'+id));
@@ -55,7 +55,7 @@ export async function pickGoalFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Session
 /** Retained as the diagnostic-format path and a reference for equivalence checks. */
 export async function pickGoalFeedEager(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now()){
  const catalog=buildGoalCatalog(b,enabled),allMemory=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
- const plan=await ensureDayPlan(db,catalog,allMemory.filter(r=>!!r).map(r=>r!.value),new Date(now));
+ const plan=await ensureDayPlan(db,catalog,allMemory.filter(r=>!!r).map(r=>r!.value),new Date(now),s);
  const mistakes=new Set(plan.mistakes?.map(m=>m.key));
  const pending=new Set([...plan.repeat,...plan.reinforce].filter(r=>r.status==='pending').map(r=>r.goalId));
  const newLeft=Math.max(0,plan.newTarget-plan.newGoalIds.length);

@@ -1,3 +1,4 @@
+import {acquisitionBlocks,applyAcquisitionEvidence} from './acquisition-evidence-service';
 import type { EngiDB } from '../db/engi-db';
 import { startAttempt, revealHint, submitAttempt, type Attempt } from '../lib/engi/study-core/attempts';
 import { validateContract, type TaskContract } from '../lib/engi/study-core/contracts';
@@ -5,7 +6,7 @@ import { updateGoalMemories, type GoalMemory } from '../lib/engi/study-core/memo
 import { observeEpisode, blockedByExposure,INTRO_DISCLOSURE_COOLDOWN_MS, type ExposureEntry, type ExposureEpisode } from '../lib/engi/study-core/exposure';
 const key = (kind: string, id: string) => `studyCore:${kind}:${id}`;
 /** Separate namespace until the feed can produce complete, revision-aware contracts. */
-export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boolean} = {}) {
+export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boolean;lifecycle?:boolean} = {}) {
   async function currentRevisions(contract: TaskContract) {
     const keys = Object.keys(contract.contentRevisions);
     const rows = await db.appMeta.bulkGet(keys.map(k => key('revision', k)));
@@ -36,9 +37,10 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const revisions = await currentRevisions(contract);
         if (Object.entries(contract.contentRevisions).some(([id, rev]) => revisions[id] !== rev)) throw Error('Task content is stale');
         const memories = await db.appMeta.bulkGet(contract.primaryGoals.map(g => key('memory', g.id)));
-        const notDue = memories.filter(r => r && new Date(r.value.card.due) > now).map(r => r!.value.goalId as string);
+        const acquisition=options.lifecycle?await acquisitionBlocks(db,contract.primaryGoals.map(g=>g.id),now):undefined;
+        const notDue = memories.filter(r => r && !acquisition?.active.has(r.value.goalId) && new Date(r.value.card.due) > now).map(r => r!.value.goalId as string);
         const exposureRows = await db.appMeta.bulkGet(contract.primaryGoals.map(g => key('exposure', g.id)));
-        const exposed = blockedByExposure(exposureRows.filter(r => !!r).map(r => r!.value as ExposureEntry), now);
+        const exposed = [...blockedByExposure(exposureRows.filter(r => !!r&&!acquisition?.active.has(r.value.goalId)).map(r => r!.value as ExposureEntry), now)];
         const attempt = startAttempt(contract, attemptId, now, [...blockedGoalIds, ...notDue, ...exposed]);
         await db.appMeta.bulkPut([{ key: key('contract', contract.id), value: structuredClone(contract) },
           { key: key('taskAttempt', contract.id), value: attemptId },
@@ -115,9 +117,12 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const rows = await db.appMeta.bulkGet(ids.map(id => key('memory', id)));
         const previous = rows.filter(r => !!r).map(r => r!.value as GoalMemory);
         // Another open screen may have reviewed the same goal in the meantime.
+        const awaitActive=options.lifecycle?(await acquisitionBlocks(db,ids,now)).active:new Map();
         const notDue = new Set(previous.filter(m => new Date(m.card.due) > now).map(m => m.goalId));
-        if (attempt.results) attempt = { ...attempt, results: attempt.results.map(r => ({ ...r, credit: r.credit && !notDue.has(r.goalId) })) };
-        const memories = updateGoalMemories(previous, attempt);
+        if (attempt.results) attempt = { ...attempt, results: attempt.results.map(r => ({ ...r, credit: r.credit && (!notDue.has(r.goalId)||!!options.lifecycle&&awaitActive.has(r.goalId)) })) };
+        const lifecycle=options.lifecycle?await applyAcquisitionEvidence(db,attempt,contract,previous):undefined;if(lifecycle)attempt=lifecycle.attempt;
+        const graduated=new Set(lifecycle?.graduated.map(m=>m.goalId));
+        const memories = [...updateGoalMemories(previous,{...attempt,results:attempt.results?.filter(r=>!graduated.has(r.goalId))}),...lifecycle?.graduated??[]];
         const credited = new Set(attempt.results?.filter(r => r.credit).map(r => r.goalId));
         // Attempt and every eligible memory transition succeed or roll back together.
         await db.appMeta.bulkPut([
@@ -144,16 +149,17 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const revisions=await currentRevisions(contract);
         if(Object.entries(contract.contentRevisions).some(([id,rev])=>revisions[id]!==rev))throw Error('Task content is stale');
         const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
-        const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;
-        const firstResult=previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
-          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&Object.keys(matched).length<rule.bindings.length-1&&(!memory||new Date(memory.card.due)<=now)};
+        const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now):undefined;
+        let firstResult:NonNullable<Attempt['results']>[number]|undefined=previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
+          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
         if(pair.correct)matched[responseKey]=answer;
         const complete=Object.keys(matched).length===rule.bindings.length;
-        const attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],
+        let attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],
           firstAnswer:{...previous.firstAnswer as Record<string,string>,...(firstResult?{[responseKey]:answer}:{})},
           results:[...previous.results??[],...(firstResult?[firstResult]:[])],phase:complete?'submitted':'open',...(complete?{submittedAt:now.toISOString()}:{})};
+        let graduated:GoalMemory[]=[];if(firstResult&&options.lifecycle){const evidence=await applyAcquisitionEvidence(db,{...attempt,id:attempt.id+':pair:'+responseKey,phase:'submitted',submittedAt:now.toISOString(),results:[firstResult]},contract,memory?[memory]:[]);firstResult=evidence.attempt.results![0];graduated=evidence.graduated;attempt.results=attempt.results!.map(r=>r.goalId===binding.goalId?firstResult!:r);}
         if(firstResult?.credit&&options.applyMemory!==false){
-          const updated=updateGoalMemories(memory?[memory]:[],{...attempt,id:attempt.id+':pair:'+responseKey,phase:'submitted',submittedAt:now.toISOString(),results:[firstResult]})[0];
+          const updated=graduated[0]??updateGoalMemories(memory?[memory]:[],{...attempt,id:attempt.id+':pair:'+responseKey,phase:'submitted',submittedAt:now.toISOString(),results:[firstResult]})[0];
           await db.appMeta.put({key:key('memory',binding.goalId),value:{...updated,goal:contract.primaryGoals.find(g=>g.id===binding.goalId)}});
         }
         await db.appMeta.put({key:row.key,value:attempt});

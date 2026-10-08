@@ -6,7 +6,7 @@ export type Attempt = {
   hintedGoalIds?: string[];
   firstAnswer?: unknown;
   submittedAt?: string;
-  results?: (GoalResult & { credit: boolean; repairEligible?:boolean })[];
+  results?: (GoalResult & { credit: boolean; acquisitionCredit?:boolean;acquisitionStageBefore?:string;acquisitionStageAfter?:string; repairEligible?:boolean })[];
   matchedAnswers?: Record<string,string>;
   pairHistory?: MatchingPair[];
 };

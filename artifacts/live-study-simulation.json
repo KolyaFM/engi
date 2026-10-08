@@ -8,13 +8,13 @@
       "size": 16,
       "limit": 3,
       "format": "mixed",
-      "screens": 217,
-      "credited": 183,
+      "screens": 203,
+      "credited": 173,
       "repairs": 29,
-      "groupScreens": 9,
-      "errorsCreated": 26,
-      "hints": 10,
-      "restarts": 35,
+      "groupScreens": 10,
+      "errorsCreated": 31,
+      "hints": 9,
+      "restarts": 27,
       "uniqueKnowledge": 16,
       "formats": [
         "choice",
@@ -22,11 +22,11 @@
         "match",
         "categorize"
       ],
-      "adjacent": 216,
-      "repeatedObjects": 36,
-      "repeatedLearningObjects": 18,
+      "adjacent": 202,
+      "repeatedObjects": 38,
+      "repeatedLearningObjects": 19,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.167,
+      "repeatRate": 0.188,
       "dailyNew": [
         3,
         3,
@@ -51,7 +51,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.966
+      "retentionModel": 0.972
     },
     {
       "seed": 1,
@@ -160,13 +160,13 @@
       "size": 16,
       "limit": 3,
       "format": "mixed",
-      "screens": 186,
-      "credited": 161,
-      "repairs": 23,
-      "groupScreens": 11,
-      "errorsCreated": 23,
-      "hints": 8,
-      "restarts": 27,
+      "screens": 196,
+      "credited": 169,
+      "repairs": 27,
+      "groupScreens": 9,
+      "errorsCreated": 26,
+      "hints": 10,
+      "restarts": 28,
       "uniqueKnowledge": 16,
       "formats": [
         "choice",
@@ -174,11 +174,11 @@
         "match",
         "categorize"
       ],
-      "adjacent": 185,
-      "repeatedObjects": 31,
-      "repeatedLearningObjects": 16,
+      "adjacent": 195,
+      "repeatedObjects": 40,
+      "repeatedLearningObjects": 20,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.168,
+      "repeatRate": 0.205,
       "dailyNew": [
         3,
         3,
@@ -203,7 +203,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.969
+      "retentionModel": 0.967
     },
     {
       "seed": 17,
@@ -345,13 +345,13 @@
       "size": 64,
       "limit": 7,
       "format": "mixed",
-      "screens": 655,
-      "credited": 591,
-      "repairs": 77,
-      "groupScreens": 77,
-      "errorsCreated": 76,
+      "screens": 632,
+      "credited": 597,
+      "repairs": 82,
+      "groupScreens": 72,
+      "errorsCreated": 84,
       "hints": 32,
-      "restarts": 95,
+      "restarts": 85,
       "uniqueKnowledge": 64,
       "formats": [
         "choice",
@@ -359,11 +359,11 @@
         "match",
         "categorize"
       ],
-      "adjacent": 654,
-      "repeatedObjects": 30,
-      "repeatedLearningObjects": 9,
+      "adjacent": 631,
+      "repeatedObjects": 42,
+      "repeatedLearningObjects": 16,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.046,
+      "repeatRate": 0.067,
       "dailyNew": [
         7,
         7,
@@ -388,7 +388,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.961
+      "retentionModel": 0.964
     }
   ]
 }

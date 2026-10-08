@@ -21,25 +21,33 @@ import {newAdmission} from '../lib/engi/study-core/day-plan';
 import {markRepairUnavailable,MISTAKE_EPISODES_KEY,type MistakeEpisode} from './mistake-episodes';
 import {studyAvailability} from './study-availability-service';
 import {readStudyPreferences} from './study-preferences-service';
+import {pickEndlessFeed} from './endless-study-service';
+import {traceStudySelection,startStudyTrace,stopStudyTrace,studyTraceReport} from './study-selection-trace';
+import {pickLifecycleFeed} from './lifecycle-feed-service';
+import {acceptLifecycleIntro,lifecycleProjection} from './learning-lifecycle-service';
+import {studyWorkload} from '../lib/engi/study-core/workload';
 
 async function selectNext(d:EngiDB,s:SessionRow){
  const b=await measureFeed('bundle.read',()=>getBundle(d)),memories=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
- const next=s.memoryModel==='goals'?await measureFeed('selection',()=>pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);return s;
+ const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s);return s;
 }
 const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSessions,d.reviewEvents,d.appMeta];
 export function createTrainerService(d:EngiDB){return {
  getSnapshot:()=>getSnapshot(d),
- getGoalSnapshot:()=>getGoalSnapshot(d),
+ getGoalSnapshot:(lifecycle=false)=>getGoalSnapshot(d,lifecycle),
  async getDayPlan(tag='all',format?:string){return d.transaction('rw',sessionTables(d),async()=>{
   const bundle=await getBundle(d),enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
   const plan=await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value));
   if(format){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
-  if(tag==='all')return plan;
+  const exposed=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:exposure:'+e.goal.id)),introduced=exposed.filter(r=>!!r).map(r=>r!.value.goalId),memory=rows.filter(r=>!!r).map(r=>r!.value);
+  const counterIds=new Set(catalog.filter(e=>!e.suspended&&(!format||format==='mixed'||e.goal.skill===(format==='recall_reveal'?'recall':'recognition'))).map(e=>e.goal.id));
+  if(tag==='all')return lifecycleProjection(d,catalog,memory,{...plan,workload:studyWorkload(plan,memory,introduced,counterIds)});
   const targets=new Set(canonicalTargets(bundle,tag).map(i=>i.targetId)),scoped=catalog.filter(e=>e.targetIds.every(id=>targets.has(id))),goals=scoped.filter(e=>!e.suspended).map(e=>e.goal),ids=new Set(goals.map(g=>g.id)),keys=new Set(scoped.map(e=>knowledgeMistakeKey(e.goal))),known=new Set(rows.filter(r=>!!r).map(r=>r!.value.goalId));
   const unavailableMistakes=((await d.appMeta.get(MISTAKE_EPISODES_KEY))?.value.episodes??[]).filter((e:MistakeEpisode)=>e.status==='unavailable'&&keys.has(e.key)).length;
   const newGoalIds=plan.newGoalIds.filter(id=>ids.has(id)),fresh=[...ids].filter(id=>!known.has(id)).length;
-  return {...plan,scopeLabel:bundle.decks?.find(t=>t.id===tag)?.name??bundle.tags.find(t=>t.id===tag)?.name??'Выбранная подборка',repeat:plan.repeat.filter(r=>ids.has(r.goalId)),reinforce:plan.reinforce.filter(r=>ids.has(r.goalId)),mistakes:plan.mistakes?.filter(m=>keys.has(m.key)),unavailableMistakes,newGoalIds,newTarget:newGoalIds.length+Math.min(fresh,plan.newTarget-plan.newGoalIds.length)};
+  const scopedPlan={...plan,scopeLabel:bundle.decks?.find(t=>t.id===tag)?.name??bundle.tags.find(t=>t.id===tag)?.name??'Выбранная подборка',repeat:plan.repeat.filter(r=>ids.has(r.goalId)),reinforce:plan.reinforce.filter(r=>ids.has(r.goalId)),mistakes:plan.mistakes?.filter(m=>keys.has(m.key)),unavailableMistakes,newGoalIds,newTarget:newGoalIds.length+Math.min(fresh,plan.newTarget-plan.newGoalIds.length)};
+  return lifecycleProjection(d,catalog,memory,{...scopedPlan,workload:studyWorkload(scopedPlan,memory,introduced,new Set([...ids].filter(id=>counterIds.has(id))))},ids);
  })},
  async refreshGoalFeed(id:string){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||s.memoryModel!=='goals'||!s.exhausted)throw Error('Сначала завершите текущую карточку');return selectNext(d,s)})},
  async retryUnavailableMistakes(id:string){return d.transaction('rw',sessionTables(d),async()=>{
@@ -50,10 +58,10 @@ export function createTrainerService(d:EngiDB){return {
   return selectNext(d,s);
  })},
  async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(t=>t.items.map(i=>i.image).filter((url):url is string=>!!url)))];},
- async startGoalFeed(tag='all',format='mixed',mode='daily'){return createTrainerService(d).startFeed(tag,format,mode,'goals')},
- async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals'){
+ async startGoalFeed(tag='all',format='mixed',mode='daily',options:{endless?:boolean;lifecycle?:boolean}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
+ async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{endless?:boolean;lifecycle?:boolean}={}){
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
-  await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={memoryModel,id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
+  await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);}await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },
  async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
@@ -71,16 +79,18 @@ export function createTrainerService(d:EngiDB){return {
   const introduced=new Set<string>((await d.appMeta.get('introducedEntities'))?.value??[]);introduced.add(intro.entityId);await d.appMeta.put({key:'introducedEntities',value:[...introduced]});
   if(!intro.newProperty){const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.introducedEntityIds=[...new Set([...daily.introducedEntityIds,intro.entityId])];await d.appMeta.put({key:'newLearning',value:daily})}
   const item=units[0];if(item)s.cooldown=[...s.cooldown??[],{id:'intro:'+crypto.randomUUID(),items:[item],options:[],reason:'intro',recipe:{id:'intro',format:'choice' as const,cue:'name' as const,answerKey:'identity',memoryKey:'intro',diagnostic:false}}].slice(-30);
-  const introContract=compileIntroContract(b,intro,s.id);if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
+  const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload));await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
   s.completedCount=(s.completedCount??0)+1;s.intro=undefined;return selectNext(d,s);
  })},
- async getResumableSession(){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
+ async getResumableSession(options:{endless?:boolean;lifecycle?:boolean}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
   if(s.memoryModel!=='goals')return s;
   return d.transaction('rw',sessionTables(d),async()=>{
+   if(options.endless&&!s.endless){s.endless=true;await d.activeSessions.put(s);}if(options.endless&&options.lifecycle!==false&&!s.learningLifecycle){s.learningLifecycle=1;await d.activeSessions.put(s);}
+   if(s.endless){const bundle=await getBundle(d),catalog=buildGoalCatalog(bundle,(await d.learningState.toArray()).map(r=>r.payload));const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),new Date(),s);}
    if(s.exhausted)return selectNext(d,s);
-   if(s.intro){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
+   if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
-   if(task&&task.intent!=='repair'&&!task.practice&&!task.recipe.diagnostic){
+   if(task&&!s.learningLifecycle&&task.intent!=='repair'&&!task.practice&&!task.recipe.diagnostic){
     const goals=task.studyContract?.primaryGoals??[],rows=await d.appMeta.bulkGet(goals.map(g=>'studyCore:memory:'+g.id)),fresh=rows.filter(r=>!r).length;
     if(fresh){const plan=await createTrainerService(d).getDayPlan(),slots=Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available);
      if(fresh>slots){if(task.studyContract)await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
@@ -130,7 +140,7 @@ export function createTrainerService(d:EngiDB){return {
   const answeredAt=new Date();
   if(task.memoryModel==='goals'&&!await d.appMeta.get(reviewReceiptKey(task.id))){
    const catalog=buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload));
-   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),answeredAt);
+   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),answeredAt,session);
   }
   const hasReceipt=!!await d.appMeta.get(reviewReceiptKey(task.id));
   if(task.memoryModel==='goals'&&!hasReceipt&&!task.studyContract&&!task.studyContractIssue)await prepareStudyTask(d,await getBundle(d),task,answeredAt);
@@ -156,4 +166,5 @@ export function createTrainerService(d:EngiDB){return {
  async resolveReport(reportId:string){return d.transaction('rw',d.reviewEvents,async()=>{if(!(await d.reviewEvents.get(reportId)))throw Error('Сообщение не найдено');if(!(await d.reviewEvents.get('resolved:'+reportId)))await d.reviewEvents.add({id:'resolved:'+reportId,timestamp:new Date().toISOString(),recipe:'report_resolved',level:'report',targetIds:[],payload:{reportId}})})}
 }}
 export const trainerService=createTrainerService(db);
+if(typeof window!=='undefined')Object.assign(window,{engiStudyTrace:{start:()=>startStudyTrace(db),stop:()=>stopStudyTrace(db),report:()=>studyTraceReport(db)}});
 

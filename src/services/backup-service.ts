@@ -7,6 +7,7 @@ import {validateImport} from '../lib/engi/validate';
 import {mediaStore,hashFromUrl} from '../media/media-store';
 import {sha256,checkImage,MAX_MEDIA_BYTES,manifestSchema,MAX_PACK_BYTES} from './pack-format';
 import {learningRow} from '../db/repositories';
+import {learningLifecycleSchema} from '../lib/engi/study-core/acquisition';
 const date=z.union([z.string(),z.date()]).refine(x=>Number.isFinite(new Date(x).getTime()));
 const count=z.number().int().nonnegative();
 export const memorySchema=z.object({id:z.string().min(1).max(500),card:z.object({due:date,stability:z.number().finite().nonnegative(),difficulty:z.number().finite().min(0).max(10),elapsed_days:z.number().finite().nonnegative(),scheduled_days:z.number().finite().nonnegative(),reps:count,lapses:count,state:z.number().int().min(0).max(3),learning_steps:count,last_review:date.optional()}).passthrough(),attempts:count,correct:count,firstSuccessAt:date.optional(),confusions:z.record(z.number().finite().nonnegative())}).passthrough().refine(m=>m.correct<=m.attempts);
@@ -18,6 +19,7 @@ export async function exportBackup(d:EngiDB=db){
  const userMedia:{hash:string;mime:string;data:string}[]=[];for(const m of data.userKnowledge.media){const hash=hashFromUrl(m.url);if(!hash||userMedia.some(x=>x.hash===hash))continue;const blob=await mediaStore.getBlob(hash);userMedia.push({hash,mime:blob.type,data:encode(new Uint8Array(await blob.arrayBuffer()))})}return {...data,userMedia};
 }
 export async function restoreBackup(input:unknown,d:EngiDB=db){
+ const lifecycle=(input as {settings?:Record<string,unknown>}|null)?.settings?.['studyCore:learningLifecycle'];if(lifecycle!==undefined)learningLifecycleSchema.parse(lifecycle);
  const backup=backupSchema.parse(input);if(new Set(backup.learningState.map(r=>r.id)).size!==backup.learningState.length||new Set(backup.reviewEvents.map(e=>e.id)).size!==backup.reviewEvents.length)throw Error('Повтор ID в копии');for(const r of backup.learningState)if(r.id!==r.payload.id)throw Error('ID состояния не совпадает');
  const current=await getBundle(d),knowledge=backup.schemaVersion>=2&&backup.userKnowledge?validateImport(backup.userKnowledge,current,true):undefined;
  const restoredMedia=[];let total=0;for(const m of backup.userMedia){if(m.data.length>Math.ceil(MAX_MEDIA_BYTES/3)*4+4)throw Error('Изображение в копии слишком большое');const blob=new Blob([Uint8Array.from(atob(m.data),c=>c.charCodeAt(0))],{type:m.mime});total+=blob.size;if(total>MAX_PACK_BYTES||blob.size>MAX_MEDIA_BYTES||await sha256(blob)!==m.hash)throw Error('Неверное изображение в копии');await checkImage(blob,m.mime);restoredMedia.push({...m,blob})}

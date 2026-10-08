@@ -114,7 +114,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
   const contract:TaskContract={id:task.id,primaryGoals:goals,supportGoalIds:[],actionFamily,visibleEntities,
     shownClaims:[...new Map(shownClaims.map(c=>[c.key,c])).values()],hintClaims,feedbackClaims,
-    contentRevisions:revisions,response,practice,...(task.intent?{intent:task.intent,repairEpisodeIds:task.repairEpisodeIds}:{})};
+    contentRevisions:revisions,response,practice,...(task.reason==='game'?{game:true}:{}),...(task.intent?{intent:task.intent,repairEpisodeIds:task.repairEpisodeIds}:{})};
   validateContract(contract);return contract;
 }
 /** Re-read dependencies from the current graph; absent or invalidated data is a new revision. */

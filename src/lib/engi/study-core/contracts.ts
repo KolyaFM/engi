@@ -11,6 +11,7 @@ export type ResponseRule =
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'self-report'; goalId: string };
 export type TaskContract = {
+  game?:boolean;
   intent?: 'learn'|'repair'|'practice';
   repairEpisodeIds?: string[];
   id: string;

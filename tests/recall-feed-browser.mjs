@@ -17,6 +17,9 @@ try{
   await saveKnowledge(b);
   const {canonicalTargets}=await import('/engi/src/lib/engi/questions/recipe-factory.ts'),{triagedMemory}=await import('/engi/src/lib/engi/learning/bootstrap.ts'),{learningRow}=await import('/engi/src/db/repositories.ts');
   for(const item of canonicalTargets(b))await db.learningState.put(learningRow(triagedMemory(item,'red','',0)));
+  const {trainerService}=await import('/engi/src/services/trainer-service.ts');await db.appMeta.delete('studyCore:learningLifecycle');await db.appMeta.put({key:'introducedEntities',value:b.entities.filter(e=>e.type==='subject').map(e=>e.id)});
+  for(const e of (await trainerService.getGoalSnapshot()).goalCatalog)await db.appMeta.put({key:'studyCore:memory:'+e.goal.id,value:{goalId:e.goal.id,goal:e.goal,lastCorrect:true,card:{due:e.goal.skill==='recall'?new Date(Date.now()-1000):new Date('2099-01-01'),stability:10,difficulty:5,elapsed_days:0,scheduled_days:0,reps:1,lapses:0,state:2,learning_steps:0,last_review:new Date(Date.now()-86400000)},independentAttempts:1,independentSuccesses:1}});
+
  });
  await page.reload();await page.getByLabel('Формат',{exact:true}).selectOption('recall_reveal');await page.getByRole('button',{name:'Начать',exact:true}).click();await page.locator('.study-feed.state-ready').waitFor();
  assert.equal(await page.locator('.revealed-answer').count(),0);
