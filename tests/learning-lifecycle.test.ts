@@ -14,6 +14,7 @@ import {setUnitSuspended} from '../src/services/learning-service';
 import {saveKnowledge} from '../src/services/knowledge-service';
 import {writeFileSync} from 'node:fs';
 import {startStudyTrace,studyTraceReport} from '../src/services/study-selection-trace';
+import {ACQUISITION_CONFIRMATION_MS} from '../src/lib/engi/study-core/acquisition';
 const fixture=(count=6):Bundle=>({entities:Array.from({length:count},(_,n)=>[{id:'s'+n,name:'Объект '+n,type:'s',aliases:[],externalIds:{}},{id:'a'+n,name:'Автор '+n,type:'a',aliases:[],externalIds:{}}]).flat(),facts:Array.from({length:count},(_,n)=>['author','country'].map(key=>({id:key+n,entityId:'s'+n,key,valueKind:'entity' as const,valueEntityId:'a'+n,verification:'user_confirmed' as const,source:{kind:'manual' as const,name:'Test'}}))).flat(),media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'s',name:'Объект'},{id:'a',name:'Ответ'}],properties:['author','country'].map(id=>({id,name:id,valueKind:'entity' as const,cardinality:'one' as const,learnable:true,subjectTypes:['s'],targetTypes:['a']}))});
 async function run(action:(d:EngiDB,svc:ReturnType<typeof createTrainerService>)=>Promise<void>,bundle=fixture()){const d=new EngiDB('lifecycle-'+crypto.randomUUID());try{await putBundle(d,bundle);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});await action(d,createTrainerService(d));}finally{d.close();await d.delete();}}
 test('completed object intro admits both properties immediately and consumes one daily object',()=>run(async(d,svc)=>{
@@ -40,7 +41,7 @@ test('learning alternates objects whenever another object has an eligible proper
   // Other objects are at confirmation, while the last object's sibling is still at first-check.
   for(const u of ledger.units)if(u.entityId!==owner){u.successes=1;u.stage='confirmation';}
   await d.appMeta.put({key:LIFECYCLE_KEY,value:ledger});await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
-  s=await svc.advanceFeed(s.id,false,q.id);assert.notEqual(s.tasks[0].items[0].entityId,owner,'available different objects must outrank the first-check sibling of the last object');
+  s=await svc.advanceFeed(s.id,false,q.id);assert.notEqual(s.intro?.entityId??s.tasks[0].items[0].entityId,owner,'available different objects must outrank the first-check sibling of the last object');
  },fixture(3));}finally{mock.timers.reset();}
 });
 test('correct service answers drain acquisition and create one real FSRS review per property',async()=>{
@@ -74,7 +75,8 @@ test('initial failure is one error; same-screen correction cannot advance acquis
   await svc.answer({sessionId:s.id,taskId:task.id,answer:wrong.id});const failed=structuredClone((await d.appMeta.get(LIFECYCLE_KEY))!.value);
   assert.equal((await svc.getDayPlan()).workload!.mistakes,1);
   await svc.answer({sessionId:s.id,taskId:task.id,answer:task.items[0].answerId});assert.deepEqual((await d.appMeta.get(LIFECYCLE_KEY))!.value,failed);assert.equal((await svc.getDayPlan()).workload!.mistakes,1);
-  for(let n=0;n<20;n++){mock.timers.setTime(at+(n+3)*15000);s=await svc.advanceFeed(s.id,false,s.tasks[0].id);if(s.intro){s=await svc.completeIntro(s.id);continue;}const q=s.tasks[0];if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});if((await svc.getDayPlan()).workload!.mistakes===0)return;}
+  s=await svc.advanceFeed(s.id,false,task.id);
+  for(let n=0;n<30;n++){mock.timers.setTime(at+(n+3)*15000);if(s.intro){s=await svc.completeIntro(s.id);continue;}const q=s.tasks[0];if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});if((await svc.getDayPlan()).workload!.mistakes===0)return;s=await svc.advanceFeed(s.id,false,q.id);}
   assert.fail('fresh checks must resolve the initial error');
  });}finally{mock.timers.reset();}
 });
@@ -142,7 +144,7 @@ test('a fresh queue supplies immediately answerable training without a deadline 
   const attempt=(await d.appMeta.get('studyCore:attempt:'+q.id))!.value;assert.equal(attempt.results[0].acquisitionCredit,true);
  });}finally{mock.timers.reset();}
 });
-test('continuous correct answers finish every property without advancing the wall clock',async()=>{
+test('frozen-clock feed continues but cannot graduate future confirmations',async()=>{
  mock.timers.enable({apis:['Date'],now:new Date(2026,9,8,10).getTime()});
  try{await run(async(d,svc)=>{
   let s=await svc.startGoalFeed('all','choice','daily',{endless:true});
@@ -152,9 +154,52 @@ test('continuous correct answers finish every property without advancing the wal
    if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});
    await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});s=await svc.advanceFeed(s.id,false,q.id);
   }
-  const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert.equal(ledger.cards.length,6);assert.equal(ledger.units.length,12);assert(ledger.units.every((u:any)=>u.stage==='completed'));assert.equal((await svc.getDayPlan()).workload!.learning,0);
-  for(const u of ledger.units){const m=(await d.appMeta.get('studyCore:memory:'+u.goal.id))!.value;assert.equal(m.card.reps,1);assert(new Date(m.card.due).getTime()>Date.now());}
+  const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert.equal(ledger.cards.length,6);assert.equal(ledger.units.length,12);assert(ledger.units.every((u:any)=>u.stage!=='completed'));assert.equal((await svc.getDayPlan()).workload!.learning,12);
+  assert.equal((await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).length,0);
  });}finally{mock.timers.reset();}
+});
+test('reading lifecycle preserves future confirmation deadlines',()=>run(async(d,svc)=>{
+ const s=await svc.startGoalFeed('all','choice','daily',{endless:true});await svc.completeIntro(s.id);
+ const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value,unit=ledger.units[0];unit.successes=1;unit.stage='confirmation';unit.availableAt=new Date(Date.now()+300000).toISOString();await d.appMeta.put({key:LIFECYCLE_KEY,value:ledger});
+ const after=await ensureLifecycle(d,buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload)));assert.equal(after.units[0].availableAt,unit.availableAt);
+}));
+test('first twenty screens introduce at least five objects and never confirm successful knowledge early',async()=>{
+ const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
+ try{await run(async(d,svc)=>{
+  await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:10}});let s=await svc.startGoalFeed('all','choice','daily',{endless:true});let intros=0;
+  for(let n=0;n<20;n++){mock.timers.setTime(at+n*3000);if(s.intro){intros++;s=await svc.completeIntro(s.id);continue;}const q=s.tasks[0];assert(q);assert.equal(q.reason,'bootstrap');await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});s=await svc.advanceFeed(s.id,false,q.id);}
+  assert(intros>=5,`only ${intros} introductions`);const l=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert(l.units.every((u:any)=>u.stage!=='completed'));assert(l.units.some((u:any)=>u.stage==='confirmation'&&new Date(u.availableAt).getTime()>=at+ACQUISITION_CONFIRMATION_MS));
+ },fixture(24));}finally{mock.timers.reset();}
+});
+test('a pending confirmation error cannot trigger an ineligible repair loop ahead of new objects',async()=>{
+ const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
+ try{await run(async(d,svc)=>{
+  let s=await svc.startGoalFeed('all','choice','daily',{endless:true});while(s.intro)s=await svc.completeIntro(s.id);const q=s.tasks[0];
+  const wrong=q.options.find(o=>o.id!==q.items[0].answerId)!;await svc.answer({sessionId:s.id,taskId:q.id,answer:wrong.id});await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
+  const row=(await d.appMeta.get(LIFECYCLE_KEY))!,g=q.studyContract!.primaryGoals[0],u=row.value.units.find((u:any)=>u.goal.id===g.id);u.successes=1;u.stage='confirmation';u.lastAttemptAt=new Date().toISOString();u.availableAt=new Date(at+300000).toISOString();for(const other of row.value.units)if(other!==u){other.stage='completed';other.successes=2;other.completedAt=new Date().toISOString();}await d.appMeta.put(row);
+  s=await svc.advanceFeed(s.id,false,q.id);assert.notEqual(s.tasks[0]?.intent,'repair');assert(s.intro||s.tasks[0]);
+ });}finally{mock.timers.reset();}
+});
+test('thirty virtual days retain independent deadlines, correct counts and playable mixed mechanics',async()=>{
+ const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
+ try{await run(async(d,svc)=>{
+  await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:5}});let s=await svc.startGoalFeed('all','mixed','daily',{endless:true});const formats=new Set<string>();let graduations=0;
+  for(let day=0;day<30;day++)for(let n=0;n<40;n++){
+   mock.timers.setTime(at+day*86400000+n*30000);if(s.intro){s=await svc.completeIntro(s.id);continue;}
+   const q=s.tasks[0];assert(q,`empty on ${day}:${n}`);assert.equal(q.readyAt,undefined);formats.add(q.recipe.format);
+   const before=(await d.appMeta.get(LIFECYCLE_KEY))!.value,memories=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();
+   if(q.intent==='learn')for(const g of q.studyContract!.primaryGoals){const u=before.units.find((u:any)=>u.goal.id===g.id);if(u?.stage==='confirmation')assert(new Date(u.availableAt).getTime()<=Date.now());}
+   if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});
+   if(q.items.length>1&&['match','categorize'].includes(q.recipe.format)){for(const i of q.items)await svc.answerMatchPair({sessionId:s.id,taskId:q.id,entityId:i.entityId,answerId:i.answerId,requestId:crypto.randomUUID()});}
+   else{const wrong=q.recipe.format==='choice'&&n%11===7;await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:wrong?q.options.find(o=>o.id!==q.items[0].answerId)!.id:q.items[0].answerId});if(wrong)await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});}
+   const after=(await d.appMeta.get(LIFECYCLE_KEY))!.value;
+   for(const u of after.units){const old=before.units.find((v:any)=>v.key===u.key);if(u.stage==='completed'&&old?.stage==='confirmation'){graduations++;assert(Date.now()-new Date(old.lastAttemptAt).getTime()>=ACQUISITION_CONFIRMATION_MS);}}
+   if(q.intent==='practice')assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),memories);
+   s=await svc.advanceFeed(s.id,false,q.id);
+   if(n%13===0)assert.equal((await createTrainerService(d).getResumableSession({endless:true}))!.id,s.id);
+  }
+  assert(graduations>=12);assert(formats.has('match'));const plan=await svc.getDayPlan();assert.equal(plan.workload!.learning,0);assert.equal(plan.workload!.mistakes,0);
+ },fixture(8));}finally{mock.timers.reset();}
 });
 test('a recall-only introduction trains the chosen skill and normal reveal permits labeled acquisition evidence',async()=>{
  const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
@@ -177,7 +222,7 @@ test('a ten-object daily plan spends exactly ten introductions despite twenty pr
   const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value,plan=await svc.getDayPlan();assert.equal(ledger.cards.filter((c:any)=>c.source==='daily').length,10);assert.equal(ledger.cards.filter((c:any)=>c.source==='extra').length,2);assert.equal(plan.newGoalIds.length,10);assert.equal(plan.newBudget,10);assert.equal(plan.workload!.learning,0);assert.equal(ledger.units.length,24);assert(ledger.units.every((u:any)=>u.stage==='completed'));
  },fixture(12));}finally{mock.timers.reset();}
 });
-test('three virtual days finish all admitted properties, bound active objects and preserve memory during games',async()=>{
+test('three virtual days finish admitted properties, bound first-check backlog and preserve memory during games',async()=>{
  const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
  try{await run(async(d,svc)=>{
   await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:3}});startStudyTrace(d,1000);
@@ -194,7 +239,7 @@ test('three virtual days finish all admitted properties, bound active objects an
     if(q.intent==='practice'){games++;assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before);}else checks++;
     if(n%9===0){const resumed=(await createTrainerService(d).getResumableSession({endless:true}))!;assert.equal(resumed.tasks[0].id,q.id);}
     s=await svc.advanceFeed(s.id,false,q.id);const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;
-    assert(new Set(ledger.units.filter((u:any)=>u.stage!=='completed').map((u:any)=>u.entityId)).size<=3);
+    assert(ledger.units.filter((u:any)=>u.stage==='first-check').length<=14);
     previousTime=Date.now();
    }
    const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value,plan=await svc.getDayPlan();assert.equal(plan.workload!.learning,0);assert.equal(plan.workload!.mistakes,0);assert.equal(ledger.cards.length,6);

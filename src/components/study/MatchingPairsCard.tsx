@@ -11,7 +11,7 @@ export function MatchingPairsCard({task,progress,busy,onPair,onComplete,onMediaR
 }){
  const [left,setLeft]=useState<string>(),[right,setRight]=useState<string>(),[flashes,setFlashes]=useState<(Pair&{correct:boolean;id:string})[]>([]),[pending,setPending]=useState(false),[loaded,setLoaded]=useState<string[]>([]),[status,setStatus]=useState('');
  const lock=useRef(false),alive=useRef(true),timers=useRef(new Set<ReturnType<typeof setTimeout>>()),request=useRef<(Pair&{id:string})|undefined>(undefined);
- const matched=progress?.matched??{},solved=new Set(task.options.filter(o=>!task.items.some(i=>i.answerId===o.id&&!matched[i.entityId])).map(o=>o.id));
+ const matched=progress?.matched??{},solved=new Set(task.options.filter(o=>task.items.some(i=>i.answerId===o.id)&&!task.items.some(i=>i.answerId===o.id&&!matched[i.entityId])).map(o=>o.id));
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;timers.current.forEach(clearTimeout)}},[]);
  const images=task.recipe.cue==='image'?task.items.filter(i=>i.image):[];
  useEffect(()=>{onMediaReady(images.every(i=>loaded.includes(i.entityId)))},[loaded,task,onMediaReady]);

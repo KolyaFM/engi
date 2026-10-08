@@ -41,7 +41,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const notDue = memories.filter(r => r && !acquisition?.active.has(r.value.goalId) && new Date(r.value.card.due) > now).map(r => r!.value.goalId as string);
         const exposureRows = await db.appMeta.bulkGet(contract.primaryGoals.map(g => key('exposure', g.id)));
         const exposed = [...blockedByExposure(exposureRows.filter(r => !!r&&!acquisition?.active.has(r.value.goalId)).map(r => r!.value as ExposureEntry), now)];
-        const attempt = startAttempt(contract, attemptId, now, [...blockedGoalIds, ...notDue, ...exposed]);
+        const attempt = startAttempt(contract, attemptId, now, [...blockedGoalIds, ...notDue, ...exposed,...acquisition?.blocked??[]]);
         await db.appMeta.bulkPut([{ key: key('contract', contract.id), value: structuredClone(contract) },
           { key: key('taskAttempt', contract.id), value: attemptId },
           { key: key('openAttempt', attemptId), value: attemptId },
@@ -145,13 +145,13 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         if(!requestId||requestId.length>200||!Number.isFinite(now.getTime())||now.getTime()<new Date(previous.startedAt).getTime())throw Error('Invalid pair request');
         const binding=rule.bindings.find(b=>b.responseKey===responseKey),matched={...previous.matchedAnswers};
         if(!binding||!rule.options.includes(answer))throw Error('Unknown matching tile');
-        if(matched[responseKey]||!rule.bindings.some(b=>b.expected===answer&&!matched[b.responseKey]))throw Error('Пара уже найдена');
+        if(matched[responseKey]||rule.bijective&&Object.values(matched).includes(answer))throw Error('Пара уже найдена');
         const revisions=await currentRevisions(contract);
         if(Object.entries(contract.contentRevisions).some(([id,rev])=>revisions[id]!==rev))throw Error('Task content is stale');
         const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
         const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now):undefined;
         let firstResult:NonNullable<Attempt['results']>[number]|undefined=previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
-          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
+          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
         if(pair.correct)matched[responseKey]=answer;
         const complete=Object.keys(matched).length===rule.bindings.length;
         let attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],

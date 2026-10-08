@@ -31,8 +31,18 @@ try{
   if(drained)break;
   await page.waitForFunction(async old=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.id!==old;},task.id);
  }
+ assert.equal(drained,false,'fast answers cannot graduate confirmations before five minutes');
+ // Advance only isolated test data deadlines; no five-minute sleep or personal data.
+ await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const row=await db.appMeta.get('studyCore:learningLifecycle');for(const u of row.value.units)if(u.stage==='confirmation'){u.lastAttemptAt=new Date(Date.now()-301000).toISOString();u.availableAt=new Date(Date.now()-1000).toISOString();}await db.appMeta.put(row);for(const ex of await db.appMeta.where('key').startsWith('studyCore:exposure:').toArray())await db.appMeta.put({...ex,value:{...ex.value,lastVisibleAt:new Date(Date.now()-301000).toISOString()}});});
+ for(let n=0;n<12&&!drained;n++){
+  await page.locator('.study-feed.state-ready, .learning22-card-sheet').first().waitFor();session=await current();
+  if(session.intro){await page.getByRole('button',{name:'Готово',exact:true}).click();continue;}
+  const task=session.tasks[0];button=page.getByRole('button',{name:task.options.find(o=>o.id===task.items[0].answerId).name,exact:true});await button.click();
+  drained=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.get('studyCore:learningLifecycle')).value.units.some(u=>u.stage==='completed');});
+  if(!drained)await page.waitForFunction(async old=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.activeSessions.where('status').equals('active').toArray()).at(-1)?.tasks[0]?.id!==old;},task.id);
+ }
  assert(drained);assert.equal(await page.locator('.learning22-stop').count(),0);assert.deepEqual(errors,[]);
- await page.screenshot({path:'artifacts/learning-lifecycle-mobile.png',fullPage:true});console.log('PASS actual UI answers complete properties and reduce learning workload');
+ await page.screenshot({path:'artifacts/learning-lifecycle-mobile.png',fullPage:true});console.log('PASS immediate answers preserve learning; elapsed confirmations complete properties');
  await page.setViewportSize({width:320,height:740});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);console.log('PASS 320px layout');
  await page.evaluate(async()=>{const {resetLearningProgress}=await import('/engi/src/services/learning-service.ts');await resetLearningProgress();});await page.reload();
  await page.getByLabel('Формат',{exact:true}).selectOption('recall_reveal');await page.getByRole('button',{name:'Начать',exact:true}).click();

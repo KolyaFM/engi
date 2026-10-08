@@ -10,7 +10,7 @@ export function groupCandidates(b:Bundle,ready:Task[],known:Set<string>,newSlots
   try{task.studyContract=compileTaskContract(b,task);return [task];}catch{return [];}
  });
 }
-export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:number):GoalProposal[]{
+export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:number,configuration:{spareAnswer?:boolean}={}):GoalProposal[]{
  const end=feedSpan('groups');try{
  const buckets=new Map<string,GoalProposal[]>(),out:GoalProposal[]=[],seen=new Set<string>(),counts=new Map<string,number>();
  for(const t of ready){
@@ -34,7 +34,10 @@ export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:n
   }
   if(selected.length<2||answers.size<2)continue;
   const key=JSON.stringify([anchor.recipe.format,[...goals].sort()]);if(seen.has(key))continue;
-  const items=shuffle(selected.map(t=>({...t.items[0]}))),options=shuffle([...new Map(items.map(i=>[i.answerId,{id:i.answerId,name:i.answer}])).values()]);
+  const items=shuffle(selected.map(t=>({...t.items[0]}))),bank=[...new Map(items.map(i=>[i.answerId,{id:i.answerId,name:i.answer}])).values()];
+  const extra=bucket.find(t=>!answers.has(t.items[0].answerId)&&!items.some(i=>[i.answer,...i.aliases].some(a=>normalize(a)===normalize(t.items[0].answer))));
+  if(configuration.spareAnswer&&anchor.recipe.format==='match'&&extra)bank.push({id:extra.items[0].answerId,name:extra.items[0].answer});
+  const options=shuffle(bank);
   const cues=items.map(i=>anchor.recipe.cue==='image'&&i.image?i.image:normalize(i.name));if(new Set(cues).size!==items.length)continue;
   const task:Task={id:'group-proposal',recipe:{...anchor.recipe,prompt:(anchor.recipe.format==='match'?'Сопоставьте объекты':'Распределите объекты по категориям')+': '+(anchor.recipe.label??anchor.recipe.answerKey)+'.'},items,options,reason:'due'};
   if(!preflight(task))continue;

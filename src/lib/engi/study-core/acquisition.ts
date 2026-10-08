@@ -2,8 +2,10 @@ import type {LearningGoal} from './goals';
 import {knowledgeMistakeKey} from './mistakes';
 import {defineGoal} from './goals';
 import {z} from 'zod';
-// Initial learning uses fresh tasks and object interleaving, not mandatory waiting.
+// First checks are immediate; confirmations are scheduled while the feed continues.
 export const ACQUISITION_GAP_MS=0;
+export const ACQUISITION_CONFIRMATION_MS=5*60000;
+export const FIRST_CHECK_BACKLOG_LIMIT=12;
 export const ACTIVE_CARD_LIMIT=3;
 export type AcquisitionUnit={key:string;entityId:string;goal:LearningGoal;stage:'first-check'|'confirmation'|'completed';successes:number;requiredSuccesses:number;availableAt:string;attemptIds:string[];lastAttemptAt?:string;completedAt?:string};
 export type CardIntroduction={entityId:string;introducedAt:string;source:'daily'|'extra'|'migration'};
@@ -23,10 +25,10 @@ export function admitAcquisition(previous:LearningLifecycle,entityId:string,goal
 }
 export function advanceAcquisition(previous:LearningLifecycle,evidence:{id:string;goalId:string;at:Date;correct:boolean;eligible:boolean}){
  const next=structuredClone(previous),unit=next.units.find(u=>u.goal.id===evidence.goalId&&u.stage!=='completed');
- if(!unit||!evidence.eligible||unit.attemptIds.includes(evidence.id))return next;
+ if(!unit||!evidence.eligible||unit.attemptIds.includes(evidence.id)||new Date(unit.availableAt)>evidence.at)return next;
  unit.attemptIds.push(evidence.id);unit.lastAttemptAt=evidence.at.toISOString();unit.successes=evidence.correct?unit.successes+1:0;
  unit.stage=unit.successes>=unit.requiredSuccesses?'completed':unit.successes?'confirmation':'first-check';
- unit.availableAt=new Date(evidence.at.getTime()+ACQUISITION_GAP_MS).toISOString();
+ unit.availableAt=new Date(evidence.at.getTime()+(unit.stage==='confirmation'?ACQUISITION_CONFIRMATION_MS:0)).toISOString();
  if(unit.stage==='completed')unit.completedAt=evidence.at.toISOString();
  return next;
 }

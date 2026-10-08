@@ -8,12 +8,12 @@ import {MISTAKE_EPISODES_KEY,markRepairUnavailable,type MistakeEpisode} from './
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {buildGoalCatalog} from './goal-catalog';
 import {canonicalTargets} from '../lib/engi/questions/recipe-factory';
-export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],session:SessionRow,memories:ReadonlyMap<string,GoalMemory>,hasLearning:boolean,learningKeys=new Set<string>()){
+export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],session:SessionRow,memories:ReadonlyMap<string,GoalMemory>,hasLearning:boolean,learningKeys=new Set<string>(),options:{excludedKeys?:ReadonlySet<string>;format?:string}={}){
  if(session.mode==='practice')return;
  const ledger=await db.appMeta.get(MISTAKE_EPISODES_KEY),episodes=(ledger?.value.episodes??[]).filter((e:MistakeEpisode)=>e.status==='open'||e.status==='unavailable'&&e.unavailableReason) as MistakeEpisode[];
  if(!episodes.length)return;
  const pool=goalProposalPool(b,enabled,session.tag,'mixed'),byKey=new Map(episodes.map(e=>[e.key,e]));
- const candidates=pool.proposals.filter(p=>p.goals.length===1&&byKey.has(knowledgeMistakeKey(p.goals[0]))&&(!hasLearning||!learningKeys.has(knowledgeMistakeKey(p.goals[0])))).map(proposal=>({proposal,episode:byKey.get(knowledgeMistakeKey(proposal.goals[0]))!}));
+ const candidates=pool.proposals.filter(p=>p.goals.length===1&&byKey.has(knowledgeMistakeKey(p.goals[0]))&&!options.excludedKeys?.has(knowledgeMistakeKey(p.goals[0]))&&(!options.format||options.format==='mixed'||p.recipe.format===options.format)&&(!hasLearning||!learningKeys.has(knowledgeMistakeKey(p.goals[0])))).map(proposal=>({proposal,episode:byKey.get(knowledgeMistakeKey(proposal.goals[0]))!}));
  const targets=new Set(canonicalTargets(b,session.tag).map(i=>i.targetId)),scopedKeys=new Set(buildGoalCatalog(b,enabled).filter(e=>!e.suspended&&e.targetIds.every(id=>targets.has(id))).map(e=>knowledgeMistakeKey(e.goal)));
  const atomicKeys=new Set(pool.proposals.filter(p=>p.goals.length===1).map(p=>knowledgeMistakeKey(p.goals[0])));
  await markRepairUnavailable(db,episodes.filter(e=>scopedKeys.has(e.key)&&!atomicKeys.has(e.key)).map(e=>e.id));

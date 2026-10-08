@@ -3,7 +3,7 @@ export type Claim = { key: string; revision: string; revealsGoalIds: string[]; w
 export type Binding = { responseKey: string; goalId: string; expected: string };
 export type ResponseRule =
   | { kind: 'choice'; goalId: string; options: string[]; expected: string }
-  | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean }
+  | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean; exhaustive?:boolean }
   | { kind: 'set'; goalId: string; options: string[]; expected: string[]; complete: true }
   | { kind: 'order'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[] }
   | { kind: 'number'; goalId: string; expected: number; tolerance: number; min: number; max: number }
@@ -48,7 +48,7 @@ export function validateContract(contract: TaskContract): void {
     else if (!contract.practice) throw Error('Untracked choice must be practice');
   } else if (rule.kind === 'mapping') {
     if (!rule.bindings.length || !unique(rule.bindings.map(b => b.responseKey)) || !unique(rule.options) || rule.bindings.some(b => !rule.options.includes(b.expected))) throw Error('Invalid mapping');
-    if (rule.bijective && (!unique(rule.bindings.map(b => b.expected)) || rule.options.length !== rule.bindings.length)) throw Error('Mapping is not bijective');
+    if (rule.bijective && (!unique(rule.bindings.map(b => b.expected)) || (rule.exhaustive===false?rule.options.length<=rule.bindings.length:rule.options.length!==rule.bindings.length))) throw Error('Mapping is not bijective');
     graded = rule.bindings.map(b => b.goalId);
   } else if (rule.kind === 'set') {
     if (rule.complete !== true || !unique(rule.expected) || !unique(rule.options) || !rule.expected.length || rule.expected.some(v => !rule.options.includes(v))) throw Error('Incomplete set');

@@ -78,7 +78,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }else if(fmt==='recall_reveal'){
     if(task.items.length!==1)throw Error('Grouped self report is unsupported');const g=goalFor(first);goals.push(g);response={kind:'self-report',goalId:g.id};actionFamily='recall';
   }else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
-    goals.push(...task.items.map(goalFor));response={kind:'mapping',bindings:task.items.map((i,n)=>({responseKey:i.entityId,goalId:goals[n].id,expected:i.answerId})),options:task.options.map(o=>o.id),bijective:fmt==='match'};actionFamily=fmt==='match'?'match':'categorize';
+    goals.push(...task.items.map(goalFor));response={kind:'mapping',bindings:task.items.map((i,n)=>({responseKey:i.entityId,goalId:goals[n].id,expected:i.answerId})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
   }else{
     const g=goalFor(first);goals.push(g);response={kind:'choice',goalId:g.id,options:task.options.map(o=>o.id),expected:first.answerId};actionFamily='select';
   }

@@ -1,0 +1,2172 @@
+{
+  "reports": [
+    {
+      "summary": {
+        "name": "fresh-fast",
+        "properties": 2,
+        "seconds": 3,
+        "reviews": 0,
+        "errors": false,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 4,
+        "firstIntroScreens": [
+          0,
+          1,
+          10,
+          11,
+          20,
+          21,
+          30,
+          31,
+          40,
+          41
+        ],
+        "minimumSameKnowledgeGapSeconds": 12,
+        "medianSameKnowledgeGapSeconds": 12,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 96,
+        "games": 0,
+        "completedProperties": 48,
+        "workload": {
+          "new": 0,
+          "learning": 0,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 3,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 6,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 9,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 12,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 15,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 18,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 21,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 24,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 27,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 30,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 11,
+          "seconds": 33,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 12,
+          "seconds": 36,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 39,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 14,
+          "seconds": 42,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 45,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 48,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 51,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 54,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 57,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "fresh-normal",
+        "properties": 2,
+        "seconds": 10,
+        "reviews": 0,
+        "errors": false,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 4,
+        "firstIntroScreens": [
+          0,
+          1,
+          10,
+          11,
+          20,
+          21,
+          30,
+          31,
+          40,
+          41
+        ],
+        "minimumSameKnowledgeGapSeconds": 40,
+        "medianSameKnowledgeGapSeconds": 40,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 96,
+        "games": 0,
+        "completedProperties": 48,
+        "workload": {
+          "new": 0,
+          "learning": 0,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 10,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 20,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 30,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 40,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 50,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 60,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 70,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 80,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 90,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 100,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 11,
+          "seconds": 110,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 12,
+          "seconds": 120,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 130,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 14,
+          "seconds": 140,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 160,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 170,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 180,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 190,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "fresh-slow",
+        "properties": 2,
+        "seconds": 30,
+        "reviews": 0,
+        "errors": false,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 4,
+        "firstIntroScreens": [
+          0,
+          1,
+          10,
+          11,
+          20,
+          21,
+          30,
+          31,
+          40,
+          41
+        ],
+        "minimumSameKnowledgeGapSeconds": 120,
+        "medianSameKnowledgeGapSeconds": 120,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 96,
+        "games": 0,
+        "completedProperties": 48,
+        "workload": {
+          "new": 0,
+          "learning": 0,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 30,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 60,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 90,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 120,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 180,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 210,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 240,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 270,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 300,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 11,
+          "seconds": 330,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 12,
+          "seconds": 360,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 390,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 14,
+          "seconds": 420,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 450,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 480,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 510,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 540,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 570,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "one-property",
+        "properties": 1,
+        "seconds": 10,
+        "reviews": 0,
+        "errors": false,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 8,
+        "firstIntroScreens": [
+          0,
+          1,
+          6,
+          7,
+          12,
+          13,
+          18,
+          19,
+          24,
+          25
+        ],
+        "minimumSameKnowledgeGapSeconds": 20,
+        "medianSameKnowledgeGapSeconds": 20,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 48,
+        "games": 48,
+        "completedProperties": 24,
+        "workload": {
+          "new": 0,
+          "learning": 0,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 10,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 20,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 30,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 40,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 50,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 60,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 7,
+          "seconds": 70,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 8,
+          "seconds": 80,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 90,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 100,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 11,
+          "seconds": 110,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 12,
+          "seconds": 120,
+          "kind": "intro",
+          "objects": [
+            "s12"
+          ]
+        },
+        {
+          "screen": 13,
+          "seconds": 130,
+          "kind": "intro",
+          "objects": [
+            "s13"
+          ]
+        },
+        {
+          "screen": 14,
+          "seconds": 140,
+          "kind": "acquisition",
+          "objects": [
+            "s12"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-12\",\"forward\",\"value\",\"[\\\"s12\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a12\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s13"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-13\",\"forward\",\"value\",\"[\\\"s13\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a13\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 160,
+          "kind": "acquisition",
+          "objects": [
+            "s12"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-12\",\"forward\",\"value\",\"[\\\"s12\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a12\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 170,
+          "kind": "acquisition",
+          "objects": [
+            "s13"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-13\",\"forward\",\"value\",\"[\\\"s13\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a13\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 180,
+          "kind": "intro",
+          "objects": [
+            "s14"
+          ]
+        },
+        {
+          "screen": 19,
+          "seconds": 190,
+          "kind": "intro",
+          "objects": [
+            "s15"
+          ]
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "eight-properties",
+        "properties": 8,
+        "seconds": 10,
+        "reviews": 0,
+        "errors": false,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 2,
+        "firstIntroScreens": [
+          0,
+          1,
+          34,
+          35,
+          68,
+          69,
+          102,
+          103
+        ],
+        "minimumSameKnowledgeGapSeconds": 160,
+        "medianSameKnowledgeGapSeconds": 160,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 112,
+        "games": 0,
+        "completedProperties": 48,
+        "workload": {
+          "new": 2,
+          "learning": 16,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 10,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 20,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 30,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 40,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 50,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 60,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p2-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p2\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 70,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p2-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p2\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 80,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p3-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p3\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 90,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p3-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p3\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 100,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p4-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p4\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 11,
+          "seconds": 110,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p4-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p4\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 12,
+          "seconds": 120,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p5-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p5\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 130,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p5-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p5\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 14,
+          "seconds": 140,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p6-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p6\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p6-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p6\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 160,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p7-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p7\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 170,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p7-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p7\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 180,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 190,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "due-reviews",
+        "properties": 2,
+        "seconds": 10,
+        "reviews": 10,
+        "errors": false,
+        "seededReviewObjects": 5,
+        "screens": 120,
+        "introductionsFirst20": 2,
+        "firstIntroScreens": [
+          10,
+          11,
+          20,
+          21,
+          30,
+          31,
+          40,
+          41,
+          50,
+          51
+        ],
+        "minimumSameKnowledgeGapSeconds": 20,
+        "medianSameKnowledgeGapSeconds": 40,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 76,
+        "games": 15,
+        "completedProperties": 48,
+        "workload": {
+          "new": 0,
+          "learning": 0,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "review",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 1,
+          "seconds": 10,
+          "kind": "review",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 2,
+          "seconds": 20,
+          "kind": "review",
+          "objects": [
+            "s2"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-2\",\"forward\",\"value\",\"[\\\"s2\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 30,
+          "kind": "review",
+          "objects": [
+            "s3"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-3\",\"forward\",\"value\",\"[\\\"s3\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 40,
+          "kind": "review",
+          "objects": [
+            "s4"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-4\",\"forward\",\"value\",\"[\\\"s4\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 50,
+          "kind": "review",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 60,
+          "kind": "review",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 70,
+          "kind": "review",
+          "objects": [
+            "s2"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-2\",\"forward\",\"value\",\"[\\\"s2\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 80,
+          "kind": "review",
+          "objects": [
+            "s3"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-3\",\"forward\",\"value\",\"[\\\"s3\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 90,
+          "kind": "review",
+          "objects": [
+            "s4"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-4\",\"forward\",\"value\",\"[\\\"s4\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "completed"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 100,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 11,
+          "seconds": 110,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 12,
+          "seconds": 120,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 130,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 14,
+          "seconds": 140,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 160,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 170,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 180,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 190,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "with-errors",
+        "properties": 2,
+        "seconds": 10,
+        "reviews": 0,
+        "errors": true,
+        "seededReviewObjects": 0,
+        "screens": 120,
+        "introductionsFirst20": 4,
+        "firstIntroScreens": [
+          0,
+          1,
+          10,
+          13,
+          23,
+          24,
+          34,
+          35,
+          45,
+          46
+        ],
+        "minimumSameKnowledgeGapSeconds": 20,
+        "medianSameKnowledgeGapSeconds": 40,
+        "maxActiveObjects": 2,
+        "acquisitionChecks": 98,
+        "games": 0,
+        "completedProperties": 42,
+        "workload": {
+          "new": 0,
+          "learning": 2,
+          "repeat": 0,
+          "mistakes": 0
+        }
+      },
+      "screens": [
+        {
+          "screen": 0,
+          "seconds": 0,
+          "kind": "intro",
+          "objects": [
+            "s0"
+          ]
+        },
+        {
+          "screen": 1,
+          "seconds": 10,
+          "kind": "intro",
+          "objects": [
+            "s1"
+          ]
+        },
+        {
+          "screen": 2,
+          "seconds": 20,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 3,
+          "seconds": 30,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 4,
+          "seconds": 40,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 5,
+          "seconds": 50,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 6,
+          "seconds": 60,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 7,
+          "seconds": 70,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 8,
+          "seconds": 80,
+          "kind": "acquisition",
+          "objects": [
+            "s0"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-0\",\"forward\",\"value\",\"[\\\"s0\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 9,
+          "seconds": 90,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 10,
+          "seconds": 100,
+          "kind": "intro",
+          "objects": [
+            "s10"
+          ]
+        },
+        {
+          "screen": 11,
+          "seconds": 110,
+          "kind": "acquisition",
+          "objects": [
+            "s1"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-1\",\"forward\",\"value\",\"[\\\"s1\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 12,
+          "seconds": 120,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 13,
+          "seconds": 130,
+          "kind": "intro",
+          "objects": [
+            "s11"
+          ]
+        },
+        {
+          "screen": 14,
+          "seconds": 140,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 15,
+          "seconds": 150,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 16,
+          "seconds": 160,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 17,
+          "seconds": 170,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "first-check"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 18,
+          "seconds": 180,
+          "kind": "acquisition",
+          "objects": [
+            "s10"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p1-10\",\"forward\",\"value\",\"[\\\"s10\\\",\\\"p1\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a10\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        },
+        {
+          "screen": 19,
+          "seconds": 190,
+          "kind": "acquisition",
+          "objects": [
+            "s11"
+          ],
+          "knowledge": [
+            "[\"fact\",\"p0-11\",\"forward\",\"value\",\"[\\\"s11\\\",\\\"p0\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a11\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
+          ],
+          "stages": [
+            "confirmation"
+          ],
+          "format": "choice"
+        }
+      ]
+    }
+  ]
+}

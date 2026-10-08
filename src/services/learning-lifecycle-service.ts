@@ -3,7 +3,7 @@ import type {GoalCatalogEntry} from '../lib/engi/knowledge/goal-progress';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import type {GoalDayPlan} from '../lib/engi/study-core/day-plan';
 import {dayBoundary} from '../lib/engi/study-core/day-plan';
-import {acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
+import {acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,ACQUISITION_CONFIRMATION_MS,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
 import {INTRO_DISCLOSURE_COOLDOWN_MS} from '../lib/engi/study-core/exposure';
 import {readStudyPreferences} from './study-preferences-service';
 export const LIFECYCLE_KEY='studyCore:learningLifecycle';
@@ -12,12 +12,13 @@ export async function readLifecycle(db:EngiDB):Promise<LearningLifecycle|undefin
 export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=new Date()){
  let ledger=await readLifecycle(db);if(ledger){
   for(const unit of ledger.units.filter(u=>u.stage!=='completed')){
-   if(new Date(unit.availableAt)>now)unit.availableAt=now.toISOString();
+   // Adopt unfinished zero-gap confirmations without rewriting completed FSRS memory.
+   if(unit.stage==='confirmation'&&unit.lastAttemptAt){const due=new Date(unit.lastAttemptAt).getTime()+ACQUISITION_CONFIRMATION_MS;if(new Date(unit.availableAt).getTime()<due)unit.availableAt=new Date(due).toISOString();}
    const candidates=catalog.filter(e=>!e.suspended&&acquisitionKey(e.goal)===unit.key);
    if(candidates.length&&!candidates.some(e=>e.goal.id===unit.goal.id)){
     unit.goal=(candidates.find(e=>e.goal.skill===unit.goal.skill)??candidates[0]).goal;
     // A success in recognition cannot confirm a newly required recall skill.
-    unit.successes=0;unit.stage='first-check';
+    unit.successes=0;unit.stage='first-check';unit.availableAt=now.toISOString();
    }
   }
   for(const card of ledger.cards){

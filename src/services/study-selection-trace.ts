@@ -1,5 +1,5 @@
 import {readLifecycle} from './learning-lifecycle-service';
-import {ACQUISITION_GAP_MS,ACTIVE_CARD_LIMIT} from '../lib/engi/study-core/acquisition';
+import {ACQUISITION_CONFIRMATION_MS,FIRST_CHECK_BACKLOG_LIMIT} from '../lib/engi/study-core/acquisition';
 import type {EngiDB,SessionRow} from '../db/engi-db';
 import type {Bundle,Memory} from '../lib/engi/types';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
@@ -39,15 +39,15 @@ export async function traceStudySelection(db:EngiDB,b:Bundle,enabled:Memory[],se
   if(lifecycle){const unit=activeUnits.get(g.id),key=knowledgeMistakeKey(g),required=lifecycle.units.find(u=>u.key===key&&u.stage!=='completed');if(unit){if(new Date(unit.availableAt).getTime()>now)blocks.push('acquisition-gap');}else if(required)blocks.push('other-required-skill');else if(!m)blocks.push('not-admitted');else if(new Date(m.card.due).getTime()>now)blocks.push('not-due');}
   else if(!m){if(!newLeft)blocks.push('daily-budget');if(admission.held)blocks.push('learning-capacity');}
   else {if(!pending.has(g.id))blocks.push('no-pending-obligation');if(new Date(m.card.due).getTime()>now)blocks.push('not-due');}
-  if(ex&&(activeUnits.has(g.id)?new Date(ex.lastVisibleAt).getTime()+ACQUISITION_GAP_MS:exposureAvailableAt(ex))>now)blocks.push('recent-disclosure');
+  if(ex&&(activeUnits.has(g.id)?activeUnits.get(g.id)!.stage==='confirmation'?new Date(ex.lastVisibleAt).getTime()+ACQUISITION_CONFIRMATION_MS:0:exposureAvailableAt(ex))>now)blocks.push('recent-disclosure');
   candidates.push({goalId:g.id,knowledge:knowledgeMistakeKey(g),state:activeUnits.get(g.id)?.stage??(!m?ex?'introduced':'unseen':Number(m.card.state)===1?'learning':Number(m.card.state)===3?'relearning':'review'),dueAt:m?new Date(m.card.due).toISOString():undefined,exposureUntil:ex?new Date(exposureAvailableAt(ex)).toISOString():undefined,blocks});
  }
  const admitted=admitStudyCandidates(pool.proposals,p=>p.goals,plan,memories,exposures,now);
  const task=session.tasks[session.currentPosition],primary=task?.studyContract?.primaryGoals??[];
  append(db,{at:new Date(now).toISOString(),kind:'selection',sessionId:session.id,taskId:task?.id,intent:task?.intent,format:task?.recipe.format,reason:task?.reason,
-  objects:task?.items.map(i=>i.entityId)??(session.intro?[session.intro.entityId]:[]),goals:primary.map(g=>g.id),knowledge:primary.map(knowledgeMistakeKey),intro:!!session.intro,exhausted:!!session.exhausted,
-  counters:{newLeft,activeLearning:plan.learningGoalIds?.length??0,activeFirstChecks:admission.active,capacity:admission.limit,newDone:plan.newGoalIds.length,newTarget:plan.newTarget,mistakes:plan.mistakes?.length??0},
-  ordinaryAvailable:lifecycle?candidates.filter(c=>!c.blocks.length).length:admitted.available.length,completed:session.completedCount??0,acquisition:lifecycle?{activeObjects:new Set([...activeUnits.values()].map(u=>u.entityId)).size,capacity:ACTIVE_CARD_LIMIT,units:[...activeUnits.values()].map(u=>({key:u.key,stage:u.stage,successes:u.successes,availableAt:u.availableAt}))}:undefined,round:structuredClone(session.playRound),lastAutoNewAt:session.lastAutoNewAt,
+  objects:task?.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId)??(session.intro?[session.intro.entityId]:[]),goals:primary.map(g=>g.id),knowledge:primary.map(knowledgeMistakeKey),intro:!!session.intro,exhausted:!!session.exhausted,
+  counters:{newLeft,activeLearning:plan.learningGoalIds?.length??0,activeFirstChecks:lifecycle?[...activeUnits.values()].filter(u=>u.stage==='first-check').length:admission.active,capacity:lifecycle?FIRST_CHECK_BACKLOG_LIMIT:admission.limit,newDone:plan.newGoalIds.length,newTarget:plan.newTarget,mistakes:plan.mistakes?.length??0},
+  ordinaryAvailable:lifecycle?candidates.filter(c=>!c.blocks.length).length:admitted.available.length,completed:session.completedCount??0,acquisition:lifecycle?{activeObjects:new Set([...activeUnits.values()].map(u=>u.entityId)).size,firstChecks:[...activeUnits.values()].filter(u=>u.stage==='first-check').length,capacity:FIRST_CHECK_BACKLOG_LIMIT,confirmationGapMs:ACQUISITION_CONFIRMATION_MS,units:[...activeUnits.values()].map(u=>({key:u.key,stage:u.stage,successes:u.successes,availableAt:u.availableAt}))}:undefined,round:structuredClone(session.playRound),lastAutoNewAt:session.lastAutoNewAt,
   candidateCount:candidates.length,candidates:candidates.slice(0,160),truncated:candidates.length>160});
 }
 export async function traceStudyAnswer(db:EngiDB,contract:TaskContract,attempt:Attempt,before:GoalMemory[]){
