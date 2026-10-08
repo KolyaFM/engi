@@ -52,6 +52,16 @@ test('normal answer reveal preserves labeled recall self report after the thinki
  const row=await db.appMeta.get('studyCore:attempt:recall-2');assert(row);assert(!row!.value.ineligibleGoalIds.includes(c2.primaryGoals[0].id));
  const answer=await svc.submit('recall-2',true,new Date(at.getTime()+6000));assert.equal(answer.results![0].credit,true);assert.equal(answer.results![0].selfReported,true);
 }));
+test('a reveal heartbeat preserves its original disclosure snapshot after grading changes conditional claims',()=>dbRun(async(db,svc)=>{
+ const c=compileTaskContract(bundle(),{...task(),id:'conditional-recall',recipe:{...task().recipe,format:'recall_reveal'},options:[]});
+ c.feedbackClaims.push({key:'conditional-detail',revision:'v1',revealsGoalIds:[c.primaryGoals[0].id],when:'incorrect'});
+ c.contentRevisions['conditional-detail']='v1';await svc.setContentRevisions(c.contentRevisions);await svc.open(c,c.id,at);
+ const first=await svc.observe(c.id,'answer-reveal','conditional-episode','start',at);
+ await svc.submit(c.id,false,new Date(at.getTime()+5000));
+ const refreshed=await svc.observe(c.id,'answer-reveal','conditional-episode','refresh',new Date(at.getTime()+6000));assert.deepEqual(refreshed.claims,first.claims);
+ await svc.observe(c.id,'answer-reveal','conditional-episode','end',new Date(at.getTime()+7000));
+ await assert.rejects(svc.observe(c.id,'early-answer','conditional-episode','end',new Date(at.getTime()+8000)),/immutable/);
+}));
 test('one continuous visible question episode does not keep extending a second disclosure epoch',()=>dbRun(async(db,svc)=>{
  const identityTask=task({id:'q',recipe:{...task().recipe,answerKey:'identity',cue:'name'},items:[{...task().items[0],factId:undefined,answer:'Картина A',answerId:'s0',answerEntityId:'s0',targetId:'identity'}],options:[{id:'s0',name:'Картина A'},{id:'s1',name:'Картина B'}]});const c=compileTaskContract(bundle(),identityTask);await svc.setContentRevisions(c.contentRevisions);await svc.open(c,'q',at);await svc.observe('q','question','episode','start',at);await svc.observe('q','question','episode','refresh',new Date(at.getTime()+1000));await svc.observe('q','question','episode','end',new Date(at.getTime()+2000));await svc.observe('q','question','episode','refresh',new Date(at.getTime()+5000));
  const exposure=await db.appMeta.get(`studyCore:exposure:${c.primaryGoals[0].id}`);assert.equal(exposure!.value.lastVisibleAt,new Date(at.getTime()+2000).toISOString());

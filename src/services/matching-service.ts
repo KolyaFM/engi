@@ -26,13 +26,14 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),now);
  const before=rows.filter(r=>!!r).map(r=>r!.value);
  const {attempt,pair,firstResult}=await core.submitPair(task.id,input.entityId,input.answerId,input.requestId,now);
- let milestone:string|undefined;
+ let milestone:string|undefined,mistakeResolved=0;
  if(firstResult){
   // Reuse the review accounting for a single first answer, preserving the parent screen.
   const item=task.items.find(i=>i.entityId===input.entityId)!,pairTask={...task,id:task.id+':pair:'+input.entityId,items:[item]};
   const result=await commitReview(d,{...session,interaction:undefined},pairTask,{sessionId:session.id,taskId:pairTask.id,answer:input.answerId},[input.answerId],
    {...attempt,id:pairTask.id,phase:'submitted',submittedAt:pair.at,results:[firstResult]},false,before);
   milestone=result.milestone;
+  mistakeResolved=result.feedback?.mistakeResolved??0;
  }
  const interaction={taskId:task.id,attemptSequence:[],matching:{matched:attempt.matchedAnswers!,history:attempt.pairHistory!}};
  session.interaction=interaction;session.updatedAt=pair.at;
@@ -46,5 +47,5 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
   session.results=[...session.results,score].slice(-100);
  }
  await d.activeSessions.put(session);
- return {correct:pair.correct,complete,interaction,feedback,milestone};
+ return {correct:pair.correct,complete,interaction,feedback,milestone,mistakeResolved};
 }

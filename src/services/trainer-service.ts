@@ -16,6 +16,11 @@ import {buildGoalCatalog} from './goal-catalog';
 import {ensureDayPlan} from './day-plan-service';
 import {measureFeed} from './feed-performance';
 import {answerMatchPair,type MatchPairInput} from './matching-service';
+import {knowledgeMistakeKey} from '../lib/engi/study-core/mistakes';
+import {newAdmission} from '../lib/engi/study-core/day-plan';
+import {markRepairUnavailable,MISTAKE_EPISODES_KEY,type MistakeEpisode} from './mistake-episodes';
+import {studyAvailability} from './study-availability-service';
+import {readStudyPreferences} from './study-preferences-service';
 
 async function selectNext(d:EngiDB,s:SessionRow){
  const b=await measureFeed('bundle.read',()=>getBundle(d)),memories=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
@@ -25,8 +30,25 @@ const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSes
 export function createTrainerService(d:EngiDB){return {
  getSnapshot:()=>getSnapshot(d),
  getGoalSnapshot:()=>getGoalSnapshot(d),
- async getDayPlan(){return (await d.appMeta.get('studyCore:dayPlan'))?.value},
+ async getDayPlan(tag='all',format?:string){return d.transaction('rw',sessionTables(d),async()=>{
+  const bundle=await getBundle(d),enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
+  const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
+  const plan=await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value));
+  if(format){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
+  if(tag==='all')return plan;
+  const targets=new Set(canonicalTargets(bundle,tag).map(i=>i.targetId)),scoped=catalog.filter(e=>e.targetIds.every(id=>targets.has(id))),goals=scoped.filter(e=>!e.suspended).map(e=>e.goal),ids=new Set(goals.map(g=>g.id)),keys=new Set(scoped.map(e=>knowledgeMistakeKey(e.goal))),known=new Set(rows.filter(r=>!!r).map(r=>r!.value.goalId));
+  const unavailableMistakes=((await d.appMeta.get(MISTAKE_EPISODES_KEY))?.value.episodes??[]).filter((e:MistakeEpisode)=>e.status==='unavailable'&&keys.has(e.key)).length;
+  const newGoalIds=plan.newGoalIds.filter(id=>ids.has(id)),fresh=[...ids].filter(id=>!known.has(id)).length;
+  return {...plan,scopeLabel:bundle.decks?.find(t=>t.id===tag)?.name??bundle.tags.find(t=>t.id===tag)?.name??'Выбранная подборка',repeat:plan.repeat.filter(r=>ids.has(r.goalId)),reinforce:plan.reinforce.filter(r=>ids.has(r.goalId)),mistakes:plan.mistakes?.filter(m=>keys.has(m.key)),unavailableMistakes,newGoalIds,newTarget:newGoalIds.length+Math.min(fresh,plan.newTarget-plan.newGoalIds.length)};
+ })},
  async refreshGoalFeed(id:string){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||s.memoryModel!=='goals'||!s.exhausted)throw Error('Сначала завершите текущую карточку');return selectNext(d,s)})},
+ async retryUnavailableMistakes(id:string){return d.transaction('rw',sessionTables(d),async()=>{
+  const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||s.memoryModel!=='goals'||!s.exhausted)throw Error('Сначала завершите текущую карточку');
+  const b=await getBundle(d),enabled=(await d.learningState.toArray()).map(r=>r.payload),targets=new Set(canonicalTargets(b,s.tag).map(i=>i.targetId));
+  const keys=new Set(buildGoalCatalog(b,enabled).filter(e=>!e.suspended&&e.targetIds.every(id=>targets.has(id))).map(e=>knowledgeMistakeKey(e.goal))),row=await d.appMeta.get(MISTAKE_EPISODES_KEY);
+  if(row){for(const episode of row.value.episodes as MistakeEpisode[])if(episode.status==='unavailable'&&keys.has(episode.key)){episode.status='open';episode.failedImage=undefined;episode.unavailableReason=undefined;}await d.appMeta.put(row);}
+  return selectNext(d,s);
+ })},
  async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(t=>t.items.map(i=>i.image).filter((url):url is string=>!!url)))];},
  async startGoalFeed(tag='all',format='mixed',mode='daily'){return createTrainerService(d).startFeed(tag,format,mode,'goals')},
  async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals'){
@@ -37,10 +59,10 @@ export function createTrainerService(d:EngiDB){return {
  async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
   const s=await d.activeSessions.get(id);if(!s?.feed||s.status!=='active')throw Error('Лента не найдена');const task=s.tasks[s.currentPosition];if(expectedTaskId&&task?.id!==expectedTaskId)return s;
   if(s.intro)throw Error('Сначала завершите знакомство');
-  if(task){if(skip){await abandonReview(d,task.id);if(task.studyContract)await feedStudyCore(d).skip(task.id);}if(!skip&&!await d.reviewEvents.get(task.id))throw Error('Сначала завершите карточку');s.cooldown=[...s.cooldown??[],task].slice(-30);s.completedCount=(s.completedCount??0)+1;if(!skip&&!task.recipe.diagnostic&&!task.retryOf)s.ordinaryCount=(s.ordinaryCount??0)+1;if(task.recipe.diagnostic)s.diagnosticSeen=[...s.diagnosticSeen??[],task.recipe.id]}
+  if(task){if(skip){await abandonReview(d,task.id);if(task.intent==='repair')await markRepairUnavailable(d,task.repairEpisodeIds??[],task.recipe.cue==='image'?task.items[0].image:undefined);if(task.studyContract)await feedStudyCore(d).skip(task.id);}if(!skip&&!await d.reviewEvents.get(task.id))throw Error('Сначала завершите карточку');s.cooldown=[...s.cooldown??[],task].slice(-30);s.completedCount=(s.completedCount??0)+1;if(!skip&&!task.recipe.diagnostic&&!task.retryOf&&task.intent!=='repair')s.ordinaryCount=(s.ordinaryCount??0)+1;if(task.recipe.diagnostic)s.diagnosticSeen=[...s.diagnosticSeen??[],task.recipe.id]}
   return selectNext(d,s);
  }))},
- async openMore(id:string,practice=false){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||!s.exhausted)throw Error('Сначала завершите текущую практику');if(practice){s.mode='practice';s.format='mixed'}else{const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.extraBudget+=2;await d.appMeta.put({key:'newLearning',value:daily})}return selectNext(d,s)})},
+ async openMore(id:string,practice=false){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||!s.exhausted)throw Error('Сначала завершите текущую практику');if(practice){s.mode='practice';s.format='mixed'}else{const {newCardsPerDay}=await readStudyPreferences(d);if(!newCardsPerDay)throw Error('Укажите дневной лимит новых карточек в настройках');const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.extraBudget+=newCardsPerDay;await d.appMeta.put({key:'newLearning',value:daily})}return selectNext(d,s)})},
  async saveIntroSelection(id:string,unitId:string,color:Familiarity){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro||!s.intro.unitIds.includes(unitId)||!['red','orange','yellow','green','suspended'].includes(color))throw Error('Свойство больше не доступно');s.intro.selections[unitId]=color;await d.activeSessions.put(s);return s})},
  async saveIntroSelections(id:string,selections:Record<string,Familiarity>){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro)throw Error('Знакомство уже завершено');for(const [unitId,color] of Object.entries(selections)){if(s.intro.unitIds.includes(unitId)&&['red','orange','yellow','green','suspended'].includes(color))s.intro.selections[unitId]=color}await d.activeSessions.put(s);return s})},
  async completeIntro(id:string){return d.transaction('rw',sessionTables(d),async()=>{
@@ -52,13 +74,27 @@ export function createTrainerService(d:EngiDB){return {
   const introContract=compileIntroContract(b,intro,s.id);if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
   s.completedCount=(s.completedCount??0)+1;s.intro=undefined;return selectNext(d,s);
  })},
- async getResumableSession(){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}return s},
+ async getResumableSession(){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
+  if(s.memoryModel!=='goals')return s;
+  return d.transaction('rw',sessionTables(d),async()=>{
+   if(s.exhausted)return selectNext(d,s);
+   if(s.intro){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
+   const task=s.tasks[s.currentPosition];
+   if(task&&task.intent!=='repair'&&!task.practice&&!task.recipe.diagnostic){
+    const goals=task.studyContract?.primaryGoals??[],rows=await d.appMeta.bulkGet(goals.map(g=>'studyCore:memory:'+g.id)),fresh=rows.filter(r=>!r).length;
+    if(fresh){const plan=await createTrainerService(d).getDayPlan(),slots=Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available);
+     if(fresh>slots){if(task.studyContract)await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
+   }
+   return s;
+  });
+ },
  async observeIntroVisibility(sessionId:string,episodeId:string,event:'start'|'refresh'|'end'){
   return d.transaction('rw',sessionTables(d),async()=>{
    const session=await d.activeSessions.get(sessionId),core=feedStudyCore(d);
-   if(event==='end'){
+   // Queued heartbeats and cleanup still belong to the object that opened this episode.
+   if(event!=='start'){
     const old=(await d.appMeta.get('studyCore:episode:'+episodeId))?.value;
-    if(old?.attemptId.startsWith('intro:'+sessionId+':'))return core.observe(old.attemptId,'question',episodeId,'end');
+    if(old?.attemptId.startsWith('intro:'+sessionId+':'))return core.observe(old.attemptId,'question',episodeId,event);
    }
    if(!session?.intro||session.status!=='active')return;
    const contract=compileIntroContract(await getBundle(d),session.intro,session.id);

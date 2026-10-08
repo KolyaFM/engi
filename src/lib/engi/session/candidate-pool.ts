@@ -6,7 +6,7 @@ import {unitDue} from '../learning/bootstrap';
 import {localDay} from '../knowledge/motivation';
 
 export function dailyNewState(value:any):NonNullable<Snapshot['newLearning']>{return value?.day===localDay()?value:{day:localDay(),introducedEntityIds:[],extraBudget:0}}
-export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNullable<Snapshot['newLearning']>,introduced:string[]=[]){
+export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNullable<Snapshot['newLearning']>,introduced:string[]=[],newCardsPerDay?:number){
  const units=canonicalTargets(b,s.tag??'all'),unitIds=new Set(units.map(i=>i.targetId)),mem=new Map(memories.filter(m=>!m.legacyOf).map(m=>[m.id,m])),history=s.cooldown??[],completed=s.completedCount??0;
  s.repairQueue=(s.repairQueue??[]).filter(t=>t.items.every(i=>unitIds.has(i.targetId)&&mem.get(i.targetId)?.status!=='suspended'));
  const repair=s.repairQueue.find(t=>(t.retryAfter??0)<=completed&&!history.slice(-3).some(h=>h.items.some(i=>i.entityId===t.items[0].entityId)));
@@ -25,7 +25,7 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  if(!diagnosticFormat)for(const i of candidates){const m=mem.get(i.targetId)!,task=composeUnit(b,m,s.tag,s.format,history);if(task){task.practice=s.mode==='practice'&&!unitDue(m,s.id,completed);task.reason=task.practice?'practice':m.status==='triaged'||m.status==='learning'?'bootstrap':'due';return {task}}}
  const entityOf=(i:typeof units[number])=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId;
  const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId));
- const budget=Math.max(0,(due.length>=20?1:3)+newState.extraBudget-newState.introducedEntityIds.length);
+ const budget=Math.max(0,(newCardsPerDay??(due.length>=20?1:3))+newState.extraBudget-newState.introducedEntityIds.length);
  const ownerKnown=(i:typeof units[number])=>seenEntities.has(entityOf(i));
  const first=newUnits.find(ownerKnown)??(budget>0?newUnits.find(i=>!sameEntity(entityOf(i))):undefined);
  if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}

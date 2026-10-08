@@ -9,6 +9,7 @@ import {createStudyCoreService} from '../src/services/study-core-service';
 import {compileTaskContract,compileIntroContract} from '../src/lib/engi/study-core/compiler';
 import type {Bundle,Task} from '../src/lib/engi/types';
 import {reviewReceiptKey} from '../src/services/review-commit';
+import {resetLearningProgress} from '../src/services/learning-service';
 
 function fixture():Bundle{
  const b:Bundle={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],properties:[{id:'relation',name:'Автор',valueKind:'entity',cardinality:'one',learnable:true,subjectTypes:['subject'],targetTypes:['answer']}]};
@@ -82,6 +83,17 @@ test('editing a fact after the first answer preserves its historical commit but 
  assert.deepEqual((await d.appMeta.get('studyCore:attempt:'+t.id))!.value,initial);
  assert.equal((await d.appMeta.get('dailyLearning'))!.value.retrievals,1);
 }));
+test('an intro heartbeat queued after Done stays with the old object after a progress reset',()=>run(async(d,svc)=>{
+ await resetLearningProgress(d);const first=await svc.startGoalFeed('all','choice');assert(first.intro);
+ const opened=await svc.observeIntroVisibility(first.id,'first-intro','start');assert(opened);
+ const next=await svc.completeIntro(first.id);assert(next.intro);assert.notEqual(next.intro.entityId,first.intro.entityId);
+ const refreshed=await svc.observeIntroVisibility(first.id,'first-intro','refresh');assert.equal(refreshed!.attemptId,opened.attemptId);
+ const ended=await svc.observeIntroVisibility(first.id,'first-intro','end');assert(ended!.endedAt);
+ const current=await svc.observeIntroVisibility(next.id,'second-intro','start');assert.notEqual(current!.attemptId,opened.attemptId);
+ const late=await svc.observeIntroVisibility(first.id,'first-intro','refresh');assert.deepEqual(late,ended);
+ assert.deepEqual((await d.appMeta.get('studyCore:episode:second-intro'))!.value,current);
+},fixture(),false));
+
 test('reference facts can be shown in Intro and completing it creates no false success',async()=>{
  const b=fixture();b.facts.push({id:'reference',entityId:'s0',key:'note',valueKind:'text',valueText:'Контекст',learnable:false,verification:'verified',source:{name:'test'}});
  const c=compileIntroContract(b,{entityId:'s0',unitIds:['ku:fact:f0:forward'],newProperty:false},'intro');

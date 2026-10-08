@@ -42,6 +42,17 @@ try{
  await page.getByRole('progressbar',{name:'Время вспомнить'}).waitFor();
  assert(Number(await page.getByRole('progressbar',{name:'Время вспомнить'}).getAttribute('aria-valuenow'))<=4);
  await page.getByRole('button',{name:'Показать сейчас',exact:true}).click();await page.locator('.revealed-answer').waitFor();await gradeAndAdvance(third.id);
+ // A real failure shows the error counter; reading its help pauses the next timer.
+ const failed=(await current()).task;await page.locator('.revealed-answer').waitFor();
+ await page.getByRole('button',{name:'Не вспомнил',exact:true}).click();
+ await page.waitForFunction(old=>document.querySelector('.feed-current')?.getAttribute('data-task-id')!==old&&document.querySelector('.study-feed.state-ready'),failed.id);
+ const counter=page.getByRole('button',{name:'Неразобранные ошибки: 1',exact:true});await counter.waitFor();await counter.click();
+ await page.locator('.day-plan-mistakes-help').waitFor();
+ const clock=page.getByRole('progressbar',{name:'Время вспомнить'}),paused=await clock.getAttribute('aria-valuenow');
+ await page.waitForTimeout(1200);assert.equal(await clock.getAttribute('aria-valuenow'),paused);assert.equal(await page.locator('.revealed-answer').count(),0);
+ await page.screenshot({path:'artifacts/mistakes-help-mobile.png'});
+ await page.getByRole('button',{name:'Понятно',exact:true}).click();await page.locator('.day-plan-mistakes-help').waitFor({state:'hidden'});
+ await page.waitForFunction(before=>Number(document.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow'))<Number(before),paused);
  assert.equal(await page.locator('.feed-error').count(),0);assert.deepEqual(errors,[]);
- console.log('PASS recall feed: fresh timer after early and automatic reveal, saved reveal resumes and grades, partial countdown resumes');
+ console.log('PASS recall feed: fresh timer after early and automatic reveal, saved reveal resumes and grades, partial countdown resumes, mistake help pauses timer');
 }finally{await context.close();await browser.close();}

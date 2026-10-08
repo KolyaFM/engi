@@ -2,7 +2,7 @@ import type { EngiDB } from '../db/engi-db';
 import { startAttempt, revealHint, submitAttempt, type Attempt } from '../lib/engi/study-core/attempts';
 import { validateContract, type TaskContract } from '../lib/engi/study-core/contracts';
 import { updateGoalMemories, type GoalMemory } from '../lib/engi/study-core/memory';
-import { observeEpisode, blockedByExposure, type ExposureEntry, type ExposureEpisode } from '../lib/engi/study-core/exposure';
+import { observeEpisode, blockedByExposure,INTRO_DISCLOSURE_COOLDOWN_MS, type ExposureEntry, type ExposureEpisode } from '../lib/engi/study-core/exposure';
 const key = (kind: string, id: string) => `studyCore:${kind}:${id}`;
 /** Separate namespace until the feed can produce complete, revision-aware contracts. */
 export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boolean} = {}) {
@@ -61,6 +61,8 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           (row.value.results?.length?row.value.results.every((r:{correct:boolean})=>r.correct):true);
         claims=claims.filter(c=>c.when!=='incorrect'||!correct);
         const old=(await db.appMeta.get(key('episode',episodeId)))?.value as ExposureEpisode|undefined;
+        // A heartbeat/cleanup reports the screen originally opened, not a newly graded screen.
+        if(old&&event!=='start'&&old.attemptId===attemptId&&old.phase===phase)claims=old.claims;
         if(phase==='matched-pairs'){
           const rule=contract.response;
           if(rule.kind!=='mapping')throw Error('Not a matching task');
@@ -74,7 +76,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const ids=[...new Set(claims.flatMap(c=>c.revealsGoalIds))];
         for(const id of ids){
           const entry=(await db.appMeta.get(key('exposure',id)))?.value as ExposureEntry|undefined;
-          if(!entry||new Date(entry.lastVisibleAt)<=new Date(episode.lastVisibleAt))await db.appMeta.put({key:key('exposure',id),value:{goalId:id,lastVisibleAt:episode.lastVisibleAt,episodeId}});
+          if(!entry||new Date(entry.lastVisibleAt)<=new Date(episode.lastVisibleAt))await db.appMeta.put({key:key('exposure',id),value:{goalId:id,lastVisibleAt:episode.lastVisibleAt,episodeId,...(contract.practice&&contract.id.startsWith('intro:')?{cooldownMs:INTRO_DISCLOSURE_COOLDOWN_MS}:{})}});
         }
         const open=await db.appMeta.where('key').startsWith(key('openAttempt','')).toArray();
         for(const owner of open){
@@ -86,7 +88,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           let affected=ids.filter(id=>activeContract.primaryGoals.some(g=>g.id===id));
           if(owner.value===attemptId&&phase==='early-answer')affected=activeContract.primaryGoals.map(g=>g.id);
           if(activeContract.response.kind==='mapping'&&activeContract.response.bijective&&affected.length)affected=activeContract.primaryGoals.map(g=>g.id);
-          if(affected.length)await db.appMeta.put({key:active.key,value:{...active.value,ineligibleGoalIds:[...new Set([...active.value.ineligibleGoalIds,...affected])]}});
+          if(affected.length)await db.appMeta.put({key:active.key,value:{...active.value,...(owner.value===attemptId?{hintedGoalIds:[...new Set([...active.value.hintedGoalIds??[],...affected])]}:{}),ineligibleGoalIds:[...new Set([...active.value.ineligibleGoalIds,...affected])]}});
         }
         return episode;
       });

@@ -1,12 +1,11 @@
 import {useEffect,useState} from 'react';
-import {db} from '../../db/engi-db';
-export type StudyPreferences={sound:boolean;accessibleRecall:boolean};
-export const DEFAULT_PREFERENCES:StudyPreferences={sound:false,accessibleRecall:false};
+import {DEFAULT_PREFERENCES,readStudyPreferences,saveStudyPreferences,type StudyPreferences} from '../../services/study-preferences-service';
+export {DEFAULT_PREFERENCES,type StudyPreferences} from '../../services/study-preferences-service';
 export function useStudyPreferences(){
- const [preferences,setPreferences]=useState(DEFAULT_PREFERENCES);
- useEffect(()=>{let alive=true;db.appMeta.get('studyPreferences').then(r=>{if(alive)setPreferences({...DEFAULT_PREFERENCES,...r?.value})});return()=>{alive=false}},[]);
- const save=async(next:StudyPreferences)=>{await db.appMeta.put({key:'studyPreferences',value:next});setPreferences(next)};
- return {preferences,save};
+ const [preferences,setPreferences]=useState(DEFAULT_PREFERENCES),[loaded,setLoaded]=useState(false);
+ useEffect(()=>{let alive=true;readStudyPreferences().then(value=>{if(alive)setPreferences(value)}).catch(()=>{}).finally(()=>{if(alive)setLoaded(true)});return()=>{alive=false}},[]);
+ const save=async(next:StudyPreferences)=>{setPreferences(await saveStudyPreferences(next))};
+ return {preferences,save,loaded};
 }
 let audioContext:AudioContext|undefined;
 /** Optional quiet success cue, initiated only by an explicit user action. */

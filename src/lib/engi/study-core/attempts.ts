@@ -3,9 +3,10 @@ export type Attempt = {
   id: string; taskId: string; startedAt: string;
   phase: 'open' | 'submitted' | 'skipped' | 'stale';
   ineligibleGoalIds: string[];
+  hintedGoalIds?: string[];
   firstAnswer?: unknown;
   submittedAt?: string;
-  results?: (GoalResult & { credit: boolean })[];
+  results?: (GoalResult & { credit: boolean; repairEligible?:boolean })[];
   matchedAnswers?: Record<string,string>;
   pairHistory?: MatchingPair[];
 };
@@ -30,7 +31,7 @@ export function revealHint(attempt: Attempt, contract: TaskContract, claimKey: s
   if (contract.response.kind === 'mapping' && contract.response.bijective && contract.primaryGoals.some(g => affected.has(g.id))) {
     contract.primaryGoals.forEach(g => affected.add(g.id));
   }
-  return { ...attempt, ineligibleGoalIds: [...new Set([...attempt.ineligibleGoalIds, ...affected])] };
+  return { ...attempt, hintedGoalIds:[...new Set([...attempt.hintedGoalIds??[],...affected])],ineligibleGoalIds: [...new Set([...attempt.ineligibleGoalIds, ...affected])] };
 }
 export function submitAttempt(attempt: Attempt, contract: TaskContract, answer: unknown, now: Date,
   currentRevisions: Record<string, string>, automaticGoalIds: string[] = []): Attempt {
@@ -40,7 +41,9 @@ export function submitAttempt(attempt: Attempt, contract: TaskContract, answer: 
   if (Object.entries(contract.contentRevisions).some(([key, revision]) => currentRevisions[key] !== revision)) {
     return { ...attempt, phase: 'stale', submittedAt: now.toISOString(), results: [] };
   }
-  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.practice &&
-    !attempt.ineligibleGoalIds.includes(r.goalId) && !automaticGoalIds.includes(r.goalId) }));
+  const shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));
+  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: contract.intent!=='repair'&&!contract.practice &&
+    !attempt.ineligibleGoalIds.includes(r.goalId) && !automaticGoalIds.includes(r.goalId),
+    ...(contract.intent==='repair'?{repairEligible:!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
   return { ...attempt, phase: 'submitted', firstAnswer: structuredClone(answer), submittedAt: now.toISOString(), results };
 }

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import {test} from 'node:test';
+import {test,mock} from 'node:test';
 import assert from 'node:assert/strict';
 import {EngiDB} from '../src/db/engi-db';
 import {putBundle,learningRow} from '../src/db/repositories';
@@ -40,6 +40,229 @@ async function run(fn:(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bu
 async function holdOtherRecognition(d:EngiDB,b:Bundle){
  for(const f of b.facts.slice(1)){const g=associationGoal(b,f,'recognition');await d.appMeta.put({key:'studyCore:memory:'+g.id,value:{goalId:g.id,card:{...createEmptyCard(),state:State.Review,due:new Date(Date.now()+2*86400000)},independentAttempts:1,independentSuccesses:1}});}
 }
+test('repair continues before the deadline and closes errors without changing memory or new budget',()=>run(async(d,svc,b)=>{
+ await holdOtherRecognition(d,b);
+ const s=await svc.startGoalFeed('all','choice'),t=s.tasks[0],wrong=t.options.find(o=>o.id!==t.items[0].answerId)!;
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:wrong.id});await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});
+ const before=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),plan=await svc.getDayPlan();
+ const next=await svc.advanceFeed(s.id,false,t.id);assert.equal(next.exhausted,false);assert.equal(next.tasks[0].intent,'repair');
+ const repair=next.tasks[0];assert.equal(repair.items[0].factId,t.items[0].factId);
+ if(repair.recipe.format==='recall_reveal')await svc.saveInteraction(next.id,repair.id,{recallElapsedMs:5000,revealed:true});
+ const result=await svc.answer({sessionId:next.id,taskId:repair.id,answer:repair.recipe.format==='recall_reveal'?true:repair.items[0].answerId});
+ assert.equal(result.feedback!.mistakeResolved,1);assert.equal((await svc.getDayPlan()).mistakes!.length,0);
+ assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before);
+ assert.deepEqual((await svc.getDayPlan()).newGoalIds,plan.newGoalIds);
+}));
+test('repair hints and a corrected first failure keep the error open for a fresh task',()=>run(async(d,svc,b)=>{
+ await holdOtherRecognition(d,b);
+ const s=await svc.startGoalFeed('all','choice'),t=s.tasks[0];
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:t.options.find(o=>o.id!==t.items[0].answerId)!.id});
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});
+ const next=await svc.advanceFeed(s.id,false,t.id),q=next.tasks[0];assert.equal(q.intent,'repair');
+ await svc.observeVisibility(next.id,q.id,'source','repair-source','start');
+ if(q.recipe.format==='recall_reveal')await svc.saveInteraction(next.id,q.id,{recallElapsedMs:5000,revealed:true});
+ await svc.answer({sessionId:next.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});
+ assert.equal((await svc.getDayPlan()).mistakes!.length,1);
+ const again=await svc.advanceFeed(next.id,false,q.id);assert.equal(again.tasks[0].intent,'repair');assert.notEqual(again.tasks[0].id,q.id);
+ const restored=await createTrainerService(d).getResumableSession();assert.equal(restored!.tasks[0].id,again.tasks[0].id);
+}));
+test('three saved mistakes drain with no time gate, including a final sole mistake',()=>run(async(d,svc,b)=>{
+ for(const [n,f] of b.facts.entries()){
+  const goal=associationGoal(b,f,'recognition'),at=new Date(Date.now()-1000);
+  await d.appMeta.put({key:'studyCore:memory:'+goal.id,value:{goalId:goal.id,goal,lastCorrect:n>=3,independentAttempts:1,independentSuccesses:Number(n>=3),card:{...createEmptyCard(at),state:State.Review,due:new Date(Date.now()+86400000),last_review:at}}});
+ }
+ let s=await svc.startGoalFeed('all','choice');assert.equal((await svc.getDayPlan()).mistakes!.length,3);
+ const seen=new Set<string>();
+ for(let remaining=3;remaining>0;remaining--){
+  assert.equal(s.exhausted,false);const q=s.tasks[0];assert.equal(q.intent,'repair');seen.add(q.items[0].factId!);
+  if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{recallElapsedMs:5000,revealed:true});
+  await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});
+  assert.equal((await svc.getDayPlan()).mistakes!.length,remaining-1);
+  s=await svc.advanceFeed(s.id,false,q.id);
+ }
+ assert.equal(seen.size,3);assert.equal(s.exhausted,true);
+}));
+
+async function seedFutureMistakes(d:EngiDB,b:Bundle,count:number){
+ for(const [n,f] of b.facts.entries()){
+  const goal=associationGoal(b,f,'recognition'),at=new Date(Date.now()-1000);
+  await d.appMeta.put({key:'studyCore:memory:'+goal.id,value:{goalId:goal.id,goal,lastCorrect:n>=count,independentAttempts:1,independentSuccesses:Number(n>=count),card:{...createEmptyCard(at),state:State.Review,due:new Date(Date.now()+86400000),last_review:at}}});
+ }
+}
+test('daily preference controls admission immediately, preserves completed cards and resets next day',()=>run(async(d,svc,b)=>{
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:7}});
+ assert.equal((await svc.getDayPlan()).newBudget,7);
+ const s=await svc.startGoalFeed('all','choice'),q=s.tasks[0];await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
+ const before=(await svc.getDayPlan()).newGoalIds;
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});
+ const plan=await svc.getDayPlan('all','choice');assert.deepEqual(plan.newGoalIds,before);assert.equal(plan.available!.new,0);
+ const {ensureDayPlan}=await import('../src/services/day-plan-service'),catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload)),memories=(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).map(r=>r.value);
+ const tomorrow=await ensureDayPlan(d,catalog,memories,new Date(Date.now()+86400000));assert.equal(tomorrow.newBudget,0);assert.equal(tomorrow.newTarget,0);
+}));
+test('zero daily preference keeps repairs available; explicit extra goals add to the selected limit',()=>run(async(d,svc,b)=>{
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});await seedFutureMistakes(d,b,1);
+ const s=await svc.startGoalFeed('all','choice');assert.equal(s.tasks[0].intent,'repair');assert.equal((await svc.getDayPlan()).newBudget,0);
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:5}});await d.appMeta.put({key:'newLearning',value:{day:(await svc.getDayPlan()).day,introducedEntityIds:[],extraBudget:2}});
+ assert.equal((await svc.getDayPlan()).newBudget,7);
+}));
+test('extra admission adds the configured daily batch each time and refuses a zero limit',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:10}});
+ let s=await svc.startGoalFeed('all','choice');assert(s.exhausted);
+ s=await svc.openMore(s.id);assert.equal((await svc.getDayPlan()).newBudget,20);assert.equal((await d.appMeta.get('newLearning'))!.value.extraBudget,10);
+ assert(s.exhausted);await svc.openMore(s.id);assert.equal((await svc.getDayPlan()).newBudget,30);
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});
+ await assert.rejects(svc.openMore(s.id),/дневной лимит/);assert.equal((await d.appMeta.get('newLearning'))!.value.extraBudget,20);
+}));
+test('first intro enters the live queue after ten seconds without shortening later feedback intervals',async()=>{
+ const at=new Date(2026,9,8,10).getTime();mock.timers.enable({apis:['Date'],now:at});
+ try{await run(async(d,svc)=>{
+  const {resetLearningProgress}=await import('../src/services/learning-service');await resetLearningProgress(d);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:1}});
+  const first=await svc.startGoalFeed('all','choice');assert(first.intro);await svc.observeIntroVisibility(first.id,'new-intro','start');
+  let s=await svc.completeIntro(first.id);await svc.observeIntroVisibility(first.id,'new-intro','end');assert(s.exhausted);assert.equal(s.waitingUntil,new Date(at+10000).toISOString());
+  mock.timers.setTime(at+9999);assert.equal((await svc.getDayPlan('all','choice')).available!.new,0);
+  mock.timers.setTime(at+10000);s=await svc.refreshGoalFeed(s.id);assert(!s.exhausted);const q=s.tasks[0];assert.equal(q.items[0].entityId,first.intro.entityId);
+  const blocked=(await d.appMeta.get('studyCore:attempt:'+q.id))!.value.ineligibleGoalIds;assert(q.studyContract!.primaryGoals.every(g=>!blocked.includes(g.id)));
+  await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});await svc.observeVisibility(s.id,q.id,'feedback','ordinary-feedback','start');
+  const {blockedByExposure}=await import('../src/lib/engi/study-core/exposure'),exposed=(await d.appMeta.get('studyCore:exposure:'+q.studyContract!.primaryGoals[0].id))!.value;
+  assert(blockedByExposure([exposed],new Date(at+40000)).length);assert.equal(blockedByExposure([exposed],new Date(at+70000)).length,0);
+ });}finally{mock.timers.reset();}
+});
+test('a larger daily preference permits introductions beyond the old fixed three-object limit',()=>run(async(d,svc,b)=>{
+ for(const row of await d.learningState.toArray())if(!['ku:fact:f0:forward','ku:fact:f1:forward','ku:fact:f2:forward'].includes(row.id))await d.learningState.delete(row.id);
+ const enabled=(await d.learningState.toArray()).map(r=>r.payload);
+ for(const task of goalCandidates(b,enabled))for(const goal of task.studyContract!.primaryGoals)await d.appMeta.put({key:'studyCore:memory:'+goal.id,value:{goalId:goal.id,goal,lastCorrect:true,independentAttempts:1,independentSuccesses:1,card:{...createEmptyCard(),state:State.Review,due:new Date('2099-01-01')}}});
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:7}});
+ const {localDay}=await import('../src/lib/engi/knowledge/motivation');await d.appMeta.put({key:'newLearning',value:{day:localDay(),introducedEntityIds:['s0','s1','s2'],extraBudget:0}});await d.appMeta.put({key:'introducedEntities',value:['s0','s1','s2']});
+ const s=await svc.startGoalFeed('all','choice');assert(s.intro);assert.equal(s.exhausted,false);
+}));
+test('lowering the daily preference retires an unanswered new task safely on resume',()=>run(async(d,svc)=>{
+ const s=await svc.startGoalFeed('all','choice');assert.equal(s.tasks[0].intent,'learn');
+ await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});await svc.getDayPlan();
+ const resumed=await svc.getResumableSession();assert.equal(resumed!.exhausted,true);assert.equal(resumed!.tasks.length,0);
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);
+}));
+test('header availability excludes due reinforcement while answer exposure blocks the feed',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);
+ const goal=associationGoal(b,b.facts[0],'recognition'),key='studyCore:memory:'+goal.id,row=(await d.appMeta.get(key))!;
+ row.value.card.state=State.Relearning;row.value.card.due=new Date(Date.now()-1000);await d.appMeta.put(row);
+ await d.appMeta.put({key:'studyCore:exposure:'+goal.id,value:{goalId:goal.id,lastVisibleAt:new Date().toISOString(),episodeId:'recent-answer'}});
+ const s=await svc.startGoalFeed('all','choice');assert.equal(s.exhausted,true);
+ const plan=await svc.getDayPlan('all','choice');assert.equal(plan.reinforce.filter(r=>r.status==='pending').length,1);
+ assert.deepEqual(plan.available,{repeat:0,reinforce:0,new:0});
+}));
+test('home snapshot and mixed feed expose identical available new counts',()=>run(async(d,svc)=>{
+ const snapshot=await svc.getGoalSnapshot(),plan=await svc.getDayPlan('all','mixed');assert.deepEqual(snapshot.dayPlan!.available,plan.available);
+}));
+test('availability retains the next deadline even when another review is already available',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);const due=new Date(Date.now()+4000);
+ for(const [n,f] of b.facts.slice(0,2).entries()){
+  const row=(await d.appMeta.get('studyCore:memory:'+associationGoal(b,f,'recognition').id))!;
+  row.value.card.state=n===0?State.Relearning:State.Review;row.value.card.due=n===0?due:new Date(Date.now()-1000);await d.appMeta.put(row);
+ }
+ const plan=await svc.getDayPlan('all','choice');assert.equal(plan.available!.repeat,1);assert.equal(plan.available!.reinforce,0);assert.equal(plan.nextAvailabilityAt,due.toISOString());
+}));
+test('header availability follows the selected format while the full plan keeps other obligations',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);
+ for(const f of b.facts){const goal=associationGoal(b,f,'recall');await d.appMeta.put({key:'studyCore:memory:'+goal.id,value:{goalId:goal.id,goal,lastCorrect:true,independentAttempts:1,independentSuccesses:1,card:{...createEmptyCard(),state:State.Review,due:new Date(Date.now()+86400000)}}});}
+ const key='studyCore:memory:'+associationGoal(b,b.facts[0],'recognition').id,row=(await d.appMeta.get(key))!;row.value.card.state=State.Relearning;row.value.card.due=new Date(Date.now()-1000);await d.appMeta.put(row);
+ const s=await svc.startGoalFeed('all','recall_reveal');assert.equal(s.exhausted,true);
+ const recall=await svc.getDayPlan('all','recall_reveal');assert.equal(recall.available!.reinforce,0);assert.equal(recall.reinforce.filter(r=>r.status==='pending').length,1);
+ assert.equal((await svc.getDayPlan('all','choice')).available!.reinforce,1);
+}));
+test('header counts a ready knowledge once across presentations and removes it after answering',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);
+ const key='studyCore:memory:'+associationGoal(b,b.facts[0],'recognition').id,row=(await d.appMeta.get(key))!;row.value.card.state=State.Relearning;row.value.card.due=new Date(Date.now()-1000);await d.appMeta.put(row);
+ assert.equal((await svc.getDayPlan('all','mixed')).available!.reinforce,1);
+ const s=await svc.startGoalFeed('all','choice'),q=s.tasks[0];assert.equal(q.intent,'learn');
+ await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});assert.equal((await svc.getDayPlan('all','choice')).available!.reinforce,0);
+}));
+test('a fresh error returns after two other learning tasks, before the learning queue ends',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,0);
+ for(const [n,f] of b.facts.slice(0,5).entries()){
+  const key='studyCore:memory:'+associationGoal(b,f,'recognition').id,row=(await d.appMeta.get(key))!;
+  row.value.card.due=new Date(Date.now()-(n===0?86400000:1000));await d.appMeta.put(row);
+ }
+ let s=await svc.startGoalFeed('all','choice'),q=s.tasks[0];assert.equal(q.items[0].factId,'f0');
+ await svc.answer({sessionId:s.id,taskId:q.id,answer:q.options.find(o=>o.id!==q.items[0].answerId)!.id});
+ await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
+ for(let n=0;n<2;n++){
+  s=await svc.advanceFeed(s.id,false,q.id);q=s.tasks[0];assert.equal(q.intent,'learn');assert(!q.items.some(i=>i.factId==='f0'));
+  const answer=q.studyContract!.response.kind==='mapping'?Object.fromEntries(q.studyContract!.response.bindings.map(b=>[b.responseKey,b.expected])):q.items[0].answerId;
+  await svc.answer({sessionId:s.id,taskId:q.id,answer});
+ }
+ s=await svc.advanceFeed(s.id,false,q.id);assert.equal(s.tasks[0].intent,'repair');assert.equal(s.tasks[0].items[0].factId,'f0');
+}));
+test('diagnostic scheduling drains future mistakes through valid alternative formats',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,1);
+ const s=await svc.startGoalFeed('all','timeline');assert.equal(s.exhausted,false);assert.equal(s.tasks[0].intent,'repair');assert.equal(s.tasks[0].items[0].factId,'f0');
+}));
+test('temporarily disabled content retains its episode; a real revision change supersedes it',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,1);await svc.getDayPlan();const id=(await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].id;
+ await putBundle(d,{...b,properties:b.properties!.map(p=>({...p,learnable:false}))});
+ assert.equal((await svc.getDayPlan()).unavailableMistakes,1);assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].status,'unavailable');
+ await putBundle(d,b);assert.equal((await svc.getDayPlan()).mistakes!.length,1);assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].id,id);
+ await putBundle(d,{...b,facts:b.facts.map(f=>f.id==='f0'?{...f,valueEntityId:'a2'}:f)});await svc.getDayPlan();
+ assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].status,'superseded');
+}));
+test('explicit unavailable-error retry clears media suppression without admitting extra new knowledge',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,1);const s=await svc.startGoalFeed('all','choice'),before=(await svc.getDayPlan()).newGoalIds;
+ const {markRepairUnavailable}=await import('../src/services/mistake-episodes');await markRepairUnavailable(d,s.tasks[0].repairEpisodeIds!,'https://example.com/temporary-image.png');
+ await d.activeSessions.update(s.id,{exhausted:true,tasks:[]});assert.equal((await svc.getDayPlan()).unavailableMistakes,1);
+ const next=await svc.retryUnavailableMistakes(s.id);assert.equal(next.exhausted,false);assert.equal(next.tasks[0].intent,'repair');
+ assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].failedImage,undefined);
+ assert.deepEqual((await svc.getDayPlan()).newGoalIds,before);
+}));
+test('failed repair and same-task correction preserve one error and never reschedule memory',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,1);
+ const s=await svc.startGoalFeed('all','choice'),q=s.tasks[0],before=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();assert.equal(q.intent,'repair');
+ if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{recallElapsedMs:5000,revealed:true});
+ const wrong=q.recipe.format==='recall_reveal'?false:q.options.find(o=>o.id!==q.items[0].answerId)!.id;
+ await svc.answer({sessionId:s.id,taskId:q.id,answer:wrong});
+ await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});
+ assert.equal((await svc.getDayPlan()).mistakes!.length,1);
+ assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before);
+ const next=await svc.advanceFeed(s.id,false,q.id);assert.equal(next.tasks[0].intent,'repair');assert.notEqual(next.tasks[0].id,q.id);
+}));
+test('scoped counters and repairs exclude errors from other collections, including suspended errors',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,2);
+ await putBundle(d,{...b,tags:[{id:'one',name:'Один'},{id:'two',name:'Два'}],entityTags:[{entityId:'s0',tagId:'one'},{entityId:'s1',tagId:'two'}]});
+ assert.equal((await svc.getDayPlan()).mistakes!.length,2);
+ const row=(await d.learningState.get('ku:fact:f1:forward'))!;await d.learningState.put(learningRow({...row.payload,status:'suspended'}));
+ const one=await svc.getDayPlan('one'),two=await svc.getDayPlan('two');
+ assert.equal(one.mistakes!.length,1);assert.equal(one.unavailableMistakes,0);
+ assert.equal(two.mistakes!.length,0);assert.equal(two.unavailableMistakes,1);
+ const s=await svc.startGoalFeed('one','choice');assert.equal(s.tasks[0].intent,'repair');assert.equal(s.tasks[0].items[0].factId,'f0');
+}));
+test('mistake episodes survive day rollover and serialized backup without remigrating resolved errors',()=>run(async(d,svc,b)=>{
+ await seedFutureMistakes(d,b,1);await svc.getDayPlan();
+ const ledger=await d.appMeta.get('studyCore:mistakeEpisodes'),id=ledger!.value.episodes[0].id;
+ const {ensureDayPlan}=await import('../src/services/day-plan-service');
+ const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload)),memories=(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).map(r=>r.value);
+ const tomorrow=await ensureDayPlan(d,catalog,memories,new Date(Date.now()+86400000));assert.equal(tomorrow.mistakes!.length,1);assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].id,id);
+ const {exportBackup,restoreBackup}=await import('../src/services/backup-service'),backup=JSON.parse(JSON.stringify(await exportBackup(d))),target=new EngiDB('repair-backup-'+crypto.randomUUID());
+ try{
+  await restoreBackup(backup,target);const restored=createTrainerService(target),s=await restored.startGoalFeed('all','choice'),q=s.tasks[0];assert.equal(q.intent,'repair');assert.deepEqual(q.repairEpisodeIds,[id]);
+  if(q.recipe.format==='recall_reveal')await restored.saveInteraction(s.id,q.id,{recallElapsedMs:5000,revealed:true});
+  await restored.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:q.items[0].answerId});
+  assert.equal((await restored.getDayPlan()).mistakes!.length,0);assert.equal((await createTrainerService(target).getDayPlan()).mistakes!.length,0);
+ }finally{target.close();await target.delete();}
+}));
+test('live mistakes survive immediate correction and close across formats without altering the failed schedule',()=>run(async(d,svc,b)=>{
+ const s=await svc.startGoalFeed('all','choice'),t=s.tasks[0],wrong=t.options.find(o=>o.id!==t.items[0].answerId)!;
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:wrong.id});
+ assert.equal((await svc.getDayPlan()).mistakes!.length,1);
+ const goal=t.studyContract!.primaryGoals[0],before=(await d.appMeta.get('studyCore:memory:'+goal.id))!.value;
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});
+ assert.equal((await svc.getDayPlan()).mistakes!.length,1);
+ const fact=b.facts.find(f=>f.id===t.items[0].factId)!;
+ await putBundle(d,{...b,tags:[{id:'mistake-scope',name:'Ошибка'}],entityTags:[{entityId:fact.entityId,tagId:'mistake-scope'}]});
+ const fresh=await svc.startGoalFeed('mistake-scope','recall_reveal'),next=fresh.tasks[0];assert.equal(next.items[0].factId,fact.id);
+ await svc.saveInteraction(fresh.id,next.id,{recallElapsedMs:5000,revealed:true});
+ const result=await svc.answer({sessionId:fresh.id,taskId:next.id,answer:true});
+ assert.equal(result.feedback!.mistakeResolved,1);assert.equal((await svc.getDayPlan()).mistakes!.length,0);
+ assert.deepEqual((await d.appMeta.get('studyCore:memory:'+goal.id))!.value,before);
+ assert.equal((await createTrainerService(d).getDayPlan()).mistakes!.length,0);
+}));
 test('goal feed commits one goal FSRS while every legacy memory stays byte-for-byte unchanged',()=>run(async(d,svc)=>{
  const before=await d.learningState.toArray(),s=await svc.startGoalFeed('all','choice'),t=s.tasks[0];assert.equal(t.memoryModel,'goals');
  const r=await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId}),g=t.studyContract!.primaryGoals[0];

@@ -32,6 +32,11 @@ try{
  await left(second.entityId).click();await left(first.entityId).click();assert.equal(await page.locator('.matching-tile.selected').count(),1);
  await right(wrong.id).click();await page.locator('.matching-tile.incorrect').first().waitFor();assert.equal(await page.locator('.matching-tile.incorrect').count(),2);
  await page.waitForFunction(()=>document.querySelectorAll('.matching-tile.incorrect,.matching-tile.selected').length===0);
+ const mistakes=page.getByRole('button',{name:'Неразобранные ошибки: 1',exact:true});await mistakes.waitFor();
+ await mistakes.click();await page.locator('.day-plan-mistakes-help').waitFor();assert(await left(second.entityId).isDisabled());
+ await page.setViewportSize({width:320,height:736});
+ const helpBox=await page.locator('.day-plan-mistakes-help').boundingBox();assert(helpBox.x>=0&&helpBox.x+helpBox.width<=320);
+ await page.getByRole('button',{name:'Понятно',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('.day-plan-mistakes-help'));await page.setViewportSize({width:393,height:852});
  const goal=task.studyContract.primaryGoals.find(g=>g.subjectId===first.entityId)??task.studyContract.primaryGoals[0];
  const memories=()=>page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.where('key').startsWith('studyCore:memory:').toArray()).map(r=>r.value);});
  const firstMemory=(await memories()).find(m=>m.goalId===goal.id);assert(firstMemory);assert.equal(firstMemory.independentSuccesses,0);
@@ -42,6 +47,7 @@ try{
  assert.equal(await left(second.entityId).isEnabled(),true,'Next object can be selected during green feedback');
  await left(second.entityId).click();assert.equal(await left(second.entityId).getAttribute('aria-pressed'),'true');
  await page.locator('.matching-tile.matched').first().waitFor();assert(await left(first.entityId).isDisabled());assert.equal(await page.locator('.matching-tile.matched').count(),2);
+ assert(await mistakes.isVisible(),'Correction does not close the knowledge mistake');
  assert.deepEqual((await memories()).find(m=>m.goalId===goal.id),firstMemory);
  await page.reload();await page.getByRole('button',{name:'Продолжить с прошлого места',exact:true}).click();await page.locator('.matching-tile.matched').first().waitFor();
  assert(await left(first.entityId).isDisabled());assert(await right(first.answerId).isDisabled());

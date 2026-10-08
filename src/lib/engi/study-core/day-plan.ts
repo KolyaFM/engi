@@ -1,8 +1,9 @@
 import type {GoalMemory} from './memory';
 import type {Attempt} from './attempts';
+import {applyMistakes,synchronizeMistakes,type KnowledgeMistake} from './mistakes';
 export const DEFAULT_NEW_GOALS_PER_DAY=3;
 export type DayObligation={goalId:string;dueAt:string;status:'pending'|'done'|'excluded'|'deferred';reason:'review'|'learning'|'mistake'};
-export type GoalDayPlan={day:string;endsAt:string;newBudget:number;newTarget:number;newGoalIds:string[];learningGoalIds?:string[];repeat:DayObligation[];reinforce:DayObligation[];processedAttemptIds:string[]};
+export type GoalDayPlan={scopeLabel?:string;nextAvailabilityAt?:string;day:string;endsAt:string;newBudget:number;newTarget:number;newGoalIds:string[];learningGoalIds?:string[];mistakes?:KnowledgeMistake[];unavailableMistakes?:number;available?:{repeat:number;reinforce:number;new:number};repeat:DayObligation[];reinforce:DayObligation[];processedAttemptIds:string[]};
 export function newAdmission(plan:GoalDayPlan){const active=new Set(plan.learningGoalIds??[]).size,limit=plan.newBudget;return {active,limit,available:Math.max(0,limit-active),held:active>=limit};}
 export function dayBoundary(now:Date){
  const day=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -13,6 +14,7 @@ export function synchronizeDayPlan(previous:GoalDayPlan|undefined,activeIds:stri
  const boundary=dayBoundary(now),plan:GoalDayPlan=previous?.day===boundary.day?structuredClone(previous):{...boundary,newBudget,newTarget:0,newGoalIds:[],repeat:[],reinforce:[],processedAttemptIds:[]};
  plan.newBudget=Math.max(plan.newGoalIds.length,Math.max(0,Math.floor(newBudget)));
  const active=new Set(activeIds),known=new Map(memories.filter(m=>active.has(m.goalId)).map(m=>[m.goalId,m]));
+ plan.mistakes=synchronizeMistakes(previous?.mistakes,[...known.values()],now);
  plan.learningGoalIds=[...known.values()].filter(m=>m.independentAttempts>0&&Number(m.card.state)===1).map(m=>m.goalId);
  for(const list of [plan.repeat,plan.reinforce])for(const row of list){
   if(!active.has(row.goalId)&&row.status==='pending')row.status='excluded';
@@ -36,6 +38,7 @@ export function applyDayAttempt(previous:GoalDayPlan,attempt:Attempt,after:GoalM
  const results=attempt.results?.filter(r=>r.credit)??[];
  if(!results.length)return plan;
  plan.processedAttemptIds.push(attempt.id);
+ plan.mistakes=applyMistakes(plan.mistakes??[],attempt,after);
  const memory=new Map(after.map(m=>[m.goalId,m]));
  for(const result of results){
   const repeat=plan.repeat.find(r=>r.goalId===result.goalId),reinforce=plan.reinforce.find(r=>r.goalId===result.goalId);
