@@ -96,6 +96,7 @@ export function createTrainerService(d:EngiDB){return {
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
+   if(task?.recipe.format==='timeline'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);s.format='sort';return selectNext(d,s);}
    if(task&&!s.learningLifecycle&&task.intent!=='repair'&&!task.practice&&!task.recipe.diagnostic){
     const goals=task.studyContract?.primaryGoals??[],rows=await d.appMeta.bulkGet(goals.map(g=>'studyCore:memory:'+g.id)),fresh=rows.filter(r=>!r).length;
     if(fresh){const plan=await createTrainerService(d).getDayPlan(),slots=Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available);

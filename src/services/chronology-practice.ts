@@ -4,7 +4,7 @@ import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {selectionTie} from '../lib/engi/session/continuous-feed-policy';
 /** Diagnostics use learned, enabled facts only. They never assert knowledge of exact dates. */
 export function chronologyPractice(b:Bundle,enabled:Memory[],facts:Set<string>,protectedGoals:Set<string>,tag:string,format:string,history:Task[],seed:string){
- const available:Format[]=['timeline','sort','missing'],formats=available.filter(f=>format==='mixed'||f===format);
+ const available:Format[]=['sort'],formats=available.filter(f=>format==='mixed'||f===format||format==='timeline');
  const restricted={...b,facts:b.facts.filter(f=>facts.has(f.id))};
  const tasks=formats.flatMap(f=>composeFeed(restricted,enabled,tag,f,'practice',history,4));
  const owners=(t:Task)=>t.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId),last=new Set(history.at(-1)?owners(history.at(-1)!):[]);

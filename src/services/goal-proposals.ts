@@ -6,7 +6,7 @@ import {goalCandidates} from './goal-candidates';
 import {composeUnit,compositionContext,type CompositionContext} from '../lib/engi/session/composer';
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {feedSpan} from './feed-performance';
-export type GoalProposal={recipe:Recipe;items:Item[];goals:LearningGoal[];group?:boolean;options?:Task['options']};
+export type GoalProposal={presentation?:'conveyor';recipe:Recipe;items:Item[];goals:LearningGoal[];group?:boolean;options?:Task['options']};
 type Pool={proposals:GoalProposal[];context:CompositionContext};
 // Bounded by two configurations/scopes. No schedule, exposure, day plan or selected task is cached.
 const cache:{key:string;pool:Pool}[]=[];
@@ -26,7 +26,7 @@ export function materializeGoalProposal(b:Bundle,enabled:Memory[],proposal:GoalP
  const end=feedSpan('materialize');try{
  let task:Task|undefined;
  if(proposal.items.some(i=>!enabled.some(m=>m.id===i.targetId&&!m.legacyOf&&m.status!=='suspended')))return;
- if(proposal.group){task={id:crypto.randomUUID(),memoryModel:'goals',recipe:{...proposal.recipe},items:proposal.items.map(i=>({...i})),options:(proposal.options??[]).map(o=>({...o})),reason:'due',practice};}
+ if(proposal.group){task={presentation:proposal.presentation,id:crypto.randomUUID(),memoryModel:'goals',recipe:{...proposal.recipe},items:proposal.items.map(i=>({...i})),options:(proposal.options??[]).map(o=>({...o})),reason:'due',practice};}
  else{
   const m=enabled.find(m=>m.id===proposal.items[0].targetId&&!m.legacyOf&&m.status!=='suspended');if(!m)return;
   // The selector chooses a goal/interaction. Keep image/name presentation free to vary

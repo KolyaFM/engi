@@ -57,7 +57,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }
   const p=properties(b).find(p=>p.id===task.recipe.answerKey);
   if(p)revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]);
-  const goals:LearningGoal[]=[];
+  const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
   const goalFor=(i:Item)=>i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
   let response:TaskContract['response'],actionFamily:TaskContract['actionFamily'],practice=!!task.practice||task.recipe.diagnostic;
   if(fmt==='multi_choice'){
@@ -69,7 +69,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     goals.push(g);response={kind:'set',goalId:g.id,options:task.options.map(o=>o.id),expected,complete:true};actionFamily='select-set';
   }else if(fmt==='sort'){
     if(task.items.some(i=>!Number.isFinite(i.year))||new Set(task.items.map(i=>i.year)).size!==task.items.length)throw Error('Order is not strict');
-    response={kind:'order',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>a.year!-c.year!).map(i=>i.entityId),relations:[]};actionFamily='order';practice=true;
+    if(task.contextual){for(const item of task.items){const g=goalFor(item);(task.contextual.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}}
+    response={kind:'order',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>a.year!-c.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
   }else if(fmt==='missing'){
     response={kind:'practice-choice',options:task.options.map(o=>o.id),expected:discreteAnswer(task)};actionFamily='select';practice=true;
   }else if(fmt==='timeline'){
@@ -78,7 +79,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }else if(fmt==='recall_reveal'){
     if(task.items.length!==1)throw Error('Grouped self report is unsupported');const g=goalFor(first);goals.push(g);response={kind:'self-report',goalId:g.id};actionFamily='recall';
   }else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
-    goals.push(...task.items.map(goalFor));response={kind:'mapping',bindings:task.items.map((i,n)=>({responseKey:i.entityId,goalId:goals[n].id,expected:i.answerId})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
+    for(const item of task.items){const g=goalFor(item);(task.contextual?.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}
+    response={kind:'mapping',bindings:task.items.map(i=>({responseKey:i.entityId,goalId:goalFor(i).id,expected:i.answerId,...(task.contextual?.supportTargetIds.includes(i.targetId)?{support:true}:{})})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
   }else{
     const g=goalFor(first);goals.push(g);response={kind:'choice',goalId:g.id,options:task.options.map(o=>o.id),expected:first.answerId};actionFamily='select';
   }
@@ -94,7 +96,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   // Custom prompts sometimes interpolate the subject even with an image cue.
   if(task.recipe.cue==='image'&&task.recipe.answerKey!=='identity'&&task.recipe.prompt?.includes(first.name))shownClaims.push(addClaim(claimForName(b,first.entityId)));
   const feedbackClaims:Claim[]=[];
-  if(fmt!=='missing')for(const item of task.items){
+    if(fmt!=='missing'&&task.contextual?.kind!=='boundary')for(const item of task.items){
     if(item.factId){
       const fact=factFor(b,item),claim=claimForFact(b,fact);
       // Diagnostic UI shows years, not full day/month answers. Correct sorts show no years.
@@ -112,7 +114,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(fmt==='recall_reveal')hintClaims.push({key:'early-answer',revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
-  const contract:TaskContract={id:task.id,primaryGoals:goals,supportGoalIds:[],actionFamily,visibleEntities,
+  if(task.contextual){for(const item of task.items){const f=factFor(b,item);if(f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact year data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
+  const contract:TaskContract={id:task.id,primaryGoals:goals,supportGoalIds:supportGoals.map(g=>g.id),actionFamily,visibleEntities,...(task.contextual?{contextual:task.contextual}:{}),
     shownClaims:[...new Map(shownClaims.map(c=>[c.key,c])).values()],hintClaims,feedbackClaims,
     contentRevisions:revisions,response,practice,...(task.reason==='game'?{game:true}:{}),...(task.intent?{intent:task.intent,repairEpisodeIds:task.repairEpisodeIds}:{})};
   validateContract(contract);return contract;

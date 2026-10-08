@@ -40,7 +40,7 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  const complete=attempt.phase==='submitted';
  let feedback=completed?.payload.feedback;
  if(complete&&!completed){
-  const results=attempt.results??[],score=results.filter(r=>r.correct).length/task.items.length;
+  const results=attempt.results??[],score=results.filter(r=>r.correct).length/Math.max(1,task.studyContract.primaryGoals.length);
   feedback={score,matchingComplete:true,chosen:attempt.matchedAnswers,items:task.items,creditBlocked:!results.some(r=>r.credit)};
   // Pair events own independent learning credit; this event only closes the screen.
   await d.reviewEvents.add({id:task.id,timestamp:pair.at,recipe:task.recipe.id,level:'matching-summary',targetIds:[],payload:{score,feedback,memoryModel:'goals',fsrsEnabled:false}});

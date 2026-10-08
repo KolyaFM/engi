@@ -54,6 +54,6 @@ export async function traceStudyAnswer(db:EngiDB,contract:TaskContract,attempt:A
  if(!buffers.has(db))return;
  const rows=await db.appMeta.bulkGet(contract.primaryGoals.map(g=>'studyCore:memory:'+g.id)),previous=new Map(before.map(m=>[m.goalId,m]));
  append(db,{at:attempt.submittedAt??new Date().toISOString(),kind:'answer',taskId:attempt.taskId,intent:contract.intent,goals:contract.primaryGoals.map(g=>g.id),
-  results:attempt.results?.map(r=>({goalId:r.goalId,correct:r.correct,credit:r.credit,acquisitionCredit:r.acquisitionCredit,acquisitionStageBefore:r.acquisitionStageBefore,acquisitionStageAfter:r.acquisitionStageAfter,repairEligible:r.repairEligible})),
+  results:attempt.results?.map(r=>({goalId:r.goalId,correct:r.correct,credit:r.credit,contextCredit:r.contextCredit,acquisitionCredit:r.acquisitionCredit,acquisitionStageBefore:r.acquisitionStageBefore,acquisitionStageAfter:r.acquisitionStageAfter,repairEligible:r.repairEligible})),
   memory:rows.filter(r=>!!r).map(r=>{const m=r!.value as GoalMemory;return {goalId:m.goalId,state:Number(m.card.state),dueAt:new Date(m.card.due).toISOString(),independentAttempts:m.independentAttempts,attemptsDelta:m.independentAttempts-(previous.get(m.goalId)?.independentAttempts??0)};})});
 }

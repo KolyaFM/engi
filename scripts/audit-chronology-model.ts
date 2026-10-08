@@ -1,0 +1,10 @@
+import {writeFileSync} from 'node:fs';
+import {simulate,randomPassChance,binaryTail,remainingMatchChance,type Actor,type Policy} from './models/chronology-model';
+const actors:Actor[]=['expert','guesser','partition-only','side-habit','recent-hint','learner'],policies:Policy[]=['same-boundary','mixed-context','two-orders','consistent','local-confirmation'];
+const reports=[];
+for(const policy of policies)for(const actor of actors){const runs=Array.from({length:100},(_,n)=>simulate(policy,actor,1000+n));const mean=(get:(r:typeof runs[number])=>number)=>runs.reduce((n,r)=>n+get(r),0)/runs.length;
+ const completedDays=runs.flatMap(r=>r.completionDays);
+ const report={policy,actor,seeds:runs.length,days:30,actionsPerDay:180,completedPercent:100*mean(r=>r.completed/r.total),meanCompletedDayAmongCompleted:completedDays.length?completedDays.reduce((n,d)=>n+d,0)/completedDays.length:null,meanChronology:mean(r=>r.chronology),meanErrors:mean(r=>r.errors),meanAdjacentFocusRepeats:mean(r=>r.repeated),fixedWindowRandomPass:randomPassChance(policy)};reports.push(report);console.log(JSON.stringify(report));}
+const sensitivity=[30,180].flatMap(actions=>[3,10,30].flatMap(seconds=>actors.map(actor=>{const runs=Array.from({length:100},(_,n)=>simulate('local-confirmation',actor,1000+n,30,actions,seconds));return {actor,actionsPerDay:actions,secondsPerAction:seconds,seeds:100,completedPercent:100*runs.reduce((n,r)=>n+r.completed/r.total,0)/runs.length,meanChronology:runs.reduce((n,r)=>n+r.chronology,0)/runs.length};})));
+const conveyor={randomChanceOf10Of12:binaryTail(10,12),randomChanceOf8Of12:binaryTail(8,12),forcedFinalPair:remainingMatchChance(1,0),finalPairWithSpare:remainingMatchChance(1,1),note:'Series score cannot assign success to every property; score per first independent decision. These probabilities assume independent unbiased choices.'};
+writeFileSync('artifacts/chronology-model-audit.json',JSON.stringify({scope:'Hypothetical actor model; no product changes, FSRS updates or real user data',reports,sensitivity,conveyor,example:simulate('local-confirmation','learner',17)},null,2));

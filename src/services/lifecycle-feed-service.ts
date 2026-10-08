@@ -14,6 +14,7 @@ import {selectRepairWork} from './study-work-service';
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {groupProposals} from './group-candidates';
 import {chronologyPractice} from './chronology-practice';
+import {buildLearningChronology} from './learning-chronology';
 /** One source of eligible work: acquisition, due reviews, repair, admission, then safe practice. */
 export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now()){
  const catalog=buildGoalCatalog(b,enabled),ledger=await ensureLifecycle(db,catalog,new Date(now));
@@ -54,8 +55,14 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(acquisitionKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
  const diagnostic=()=>chronologyPractice(b,enabled,knownFacts,protectedGoals,s.tag??'all',s.format??'mixed',history,s.id+(s.completedCount??0));
  const lastDiagnostic=history.map(t=>!!t.recipe.diagnostic).lastIndexOf(true),diagnosticActions=history.slice(lastDiagnostic+1).reduce((n,t)=>n+Math.max(1,t.items.length),0);
- if((s.format==='mixed'&&diagnosticActions>=8||['timeline','sort','missing'].includes(s.format??''))&&!firstChecks.length){const task=diagnostic();if(task)return {task,intro:undefined};}
- const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(selected,new Set(memories.keys()),3,{spareAnswer:true}).filter(compatible):[];
+ const recentContext=history.map(t=>!!t.contextual||!!t.recipe.diagnostic).lastIndexOf(true),contextActions=history.slice(recentContext+1).reduce((n,t)=>n+Math.max(1,t.items.length),0);
+ if(s.mode!=='practice'&&(s.format==='mixed'&&contextActions>=6||['sort','timeline'].includes(s.format??''))){
+  const targets=first.filter(p=>p.recipe.format==='choice'||p.recipe.format==='categorize').sort((a,c)=>objectRank(a)-objectRank(c));
+  const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&!active.has(acquisitionKey(g))&&memories.has(g.id)&&new Date(memories.get(g.id)!.card.due).getTime()>now)).filter(p=>p.recipe.format==='choice');
+  if(lane==='first'||!due.length){const task=buildLearningChronology(b,targets,supports,history,s.completedCount??0);if(task)return {task,intro:undefined};}
+ }
+ if((s.format==='mixed'&&contextActions>=8&&!eligible.length||['timeline','sort','missing'].includes(s.format??''))){const task=diagnostic();if(task)return {task,intro:undefined};}
+ const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(selected,new Set(memories.keys()),12,{spareAnswer:true,conveyor:true}).filter(compatible):[];
  const proposals=[...selected,...groups],earliest=selected.length?Math.min(...selected.flatMap(p=>p.goals.map(g=>at(g.id)))):now;
  const formatRank=(p:typeof pool.proposals[number])=>history.slice(-5).filter(t=>t.recipe.format===p.recipe.format).length*3+Number(p.recipe.format===history.at(-1)?.recipe.format)*8+(p.group?(history.at(-1)?.items.length??0)>1?8:-2:0);
  proposals.sort((a,c)=>{
@@ -65,7 +72,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(acquisitionKey(g)))?'confirmation':'due';return {task,intro:undefined};}}
  const remainingRepair=await selectRepairWork(db,b,enabled,s,memories,false,new Set(),repairOptions);if(remainingRepair){remainingRepair.learningLifecycle=1;return {task:remainingRepair,intro:undefined};}
  if(nextIntroduction)return nextIntroduction;
- const diagnosticTask=diagnostic();if(diagnosticTask&&(!history.at(-1)?.recipe.diagnostic||['timeline','sort','missing'].includes(s.format??'')))return {task:diagnosticTask,intro:undefined};
+ const diagnosticTask=diagnostic();if(diagnosticTask&&(contextActions>=8||['timeline','sort','missing'].includes(s.format??'')))return {task:diagnosticTask,intro:undefined};
  const knownKeys=new Set([...ledger.units.map(u=>u.key),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>acquisitionKey(e.goal))]);
  const games=pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(acquisitionKey(g))));
  games.sort((a,c)=>objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||Number(a.goals.some(g=>recent.includes(g.id)))-Number(c.goals.some(g=>recent.includes(g.id)))||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));

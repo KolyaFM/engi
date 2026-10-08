@@ -10,7 +10,7 @@ export function groupCandidates(b:Bundle,ready:Task[],known:Set<string>,newSlots
   try{task.studyContract=compileTaskContract(b,task);return [task];}catch{return [];}
  });
 }
-export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:number,configuration:{spareAnswer?:boolean}={}):GoalProposal[]{
+export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:number,configuration:{spareAnswer?:boolean;conveyor?:boolean}={}):GoalProposal[]{
  const end=feedSpan('groups');try{
  const buckets=new Map<string,GoalProposal[]>(),out:GoalProposal[]=[],seen=new Set<string>(),counts=new Map<string,number>();
  for(const t of ready){
@@ -22,7 +22,7 @@ export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:n
  // Randomized traversal avoids permanently privileging the first property/object.
  // Atomic candidates retain full goal coverage; grouped variants have a separate build budget.
  for(const bucket of shuffle([...buckets.values()]))for(const n of shuffle(bucket.map((_t,n)=>n))){
-  const anchor=bucket[n],fresh=!known.has(anchor.goals[0].id),limit=fresh?Math.min(3,newSlots):3;
+  const anchor=bucket[n],fresh=!known.has(anchor.goals[0].id),limit=configuration.conveyor&&anchor.recipe.format==='categorize'&&new Set(bucket.map(p=>p.items[0].answerId)).size===2?(fresh?Math.min(12,newSlots):12):fresh?Math.min(3,newSlots):3;
   if((counts.get(anchor.recipe.format)??0)>=32)continue;
   if(limit<2)continue;
   const selected=[anchor],entities=new Set([anchor.items[0].entityId]),answers=new Set([anchor.items[0].answerId]),goals=new Set([anchor.goals[0].id]);
@@ -41,7 +41,7 @@ export function groupProposals(ready:GoalProposal[],known:Set<string>,newSlots:n
   const cues=items.map(i=>anchor.recipe.cue==='image'&&i.image?i.image:normalize(i.name));if(new Set(cues).size!==items.length)continue;
   const task:Task={id:'group-proposal',recipe:{...anchor.recipe,prompt:(anchor.recipe.format==='match'?'Сопоставьте объекты':'Распределите объекты по категориям')+': '+(anchor.recipe.label??anchor.recipe.answerKey)+'.'},items,options,reason:'due'};
   if(!preflight(task))continue;
-  seen.add(key);out.push({recipe:task.recipe,items,options,goals:selected.flatMap(p=>p.goals),group:true});counts.set(anchor.recipe.format,(counts.get(anchor.recipe.format)??0)+1);
+  seen.add(key);out.push({recipe:task.recipe,items,options,goals:selected.flatMap(p=>p.goals),group:true,...(configuration.conveyor&&anchor.recipe.format==='categorize'&&options.length===2?{presentation:'conveyor' as const}:{})});counts.set(anchor.recipe.format,(counts.get(anchor.recipe.format)??0)+1);
  }
  return out;
  }finally{end();}

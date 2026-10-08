@@ -1,16 +1,17 @@
 import { defineGoal, type LearningGoal } from './goals';
 export type Claim = { key: string; revision: string; revealsGoalIds: string[]; when?: 'incorrect' };
-export type Binding = { responseKey: string; goalId: string; expected: string };
+export type Binding = { responseKey: string; goalId: string; expected: string; support?:boolean };
 export type ResponseRule =
   | { kind: 'choice'; goalId: string; options: string[]; expected: string }
   | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean; exhaustive?:boolean }
   | { kind: 'set'; goalId: string; options: string[]; expected: string[]; complete: true }
-  | { kind: 'order'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[] }
+  | { kind: 'order'; entities: string[]; expected: string[]; relations: { goalId: string; before: string; after: string }[];contextBindings?:{goalId:string;entityId:string}[] }
   | { kind: 'number'; goalId: string; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'practice-choice'; options: string[]; expected: string }
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'self-report'; goalId: string };
 export type TaskContract = {
+  contextual?:{kind:'order'|'boundary';threshold?:number;supportTargetIds:string[]};
   game?:boolean;
   intent?: 'learn'|'repair'|'practice';
   repairEpisodeIds?: string[];
@@ -49,7 +50,8 @@ export function validateContract(contract: TaskContract): void {
   } else if (rule.kind === 'mapping') {
     if (!rule.bindings.length || !unique(rule.bindings.map(b => b.responseKey)) || !unique(rule.options) || rule.bindings.some(b => !rule.options.includes(b.expected))) throw Error('Invalid mapping');
     if (rule.bijective && (!unique(rule.bindings.map(b => b.expected)) || (rule.exhaustive===false?rule.options.length<=rule.bindings.length:rule.options.length!==rule.bindings.length))) throw Error('Mapping is not bijective');
-    graded = rule.bindings.map(b => b.goalId);
+    if(rule.bindings.some(b=>b.support&&!contract.supportGoalIds.includes(b.goalId)))throw Error('Unknown support binding');
+    graded = rule.bindings.filter(b=>!b.support).map(b => b.goalId);
   } else if (rule.kind === 'set') {
     if (rule.complete !== true || !unique(rule.expected) || !unique(rule.options) || !rule.expected.length || rule.expected.some(v => !rule.options.includes(v))) throw Error('Incomplete set');
     if (contract.primaryGoals.find(g => g.id === rule.goalId)?.knowledge.kind !== 'complete-set') throw Error('Set requires an aggregate goal');
@@ -60,7 +62,8 @@ export function validateContract(contract: TaskContract): void {
       if (!rule.entities.includes(relation.before) || !rule.entities.includes(relation.after) || rule.expected.indexOf(relation.before) >= rule.expected.indexOf(relation.after)) throw Error('Inconsistent relation');
       if (contract.primaryGoals.find(g => g.id === relation.goalId)?.knowledge.kind !== 'order-relation') throw Error('Sorting cannot grade dates');
     }
-    graded = rule.relations.map(r => r.goalId);
+    if(rule.contextBindings){if(contract.contextual?.kind!=='order'||rule.relations.length||rule.contextBindings.some(b=>!rule.entities.includes(b.entityId)))throw Error('Invalid contextual order');graded=rule.contextBindings.map(b=>b.goalId);}
+    else graded = rule.relations.map(r => r.goalId);
   } else if (rule.kind === 'number' || rule.kind === 'practice-number') {
     if (![rule.expected, rule.tolerance, rule.min, rule.max].every(Number.isFinite) || rule.tolerance < 0 || rule.min > rule.expected || rule.max < rule.expected) throw Error('Invalid number scale');
     if (rule.tolerance !== 0 && !contract.practice) throw Error('Approximate scale is practice until a precision contract exists');
@@ -87,7 +90,7 @@ export function gradeResponse(contract: TaskContract, answer: unknown): GoalResu
     const values = answer as Record<string, unknown>, keys = rule.bindings.map(b => b.responseKey);
     if (!permutation(Object.keys(values), keys) || keys.some(k => typeof values[k] !== 'string' || !rule.options.includes(values[k] as string))) throw Error('Submit the complete mapping');
     if (rule.bijective && !unique(Object.values(values) as string[])) throw Error('Each option must be placed once');
-    return rule.bindings.map(b => result(b.goalId, values[b.responseKey] === b.expected));
+    return rule.bindings.filter(b=>!b.support).map(b => result(b.goalId, values[b.responseKey] === b.expected));
   }
   if (rule.kind === 'set') {
     if (!Array.isArray(answer) || answer.some(v => typeof v !== 'string' || !rule.options.includes(v)) || !unique(answer)) throw Error('Invalid selection');
@@ -95,6 +98,7 @@ export function gradeResponse(contract: TaskContract, answer: unknown): GoalResu
   }
   if (rule.kind === 'order') {
     if (!Array.isArray(answer) || !permutation(answer, rule.entities)) throw Error('Submit the complete order');
+    if(rule.contextBindings)return rule.contextBindings.map(b=>result(b.goalId,rule.entities.every(id=>id===b.entityId||(answer.indexOf(b.entityId)<answer.indexOf(id))===(rule.expected.indexOf(b.entityId)<rule.expected.indexOf(id)))));
     return rule.relations.map(r => result(r.goalId, answer.indexOf(r.before) < answer.indexOf(r.after)));
   }
   if (rule.kind === 'number' || rule.kind === 'practice-number') {

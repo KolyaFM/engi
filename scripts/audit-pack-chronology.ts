@@ -27,13 +27,13 @@ for(const scenario of [{name:'fresh-mixed-10s',format:'mixed',seconds:10,seed:fa
   for(let n=0;n<scenario.count;n++){mock.timers.setTime(initial+n*scenario.seconds*1000);const ledger=(await d.appMeta.get('studyCore:learningLifecycle'))?.value;
    if(s.intro){counts.intro=(counts.intro??0)+1;screens.push({screen:n,format:'intro',firstChecks:ledger?.units.filter((u:any)=>u.stage==='first-check').length});s=await svc.completeIntro(s.id);continue;}
    const t=s.tasks[0];if(!t){counts.exhausted=(counts.exhausted??0)+1;break;}counts[t.recipe.format]=(counts[t.recipe.format]??0)+1;
-   if(t.recipe.diagnostic&&firstChronology===undefined)firstChronology=n;
+   if((t.recipe.diagnostic||t.contextual)&&firstChronology===undefined)firstChronology=n;if(t.contextual?.kind==='boundary')counts.boundary=(counts.boundary??0)+1;
    screens.push({screen:n,format:t.recipe.format,reason:t.reason,firstChecks:ledger?.units.filter((u:any)=>u.stage==='first-check').length,completedDates:ledger?.units.filter((u:any)=>u.stage==='completed'&&bundle.facts.some((f:any)=>f.id===u.goal.knowledge.key&&f.valueKind==='date')).length});
    if(t.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,t.id,{revealed:true,recallElapsedMs:5000});
    if(['match','categorize'].includes(t.recipe.format)&&t.items.length>1){for(const item of t.items)await svc.answerMatchPair({sessionId:s.id,taskId:t.id,entityId:item.entityId,answerId:item.answerId,requestId:crypto.randomUUID()});}
    else{const answer=t.recipe.format==='sort'?t.studyContract!.response.expected:t.recipe.format==='timeline'?{[t.items[0].entityId]:t.items[0].year}:t.recipe.format==='recall_reveal'?true:t.recipe.format==='multi_choice'?t.answerSet:discreteAnswer(t);await svc.answer({sessionId:s.id,taskId:t.id,answer});}
    s=await svc.advanceFeed(s.id,false,t.id);
-  }const chronology=(counts.timeline??0)+(counts.sort??0)+(counts.missing??0),summary={...scenario,counts,firstChronology,firstChronologyMinutes:firstChronology===undefined?null:firstChronology*scenario.seconds/60,chronology,totalScreens:screens.length,sharePercent:100*chronology/screens.length};reports.push({summary,screens});console.log(JSON.stringify(summary));
+  }const chronology=(counts.timeline??0)+(counts.sort??0)+(counts.missing??0)+(counts.boundary??0),summary={...scenario,counts,firstChronology,firstChronologyMinutes:firstChronology===undefined?null:firstChronology*scenario.seconds/60,chronology,totalScreens:screens.length,sharePercent:100*chronology/screens.length};reports.push({summary,screens});console.log(JSON.stringify(summary));
  }finally{d.close();await d.delete();mock.timers.reset();}
 }
 writeFileSync('artifacts/usa-states-chronology-audit.json',JSON.stringify(reports,null,2));

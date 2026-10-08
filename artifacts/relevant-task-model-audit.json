@@ -1,0 +1,6857 @@
+{
+  "scope": "Synthetic task composition, not the product feed or a memory evaluation",
+  "reports": [
+    {
+      "scenario": "dense",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 21.738541666666666,
+      "supportPercent": 0,
+      "meanKnownGraded": 751.31,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 99.4,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "dense",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 13.62,
+      "usefulPercent": 99.89269234896449,
+      "supportPercent": 0.10730765103551883,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 1,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 100,
+      "formats": {
+        "order": 400,
+        "date-conveyor": 251,
+        "conveyor": 417,
+        "single": 294
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "anchor:learning",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k14",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k16",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "date-conveyor",
+          "why": [
+            "anchor:error",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k18",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k30",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k34",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "learning"
+            }
+          ],
+          "threshold": 1835
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "anchor:error",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k34",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k38",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "anchor:learning",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k17",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k43",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "anchor:learning",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k4",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k40",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k53",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k69",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "date-conveyor",
+          "why": [
+            "anchor:error",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k4",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k48",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k52",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k54",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k56",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k6",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "learning"
+            }
+          ],
+          "threshold": 1820
+        },
+        {
+          "step": 9,
+          "format": "order",
+          "why": [
+            "anchor:learning",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k68",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k70",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k74",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k76",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:8",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k7",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k75",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k79",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "order",
+          "why": [
+            "anchor:error",
+            "targets:3",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k78",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k8",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k79",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "sparse",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 13.86875,
+      "supportPercent": 0,
+      "meanKnownGraded": 826.86,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 99.25,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "sparse",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 2.44,
+      "usefulPercent": 100,
+      "supportPercent": 0,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 100,
+      "formats": {
+        "date-conveyor": 98,
+        "single": 46,
+        "conveyor": 100
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "date-conveyor",
+          "why": [
+            "anchor:learning",
+            "targets:2",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "learning"
+            }
+          ],
+          "threshold": 1765
+        },
+        {
+          "step": 1,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "conveyor",
+          "why": [
+            "anchor:learning",
+            "targets:2",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "errors-and-due",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 16.764583333333334,
+      "supportPercent": 0,
+      "meanKnownGraded": 799.06,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 99.28125,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "errors-and-due",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 6.34,
+      "usefulPercent": 99.81293425975414,
+      "supportPercent": 0.18706574024585784,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 1,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 100,
+      "formats": {
+        "order": 129,
+        "conveyor": 211,
+        "date-conveyor": 104,
+        "single": 190
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "anchor:error",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k4",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k6",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k7",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k17",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "date-conveyor",
+          "why": [
+            "anchor:due",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k14",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k16",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k18",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k30",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k8",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "error"
+            }
+          ],
+          "threshold": 1805
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:8",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "due"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "due"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:2",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "future-only",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 13.408333333333333,
+      "supportPercent": 0,
+      "meanKnownGraded": 831.28,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": null,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k52",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k92",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k78",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k89",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k53",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k69",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k87",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k52",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k56",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k75",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k99",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k79",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k96",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k84",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k56",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k99",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k75",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k87",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k78",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k108",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k56",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k87",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k79",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k43",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k75",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k54",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k75",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k89",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k43",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k53",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k108",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k43",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k69",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k89",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k106",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k25",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k43",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k69",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k68",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k40",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "future-only",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 0,
+      "usefulPercent": 0,
+      "supportPercent": 0,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": null,
+      "formats": {},
+      "exampleTrace": []
+    },
+    {
+      "scenario": "all-known",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 13.455208333333333,
+      "supportPercent": 0,
+      "meanKnownGraded": 830.83,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": null,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "all-known",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 0,
+      "usefulPercent": 0,
+      "supportPercent": 0,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": null,
+      "formats": {},
+      "exampleTrace": []
+    },
+    {
+      "scenario": "same-years",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 15.9375,
+      "supportPercent": 0,
+      "meanKnownGraded": 807,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 99.29166666666669,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "same-years",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 16.27,
+      "usefulPercent": 99.49964260185847,
+      "supportPercent": 0.5003573981415297,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 1,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 100,
+      "formats": {
+        "single": 1494,
+        "conveyor": 133
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "anchor:learning",
+            "targets:12",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k17",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k7",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "conveyor",
+          "why": [
+            "anchor:error",
+            "targets:3",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k17",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k14",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k16",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k18",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k4",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "one-category",
+      "policy": "format-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 120,
+      "usefulPercent": 15.9375,
+      "supportPercent": 0,
+      "meanKnownGraded": 807,
+      "blockedSelections": 0,
+      "maxSupport": 0,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 99.29166666666669,
+      "formats": {
+        "order": 6000,
+        "conveyor": 6000
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k32",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k46",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k62",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k50",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k41",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k71",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k105",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k26",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k24",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k103",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k107",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k51",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k47",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k97",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k44",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k36",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k100",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k35",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k91",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k9",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k59",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k63",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k5",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k58",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k72",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k49",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k67",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k27",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k64",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k42",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k98",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k28",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k95",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k65",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k73",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k101",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k37",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k85",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k93",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k3",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k55",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k80",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "conveyor",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k29",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k33",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k45",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k109",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k83",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k81",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k77",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k57",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k31",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k61",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k39",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "order",
+          "why": [
+            "synthetic format-first baseline"
+          ],
+          "members": [
+            {
+              "id": "k60",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k66",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k94",
+              "role": "target",
+              "need": "known"
+            },
+            {
+              "id": "k86",
+              "role": "target",
+              "need": "known"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "one-category",
+      "policy": "needs-first",
+      "seeds": 100,
+      "horizonSeconds": 3600,
+      "meanScreens": 17.53,
+      "usefulPercent": 99.92821249102656,
+      "supportPercent": 0.07178750897343862,
+      "meanKnownGraded": 0,
+      "blockedSelections": 0,
+      "maxSupport": 1,
+      "wrongProperty": 0,
+      "meanInitialCoverage": 100,
+      "formats": {
+        "order": 161,
+        "date-conveyor": 98,
+        "single": 1494
+      },
+      "exampleTrace": [
+        {
+          "step": 0,
+          "format": "order",
+          "why": [
+            "anchor:learning",
+            "targets:5",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k0",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k12",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k14",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k16",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 1,
+          "format": "date-conveyor",
+          "why": [
+            "anchor:error",
+            "targets:8",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            },
+            {
+              "id": "k18",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k2",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k20",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k4",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k6",
+              "role": "target",
+              "need": "learning"
+            },
+            {
+              "id": "k8",
+              "role": "target",
+              "need": "learning"
+            }
+          ],
+          "threshold": 1800
+        },
+        {
+          "step": 2,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k22",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k1",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k11",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 7,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k10",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 8,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k13",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 9,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k15",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 10,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k17",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 11,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k19",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 12,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        },
+        {
+          "step": 13,
+          "format": "single",
+          "why": [
+            "anchor:error",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k21",
+              "role": "target",
+              "need": "error"
+            }
+          ]
+        },
+        {
+          "step": 14,
+          "format": "single",
+          "why": [
+            "anchor:learning",
+            "targets:1",
+            "supports:0"
+          ],
+          "members": [
+            {
+              "id": "k23",
+              "role": "target",
+              "need": "learning"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

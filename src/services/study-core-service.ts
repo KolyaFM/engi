@@ -150,8 +150,8 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         if(Object.entries(contract.contentRevisions).some(([id,rev])=>revisions[id]!==rev))throw Error('Task content is stale');
         const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
         const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now):undefined;
-        let firstResult:NonNullable<Attempt['results']>[number]|undefined=previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
-          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
+          let firstResult:NonNullable<Attempt['results']>[number]|undefined=binding.support||previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
+            credit:!contract.contextual&&!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
         if(pair.correct)matched[responseKey]=answer;
         const complete=Object.keys(matched).length===rule.bindings.length;
         let attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],

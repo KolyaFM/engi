@@ -18,9 +18,11 @@ async function run(format:string,action:(d:EngiDB,s:any)=>Promise<void>){const d
  await action(d,await createTrainerService(d).startGoalFeed('all',format,'daily',{endless:true}));
 }finally{d.close();await d.delete();}}
 test('mixed feed can use familiar chronology as practice, without unknown events or date credit',()=>run('mixed',async(d,s)=>{
+ const svc=createTrainerService(d);for(let n=0;n<16&&!s.tasks[0]?.recipe.diagnostic;n++){const t=s.tasks[0];assert(t);if(t.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,t.id,{revealed:true,recallElapsedMs:5000});await svc.answer({sessionId:s.id,taskId:t.id,answer:t.recipe.format==='recall_reveal'?true:t.items[0].answerId});s=await svc.advanceFeed(s.id,false,t.id);}
  const q=s.tasks[0];assert(q?.recipe.diagnostic);assert(q.items.every((i:any)=>['e0','e1','e2'].includes(i.entityId)));assert(q.studyContract.practice);assert.equal(q.studyContract.primaryGoals.length,0);
  const before=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();const answer=q.recipe.format==='sort'?q.studyContract.response.expected:q.recipe.format==='timeline'?{[q.items[0].entityId]:q.items[0].year}:q.studyContract.response.expected;
  await createTrainerService(d).answer({sessionId:s.id,taskId:q.id,answer});assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before);
 }));
-test('explicit timeline format produces a timeline from learned dates',()=>run('timeline',async(_d,s)=>{assert.equal(s.tasks[0]?.recipe.format,'timeline');assert.equal(s.tasks[0]?.intent,'practice');}));
+test('legacy timeline selection uses vertical chronology instead of a slider',()=>run('timeline',async(_d,s)=>{assert.equal(s.tasks[0]?.recipe.format,'sort');assert.equal(s.tasks[0]?.intent,'practice');}));
+test('resuming an old slider task replaces it without rewriting learned date memory',()=>run('timeline',async(d,s)=>{const before=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();s.tasks=[{...s.tasks[0],id:'legacy-slider',studyContract:undefined,recipe:{...s.tasks[0].recipe,format:'timeline'}}];await d.activeSessions.put(s);const next=await createTrainerService(d).getResumableSession();assert.equal(next!.tasks[0].recipe.format,'sort');assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before);}));
 
