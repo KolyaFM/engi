@@ -1,5 +1,7 @@
 import type {Bundle,Memory,Task,Recipe,Item} from '../lib/engi/types';
 import type {LearningGoal} from '../lib/engi/study-core/goals';
+import type {GoalMemory} from '../lib/engi/study-core/memory';
+import {goalPresentationMemory} from '../lib/engi/study-core/presentation-memory';
 import {goalCandidates} from './goal-candidates';
 import {composeUnit,compositionContext,type CompositionContext} from '../lib/engi/session/composer';
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
@@ -20,7 +22,7 @@ export function goalProposalPool(b:Bundle,enabled:Memory[],tag='all',format='mix
  cache.push({key,pool});if(cache.length>2)cache.shift();return pool;
  }finally{end();}
 }
-export function materializeGoalProposal(b:Bundle,enabled:Memory[],proposal:GoalProposal,context:CompositionContext,tag:string,history:Task[],practice=false):Task|undefined{
+export function materializeGoalProposal(b:Bundle,enabled:Memory[],proposal:GoalProposal,context:CompositionContext,tag:string,history:Task[],practice=false,memories:ReadonlyMap<string,GoalMemory>=new Map()):Task|undefined{
  const end=feedSpan('materialize');try{
  let task:Task|undefined;
  if(proposal.items.some(i=>!enabled.some(m=>m.id===i.targetId&&!m.legacyOf&&m.status!=='suspended')))return;
@@ -31,7 +33,7 @@ export function materializeGoalProposal(b:Bundle,enabled:Memory[],proposal:GoalP
   // at construction time, as in the eager generator; do not pin a random cached cue.
   const alternatives=(context.targets.get(m.id)??[]).filter(({r})=>r.format===proposal.recipe.format&&r.answerKey===proposal.recipe.answerKey&&r.direction===proposal.recipe.direction);
   const narrowed={...context,targets:new Map([[m.id,alternatives]])};
-  task=composeUnit(b,{...m,status:'review',bootstrap:undefined},tag,proposal.recipe.format,history,narrowed);
+  task=composeUnit(b,goalPresentationMemory(m,memories.get(proposal.goals[0].id)),tag,proposal.recipe.format,history,narrowed);
   if(!task||task.items.some(i=>!enabled.some(m=>m.id===i.targetId&&!m.legacyOf&&m.status!=='suspended')))return;
   task.memoryModel='goals';task.practice=practice;
  }

@@ -22,6 +22,20 @@ async function install(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bu
  return {session,task:(await d.activeSessions.get(session.id))!.tasks[0]};
 }
 function answer(t:Task){return Object.fromEntries(t.items.map(i=>[i.entityId,i.answerId]));}
+test('progressive categories accept the same author twice and resume each solved object',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b,'categorize',true);
+ const repeated=task.items.filter(i=>i.answerId===task.items.find(i=>i.entityId==='s0')!.answerId);
+ assert.equal(repeated.length,2);
+ for(const [n,item] of repeated.entries()){
+  const result=await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'repeat:'+n});
+  assert.equal(result.correct,true);assert.equal(result.complete,false);
+  const episode=await svc.observeVisibility(session.id,task.id,'matched-pairs','category-exposure:'+n,'start');assert(episode);
+ }
+ assert.equal(Object.keys((await svc.getResumableSession())!.interaction!.matching!.matched).length,2);
+ const last=task.items.find(i=>!repeated.includes(i))!;
+ const result=await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:last.entityId,answerId:last.answerId,requestId:'last-category'});
+ assert.equal(result.complete,true);assert((await svc.getFeedback(task.id)).matchingComplete);
+}));
 test('six matching permutations independently grade three goals, never reschedule on duplicate answer',async()=>{
  const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
  for(const permutation of permutations)await run(async(d,svc,b)=>{
@@ -87,4 +101,92 @@ test('rendered group restores a saved answer and feedback shows every correction
  const {task}=await install(d,svc,b);const values=answer(task),first=task.items[0];values[first.entityId]=task.options.find(o=>o.id!==first.answerId)!.id;
  const html=renderToStaticMarkup(createElement(MappingCard,{task,feedback:{chosen:values},busy:false,onPersist:()=>{},onSubmit:()=>{},onNext:()=>{},onMediaReady:()=>{},onMediaFail:()=>{}}));
  assert(html.includes('Правильно: '+first.answer));assert(html.includes(`из ${task.items.length}`));assert(html.includes('Дальше'));assert(!html.includes('Проверить</button>'));
+}));
+
+test('matching pair commits its first error immediately and correction only resolves the tiles',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),item=task.items[0],goal=task.studyContract!.primaryGoals[0];
+ const input={sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:task.options.find(o=>o.id!==item.answerId)!.id,requestId:'first'};
+ const wrong=await svc.answerMatchPair(input);assert.equal(wrong.correct,false);assert.equal(wrong.complete,false);
+ const first=(await d.appMeta.get('studyCore:memory:'+goal.id))!.value;
+ assert.equal(first.independentAttempts,1);assert.equal(first.independentSuccesses,0);
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),1);
+ assert.deepEqual((await svc.getResumableSession())!.interaction!.matching!.matched,{});
+ const restored=createTrainerService(d),right=await restored.answerMatchPair({...input,answerId:item.answerId,requestId:'correction'});
+ assert.equal(right.correct,true);assert.deepEqual(right.interaction!.matching!.matched,{[item.entityId]:item.answerId});
+ assert.deepEqual((await d.appMeta.get('studyCore:memory:'+goal.id))!.value,first);
+ assert.equal((await d.activeSessions.get(session.id))!.tasks[0].id,task.id);
+ await assert.rejects(svc.answer({sessionId:session.id,taskId:task.id,answer:answer(task)}),/пары/);
+}));
+
+test('progressive matching grades other pairs separately and excludes the untested last pair',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b);
+ for(const [n,item] of task.items.entries()){
+  const result=await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'pair:'+n});
+  assert.equal(result.correct,true);assert.equal(result.complete,n===task.items.length-1);
+ }
+ const rows=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();assert.equal(rows.length,2);
+ assert.equal((await svc.getDayPlan()).newGoalIds.length,2);
+ assert.equal(await d.appMeta.get('studyCore:memory:'+task.studyContract!.primaryGoals[2].id),undefined);
+ assert((await svc.getFeedback(task.id)).matchingComplete);
+ await svc.advanceFeed(session.id,false,task.id);
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),2);
+}));
+
+test('matching requests are idempotent and a previously failed last pair keeps its error',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),last=task.items[2],input={sessionId:session.id,taskId:task.id,entityId:last.entityId,answerId:task.items[0].answerId,requestId:'same'};
+ await Promise.all([svc.answerMatchPair(input),svc.answerMatchPair(input)]);
+ const key='studyCore:memory:'+task.studyContract!.primaryGoals[2].id,first=(await d.appMeta.get(key))!.value;
+ assert.equal(first.independentAttempts,1);assert.equal(first.confusions[input.answerId],1);
+ for(const [n,item] of task.items.slice(0,2).entries())await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'other:'+n});
+ await svc.answerMatchPair({...input,answerId:last.answerId,requestId:'last'});
+ assert.deepEqual((await d.appMeta.get(key))!.value,first);
+ assert.equal((await svc.getResumableSession())!.interaction!.matching!.history.length,4);
+}));
+
+test('hinted progressive matching does not credit any pair',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b);await svc.observeVisibility(session.id,task.id,'source','matching-source','start');
+ for(const [n,item] of task.items.entries())await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'hinted:'+n});
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);assert.equal((await svc.getDayPlan()).newGoalIds.length,0);
+}));
+
+test('failed pair history write rolls back memory and permits a safe retry',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),item=task.items[0],input={sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'retry'};
+ const fail=()=>{throw Error('pair persistence failure');};d.reviewEvents.hook('creating',fail);
+ await assert.rejects(svc.answerMatchPair(input),/pair persistence failure/);d.reviewEvents.hook('creating').unsubscribe(fail);
+ assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);
+ assert.equal((await svc.getResumableSession())!.interaction?.matching,undefined);
+ await svc.answerMatchPair(input);assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),1);
+}));
+
+test('matched-pair disclosure exposes only solved facts and its episode stays immutable as more pairs are found',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),[first,second,last]=task.items;
+ await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:first.entityId,answerId:first.answerId,requestId:'disclosure-first'});
+ const episode=await svc.observeVisibility(session.id,task.id,'matched-pairs','matched-first','start');
+ assert(episode!.claims.some(c=>c.key==='fact:'+first.factId));
+ assert(!episode!.claims.some(c=>c.key==='fact:'+second.factId||c.key==='fact:'+last.factId));
+ assert.equal((await d.appMeta.get('studyCore:exposure:'+task.studyContract!.primaryGoals[1].id)),undefined);
+ await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:second.entityId,answerId:second.answerId,requestId:'disclosure-second'});
+ const closed=await svc.observeVisibility(session.id,task.id,'matched-pairs','matched-first','end');assert.deepEqual(closed!.claims,episode!.claims);
+ const next=await svc.observeVisibility(session.id,task.id,'matched-pairs','matched-second','start');assert.equal(next!.claims.length,2);
+}));
+
+test('content changes after a first pair preserve its history and invalidate remaining pairs',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),[first,second]=task.items;
+ await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:first.entityId,answerId:first.answerId,requestId:'valid-first'});
+ const memories=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();
+ await d.facts.update(second.factId!,{valueEntityId:'a-changed'});
+ const result=await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:second.entityId,answerId:second.answerId,requestId:'stale-second'});
+ assert(result.feedback.invalidContent);assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),memories);
+ assert(await d.reviewEvents.get(task.id+':pair:'+first.entityId));
+ await svc.advanceFeed(session.id,false,task.id);
+}));
+
+test('skipping a partly completed match preserves first answers without crediting untouched objects',()=>run(async(d,svc,b)=>{
+ const {session,task}=await install(d,svc,b),item=task.items[0];
+ await svc.answerMatchPair({sessionId:session.id,taskId:task.id,entityId:item.entityId,answerId:item.answerId,requestId:'before-skip'});
+ const memories=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();
+ await svc.advanceFeed(session.id,true,task.id);
+ assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),memories);
+ assert.equal((await d.appMeta.get('studyCore:attempt:'+task.id))!.value.phase,'skipped');
+ assert.equal((await svc.getDayPlan()).newGoalIds.length,1);
 }));

@@ -6,7 +6,10 @@ export type Attempt = {
   firstAnswer?: unknown;
   submittedAt?: string;
   results?: (GoalResult & { credit: boolean })[];
+  matchedAnswers?: Record<string,string>;
+  pairHistory?: MatchingPair[];
 };
+export type MatchingPair = {id:string;responseKey:string;answer:string;correct:boolean;at:string};
 export function startAttempt(contract: TaskContract, id: string, now: Date, blockedGoalIds: string[] = []): Attempt {
   validateContract(contract);
   const shown = new Set(contract.shownClaims.flatMap(c => c.revealsGoalIds));

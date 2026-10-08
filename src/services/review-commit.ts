@@ -1,4 +1,5 @@
 import type {Attempt} from '../lib/engi/study-core/attempts';
+import type {GoalMemory} from '../lib/engi/study-core/memory';
 import {reviewLearning,unitDue} from '../lib/engi/learning/bootstrap';
 import type {EngiDB,SessionRow,ReviewEventRow} from '../db/engi-db';
 import {learningRow} from '../db/repositories';
@@ -26,7 +27,7 @@ export async function abandonReview(d:EngiDB,taskId:string){
  await d.appMeta.delete(key);
 }
 /** First independent answer commits memory; correction only finalizes the screen event. */
-export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:AnswerInput,attemptSequence:string[],audited?:Attempt,deferCompletion=false){
+export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:AnswerInput,attemptSequence:string[],audited?:Attempt,deferCompletion=false,goalBefore:GoalMemory[]=[]){
  const receipt=(await d.appMeta.get(reviewReceiptKey(task.id)))?.value as ReviewEventRow|undefined;
  if(receipt){
   if(deferCompletion){session.updatedAt=new Date().toISOString();await d.activeSessions.put(session);return {pending:true as const,feedback:null,memories:[],event:undefined,results:session.results,interaction:session.interaction,milestone:undefined};}
@@ -61,6 +62,26 @@ export async function commitReview(d:EngiDB,session:SessionRow,task:Task,input:A
  const goalResults=task.memoryModel==='goals'?audited?.results??[]:[];
  for(const r of goalResults)if(r.credit)fsrsUpdated.add(r.goalId);
  const goalMemories=await d.appMeta.bulkGet(goalResults.filter(r=>r.credit).map(r=>'studyCore:memory:'+r.goalId));
+ for(const row of goalMemories){
+  if(!row)continue;
+  const m=row.value as GoalMemory,r=goalResults.find(r=>r.goalId===m.goalId)!,rule=task.studyContract!.response;
+  const prior=goalBefore.find(p=>p.goalId===m.goalId);
+  stabilityTransitions.push({targetId:m.goalId,before:prior?.card.stability??0,after:m.card.stability});
+  const chosen=rule.kind==='choice'?audited?.firstAnswer:rule.kind==='mapping'?(audited?.firstAnswer as Record<string,unknown>)?.[rule.bindings.find(b=>b.goalId===m.goalId)!.responseKey]:undefined;
+  if(typeof chosen==='string'){
+   m.confusions={...m.confusions};
+   if(!r.correct)m.confusions[chosen]=(m.confusions[chosen]??0)+1;
+   else for(const option of task.options)if(option.id!==chosen&&m.confusions[option.id]){const value=m.confusions[option.id]*.85;if(value<.1)delete m.confusions[option.id];else m.confusions[option.id]=value;}
+  }
+  // Group timing measures multiple goals; recall timing includes the reveal stage.
+  if(isDiscrete(task)){
+   const latency=session.interaction?.firstAttemptLatencyMs??input.latencyMs;
+   if(latency!==undefined&&Number.isFinite(latency)){const bounded=Math.min(3600000,Math.max(0,latency));m.latencyEmaMs=m.latencyEmaMs===undefined?bounded:m.latencyEmaMs*.7+bounded*.3;}
+  }
+  const item=task.items.find(i=>studyEvidence(task,{...audited!,results:[r]},i).credit);
+  if(item?.mediaId)m.recentMediaIds=[...m.recentMediaIds??[],item.mediaId].slice(-3);
+  await d.appMeta.put({key:row.key,value:m});
+ }
  const confidence=['low','medium','high'].includes(input.confidence??'')?input.confidence!:'medium';
  const encoding=isNewFailure&&!task.retryOf&&!task.recipe.diagnostic;
  const feedback={...result,creditBlocked,chosen:input.answer,items:task.items,nextReview:goalMemories[0]?.value.card.due??changes[0]?.payload.card.due,correctionComplete:discrete&&!deferCompletion,encoding,repairResolved:!!task.retryOf&&result.score===1&&!creditBlocked};

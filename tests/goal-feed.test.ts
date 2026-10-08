@@ -7,7 +7,7 @@ import {prepareDue} from './helpers22';
 import {createTrainerService} from '../src/services/trainer-service';
 import {associationGoal,completeSetGoal} from '../src/lib/engi/study-core/compiler';
 import {goalCandidates} from '../src/services/goal-feed';
-import {createEmptyCard} from 'ts-fsrs';
+import {createEmptyCard,State} from 'ts-fsrs';
 import type {Bundle} from '../src/lib/engi/types';
 import {composeUnit,compositionContext} from '../src/lib/engi/session/composer';
 import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
@@ -37,6 +37,9 @@ test('pruning generator targets keeps complete-set membership and unrelated dist
  assert.equal(goalCandidates(b,suspended,'all','multi_choice',[],new Set([complete.items[0].targetId])).length,0);
 },true));
 async function run(fn:(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bundle)=>Promise<void>,many=false){const d=new EngiDB('goal-feed-'+crypto.randomUUID()),b=fixture(many);try{await putBundle(d,b);await prepareDue(d);await fn(d,createTrainerService(d),b);}finally{d.close();await d.delete();}}
+async function holdOtherRecognition(d:EngiDB,b:Bundle){
+ for(const f of b.facts.slice(1)){const g=associationGoal(b,f,'recognition');await d.appMeta.put({key:'studyCore:memory:'+g.id,value:{goalId:g.id,card:{...createEmptyCard(),state:State.Review,due:new Date(Date.now()+2*86400000)},independentAttempts:1,independentSuccesses:1}});}
+}
 test('goal feed commits one goal FSRS while every legacy memory stays byte-for-byte unchanged',()=>run(async(d,svc)=>{
  const before=await d.learningState.toArray(),s=await svc.startGoalFeed('all','choice'),t=s.tasks[0];assert.equal(t.memoryModel,'goals');
  const r=await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId}),g=t.studyContract!.primaryGoals[0];
@@ -124,4 +127,60 @@ test('precomputed composition pools preserve task semantics and are rebuilt for 
  assert.deepEqual(build(compositionContext(b)),build());
  const edited={...b,entities:b.entities.map(e=>({...e,name:e.name+' изменено'}))},context=compositionContext(edited),t=composeUnit(edited,m,'all','choice',[],context)!;
  assert(t.items[0].name.endsWith('изменено'));assert(t.options.every(o=>o.name.endsWith('изменено')));
+}));
+
+test('live recognition memory controls difficulty independently of legacy and recall memory',()=>run(async(d,svc,b)=>{
+ const now=Date.now(),g=associationGoal(b,b.facts[0],'recognition');
+ await holdOtherRecognition(d,b);
+ const before=await d.learningState.toArray();
+ await d.appMeta.put({key:'studyCore:memory:'+g.id,value:{goalId:g.id,card:{...createEmptyCard(),state:State.Review,stability:90,difficulty:3,reps:6,last_review:new Date(now-86400000),due:new Date(now-1000)},lastCorrect:true,independentAttempts:6,independentSuccesses:6,latencyEmaMs:1000}});
+ const recognition=await svc.startGoalFeed('all','choice');
+ assert.equal(recognition.tasks[0].difficultyStage,4);
+ const recall=await svc.startGoalFeed('all','recall_reveal');
+ assert.equal(recall.tasks[0].difficultyStage,1);
+ assert.deepEqual(await d.learningState.toArray(),before);
+}));
+
+test('unverified goal does not inherit difficulty or confusions from legacy progress',()=>run(async(d,svc)=>{
+ for(const row of await d.learningState.toArray())await d.learningState.put(learningRow({...row.payload,status:'review',attempts:20,correct:20,lastOutcome:true,firstSuccessAt:new Date().toISOString(),latencyEmaMs:500,confusions:{a1:10},card:{...row.payload.card,state:State.Review,stability:180,last_review:new Date()}}));
+ const before=await d.learningState.toArray(),s=await svc.startGoalFeed('all','choice'),task=s.tasks[0];
+ assert.equal(task.difficultyStage,1);assert.equal(task.discrimination,false);assert.equal(task.options.length,4);
+ assert.deepEqual(await d.learningState.toArray(),before);
+}));
+
+test('only credited first choices update goal confusions and latency, not correction or practice',()=>run(async(d,svc)=>{
+ const before=await d.learningState.toArray(),s=await svc.startGoalFeed('all','choice'),t=s.tasks[0],wrong=t.options.find(o=>o.id!==t.items[0].answerId)!;
+ const key='studyCore:memory:'+t.studyContract!.primaryGoals[0].id;
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:wrong.id,latencyMs:2400});
+ const first=(await d.appMeta.get(key))!.value;
+ assert.deepEqual(first.confusions,{[wrong.id]:1});assert.equal(first.latencyEmaMs,2400);
+ await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId,latencyMs:10000});
+ assert.deepEqual((await d.appMeta.get(key))!.value,first);
+ const p=await svc.startGoalFeed('all','choice','practice'),pt=p.tasks[0];
+ const allBefore=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();
+ await svc.answer({sessionId:p.id,taskId:pt.id,answer:pt.options.find(o=>o.id!==pt.items[0].answerId)!.id,latencyMs:900});
+ assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),allBefore);
+ assert.deepEqual(await d.learningState.toArray(),before);
+}));
+
+test('live goal confusion selects the mistaken alternative for mature discrimination',()=>run(async(d,svc,b)=>{
+ const now=Date.now(),g=associationGoal(b,b.facts[0],'recognition');
+ await holdOtherRecognition(d,b);
+ await d.appMeta.put({key:'studyCore:memory:'+g.id,value:{goalId:g.id,card:{...createEmptyCard(),state:State.Review,stability:90,difficulty:3,reps:6,last_review:new Date(now-86400000),due:new Date(now-1000)},lastCorrect:true,independentAttempts:7,independentSuccesses:6,latencyEmaMs:1000,confusions:{a7:2}}});
+ const s=await svc.startGoalFeed('all','choice'),t=s.tasks[0];
+ assert.equal(t.discrimination,true);assert.deepEqual(t.options.map(o=>o.id).sort(),['a0','a7']);
+}));
+
+test('goal stability crossing thirty days is counted once and retained in history',()=>run(async(d,svc,b)=>{
+ const now=Date.now(),g=associationGoal(b,b.facts[0],'recognition');
+ await holdOtherRecognition(d,b);
+ await d.appMeta.put({key:'studyCore:memory:'+g.id,value:{goalId:g.id,card:{...createEmptyCard(),state:State.Review,stability:29,difficulty:5,reps:5,last_review:new Date(now-14*86400000),due:new Date(now-1000)},lastCorrect:true,independentAttempts:5,independentSuccesses:5}});
+ const s=await svc.startGoalFeed('all','choice'),t=s.tasks[0],input={sessionId:s.id,taskId:t.id,answer:t.items[0].answerId};
+ const result=await svc.answer(input),after=(await d.appMeta.get('studyCore:memory:'+g.id))!.value;
+ assert(after.card.stability>=30);
+ assert.equal((await d.appMeta.get('studyCore:dailyLearning'))!.value.stability30Gains,1);
+ assert.equal(result.event!.payload.metadata.stabilityTransitions[0].targetId,g.id);
+ assert.equal(result.event!.payload.metadata.stabilityTransitions[0].before,29);
+ assert.equal(result.event!.payload.metadata.stabilityTransitions[0].after,after.card.stability);
+ await svc.answer(input);assert.equal((await d.appMeta.get('studyCore:dailyLearning'))!.value.stability30Gains,1);
 }));

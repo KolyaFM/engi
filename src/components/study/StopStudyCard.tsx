@@ -27,7 +27,7 @@ export function StopStudyCard({onMore,onPractice,onExit,busy=false,error,waiting
     {waiting&&<p role="status">{seconds>0?`Следующая проверка: ${waiting.toLocaleString('ru-RU')} · осталось ${seconds<60?`${seconds} сек.`:`${Math.ceil(seconds/60)} мин.`}`:'Можно продолжить повторение'}</p>}
     <div className="learning22-stop-actions">
      {waiting&&onRefresh&&<button type="button" className="learning22-action learning22-primary" onClick={onRefresh} disabled={busy||seconds>0}>Продолжить повторение</button>}
-     <button type="button" className="learning22-action learning22-primary" onClick={onMore} disabled={busy}>Открыть ещё 2 объекта</button>
+     <button type="button" className="learning22-action learning22-primary" onClick={onMore} disabled={busy}>Добавить 2 новые цели</button>
      <button type="button" className="learning22-action" onClick={onPractice} disabled={busy}>Свободная практика</button>
      <button type="button" className="learning22-action learning22-quiet" onClick={onExit} disabled={busy}>Закончить</button>
     </div>

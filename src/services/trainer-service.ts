@@ -15,6 +15,7 @@ import {getGoalSnapshot} from './goal-snapshot';
 import {buildGoalCatalog} from './goal-catalog';
 import {ensureDayPlan} from './day-plan-service';
 import {measureFeed} from './feed-performance';
+import {answerMatchPair,type MatchPairInput} from './matching-service';
 
 async function selectNext(d:EngiDB,s:SessionRow){
  const b=await measureFeed('bundle.read',()=>getBundle(d)),memories=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
@@ -65,7 +66,7 @@ export function createTrainerService(d:EngiDB){return {
    return core.observe(contract.id,'question',episodeId,event);
   });
  },
- async observeVisibility(sessionId:string,taskId:string,phase:'question'|'feedback'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
+ async observeVisibility(sessionId:string,taskId:string,phase:'question'|'feedback'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
   return d.transaction('rw',sessionTables(d),async()=>{
    const session=await d.activeSessions.get(sessionId),task=session?.tasks[session.currentPosition];
    if(!task||task.id!==taskId||session?.status!=='active'){if(event==='end'&&(session?.tasks.some(t=>t.id===taskId)||session?.cooldown?.some(t=>t.id===taskId)))return feedStudyCore(d).observe(taskId,phase,episodeId,event);return;}
@@ -76,6 +77,7 @@ export function createTrainerService(d:EngiDB){return {
   });
  },
  async getFeedback(taskId:string){return (await d.reviewEvents.get(taskId))?.payload.feedback??null},
+ async answerMatchPair(input:MatchPairInput){return d.transaction('rw',sessionTables(d),()=>answerMatchPair(d,input))},
  async saveInteraction(sessionId:string,taskId:string,delta:Partial<Omit<InteractionDraft,'taskId'|'attemptSequence'>>){return d.transaction('rw',d.activeSessions,d.reviewEvents,d.appMeta,async()=>{
   const s=await d.activeSessions.get(sessionId),t=s?.tasks[s.currentPosition];if(!s||s.status!=='active'||!t||t.id!==taskId)throw Error('Карточка уже сменилась');if(await d.reviewEvents.get(taskId))return s.interaction;
   const draft:InteractionDraft=s.interaction?.taskId===taskId?{...s.interaction}:{taskId,attemptSequence:[]};
@@ -95,6 +97,8 @@ export function createTrainerService(d:EngiDB){return {
    const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),answeredAt);
   }
   const hasReceipt=!!await d.appMeta.get(reviewReceiptKey(task.id));
+  if(task.memoryModel==='goals'&&!hasReceipt&&!task.studyContract&&!task.studyContractIssue)await prepareStudyTask(d,await getBundle(d),task,answeredAt);
+  const goalBefore=task.memoryModel==='goals'&&!hasReceipt?(await d.appMeta.bulkGet((task.studyContract?.primaryGoals??[]).map(g=>'studyCore:memory:'+g.id))).filter(r=>!!r).map(r=>r!.value):[];
   if(isMapping(task)){const rows=await d.learningState.bulkGet(task.items.map(i=>i.targetId));if(rows.some(row=>!row||row.payload.status==='suspended'))return commitInvalidStudyTask(d,session,task);}
   if(!task.recipe.diagnostic&&!hasReceipt){const old=await d.learningState.get(task.items[0].targetId);if(!old||old.payload.status==='suspended')throw Error('Это знание не участвует в практике');if(task.memoryModel!=='goals'){const due=unitDue(old.payload,session.id,session.completedCount??0);if(!due&&!task.retryOf&&session.mode!=='practice')throw Error('Пока не пора повторять это знание');task.practice=session.mode==='practice'&&!due&&!task.retryOf}}
   let attempts:string[]=[];
@@ -102,13 +106,13 @@ export function createTrainerService(d:EngiDB){return {
    if(typeof input.answer!=='string'||!task.options.some(o=>o.id===input.answer))throw Error('Выберите один из вариантов');
    const draft=session.interaction?.taskId===task.id?session.interaction:{taskId:task.id,attemptSequence:[]};draft.firstAttemptLatencyMs??=Math.min(3600000,Math.max(0,input.latencyMs??0));if(!draft.attemptSequence.includes(input.answer))draft.attemptSequence.push(input.answer);attempts=draft.attemptSequence;
    session.interaction=draft;
-   if(input.answer!==discreteAnswer(task)){const audited=await auditStudyAnswer(d,task,attempts[0],answeredAt);if(task.studyContractIssue||audited?.phase==='stale')return commitInvalidStudyTask(d,session,task);return commitReview(d,session,task,input,attempts,audited,true)}
+   if(input.answer!==discreteAnswer(task)){const audited=await auditStudyAnswer(d,task,attempts[0],answeredAt);if(task.studyContractIssue||audited?.phase==='stale')return commitInvalidStudyTask(d,session,task);return commitReview(d,session,task,input,attempts,audited,true,goalBefore)}
   }
   if(task.recipe.format==='recall_reveal'&&(typeof input.answer!=='boolean'||!session.interaction?.revealed))throw Error('Сначала откройте ответ');
   if(task.recipe.format==='timeline'){const scale=task.timeline,value=(input.answer as Record<string,unknown>)?.[task.items[0].entityId];if(!scale||!Number.isInteger(value)||Number(value)<scale.min||Number(value)>scale.max)throw Error('Подтвердите значение на шкале')}
   const audited=await auditStudyAnswer(d,task,isDiscrete(task)?attempts[0]:input.answer,answeredAt);
   if(task.studyContractIssue||audited?.phase==='stale')return commitInvalidStudyTask(d,session,task);
-  return commitReview(d,session,task,input,attempts,audited);
+  return commitReview(d,session,task,input,attempts,audited,false,goalBefore);
  }))},
  async importBundle(input:unknown){return d.transaction('rw',contentTables(d),async()=>{const b=validateImport(input,await getBundle(d));if(b.media.some(m=>!m.url.startsWith('engi-media://')))throw Error('Изображения нужны внутри пакета .engi');await putBundle(d,b);return {entities:b.entities.length,facts:b.facts.length,excluded:b.facts.filter(f=>!['direct','verified','user_confirmed'].includes(f.verification)).length}})},
  async editEntity(input:{entityId:string;name:string;facts:any[]}){const b=await getBundle(d),e=b.entities.find(e=>e.id===input.entityId);if(!e)throw Error('Объект не найден');const facts=input.facts.map(change=>{const f=b.facts.find(x=>x.id===change.id);if(!f)throw Error('Факт не найден');const next={...f,...change};if(f.valueKind==='date'&&change.year!==undefined&&String(change.year)!==f.dateStart?.slice(0,4)){const y=Number(change.year);if(!Number.isInteger(y)||y<1||y>2100)throw Error('Неверный год');next.dateStart=String(y).padStart(4,'0')+'-01-01';next.dateEnd=String(y).padStart(4,'0')+'-12-31';next.datePrecision='year'}return next});await saveEntity({...e,name:input.name},facts,b.entityTags.filter(t=>t.entityId===e.id&&!t.archived).map(t=>t.tagId),d);return {ok:true}},

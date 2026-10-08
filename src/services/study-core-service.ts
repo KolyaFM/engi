@@ -47,7 +47,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         return attempt;
       });
     },
-    async observe(attemptId: string, phase: 'question'|'feedback'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
+    async observe(attemptId: string, phase: 'question'|'feedback'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
       event: 'start'|'refresh'|'end', now=new Date()) {
       return db.transaction('rw', db.appMeta, async()=>{
         const row=await db.appMeta.get(key('attempt',attemptId));
@@ -61,6 +61,12 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           (row.value.results?.length?row.value.results.every((r:{correct:boolean})=>r.correct):true);
         claims=claims.filter(c=>c.when!=='incorrect'||!correct);
         const old=(await db.appMeta.get(key('episode',episodeId)))?.value as ExposureEpisode|undefined;
+        if(phase==='matched-pairs'){
+          const rule=contract.response;
+          if(rule.kind!=='mapping')throw Error('Not a matching task');
+          const solved=rule.bindings.filter(b=>row.value.matchedAnswers?.[b.responseKey]===b.expected).map(b=>b.goalId);
+          claims=old?.claims??claims.filter(c=>c.revealsGoalIds.some(id=>solved.includes(id)));
+        }
         const episode=observeEpisode(old,{id:episodeId,attemptId,phase,claims},now,event);
         // An old heartbeat cannot reopen a closed episode or extend its pause.
         if(old?.endedAt)return old;
@@ -99,6 +105,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
       return db.transaction('rw', db.appMeta, async () => {
         const row = await db.appMeta.get(key('attempt', attemptId));
         if (!row) throw Error('Attempt not found');
+        if(row.value.pairHistory)throw Error('Проверяйте пары по одной');
         if (row.value.phase !== 'open') return row.value as Attempt;
         const contract = (await db.appMeta.get(key('contract', row.value.taskId)))?.value as TaskContract;
         let attempt = submitAttempt(row.value, contract, answer, now, await currentRevisions(contract), automaticGoalIds);
@@ -117,6 +124,39 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         ]);
         await db.appMeta.delete(key('openAttempt',attemptId));
         return attempt;
+      });
+    },
+    async submitPair(attemptId:string,responseKey:string,answer:string,requestId:string,now=new Date()){
+      return db.transaction('rw',db.appMeta,async()=>{
+        const row=await db.appMeta.get(key('attempt',attemptId));
+        if(!row)throw Error('Attempt not found');
+        const previous=row.value as Attempt,contract=(await db.appMeta.get(key('contract',previous.taskId)))!.value as TaskContract,rule=contract.response;
+        if(rule.kind!=='mapping')throw Error('Not a matching task');
+        const replay=previous.pairHistory?.find(p=>p.id===requestId);
+        if(replay){if(replay.responseKey!==responseKey||replay.answer!==answer)throw Error('Request ID already used');return {attempt:previous,pair:replay,firstResult:undefined};}
+        if(previous.phase!=='open')throw Error('Attempt is not open');
+        if(!requestId||requestId.length>200||!Number.isFinite(now.getTime())||now.getTime()<new Date(previous.startedAt).getTime())throw Error('Invalid pair request');
+        const binding=rule.bindings.find(b=>b.responseKey===responseKey),matched={...previous.matchedAnswers};
+        if(!binding||!rule.options.includes(answer))throw Error('Unknown matching tile');
+        if(matched[responseKey]||!rule.bindings.some(b=>b.expected===answer&&!matched[b.responseKey]))throw Error('Пара уже найдена');
+        const revisions=await currentRevisions(contract);
+        if(Object.entries(contract.contentRevisions).some(([id,rev])=>revisions[id]!==rev))throw Error('Task content is stale');
+        const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
+        const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;
+        const firstResult=previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
+          credit:!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&Object.keys(matched).length<rule.bindings.length-1&&(!memory||new Date(memory.card.due)<=now)};
+        if(pair.correct)matched[responseKey]=answer;
+        const complete=Object.keys(matched).length===rule.bindings.length;
+        const attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],
+          firstAnswer:{...previous.firstAnswer as Record<string,string>,...(firstResult?{[responseKey]:answer}:{})},
+          results:[...previous.results??[],...(firstResult?[firstResult]:[])],phase:complete?'submitted':'open',...(complete?{submittedAt:now.toISOString()}:{})};
+        if(firstResult?.credit&&options.applyMemory!==false){
+          const updated=updateGoalMemories(memory?[memory]:[],{...attempt,id:attempt.id+':pair:'+responseKey,phase:'submitted',submittedAt:now.toISOString(),results:[firstResult]})[0];
+          await db.appMeta.put({key:key('memory',binding.goalId),value:{...updated,goal:contract.primaryGoals.find(g=>g.id===binding.goalId)}});
+        }
+        await db.appMeta.put({key:row.key,value:attempt});
+        if(complete)await db.appMeta.delete(key('openAttempt',attemptId));
+        return {attempt,pair,firstResult};
       });
     },
     async skip(attemptId: string) {

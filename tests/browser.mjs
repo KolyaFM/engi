@@ -123,7 +123,7 @@ check('Object Intro autosaves colors across reload, spends three entities, and M
  for(let n=0;n<3;n++){await page.locator('#object-intro-heading').waitFor();const previous=await page.locator('#object-intro-heading').textContent();await page.getByRole('button',{name:'Готово',exact:true}).click();if(n<2)await page.waitForFunction(previous=>document.querySelector('#object-intro-heading')?.textContent!==previous,previous)}
  await page.locator('#stop-study-heading').waitFor();const stopped=await current(page);assert.equal(stopped.session.exhausted,true);assert.equal(stopped.events.length,0);
  const status=await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return {budget:(await db.appMeta.get('newLearning')).value,rows:await db.learningState.toArray()}});assert.equal(status.budget.introducedEntityIds.length,3);assert(status.rows.every(r=>r.payload.card.reps===0&&!r.payload.firstSuccessAt));assert.equal(status.rows.find(r=>r.id===intro.unitIds.find(id=>id.includes(':d'))).payload.status,'suspended');
- await page.getByRole('button',{name:'Открыть ещё 2 объекта',exact:true}).click();
+ await page.getByRole('button',{name:'Добавить 2 новые цели',exact:true}).click();
  for(let n=0;n<2;n++){await page.locator('#object-intro-heading').waitFor();await page.getByRole('button',{name:'Готово',exact:true}).click()}
  await page.locator('#stop-study-heading').waitFor();assert.equal((await current(page)).events.length,0);assert.equal(await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return (await db.appMeta.get('newLearning')).value.introducedEntityIds.length}),5);
 });

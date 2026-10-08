@@ -44,7 +44,7 @@ export async function pickGoalFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Session
   });
   // Retry from the unchanged prior state. Failed construction is not a selection or an answer.
   const picked=selectGoalCandidate(descriptors,prior,plan.day,{newSlotsLeft:newLeft}),proposal=available[picked.index];
-  const task=materializer(b,enabled,proposal,pool.context,s.tag??'all',s.cooldown??[],s.mode==='practice');
+  const task=materializer(b,enabled,proposal,pool.context,s.tag??'all',s.cooldown??[],s.mode==='practice',memory);
   if(!task){available.splice(picked.index,1);continue;}
   task.reason=s.mode==='practice'?'practice':descriptors[picked.index].kind==='due'?'due':'new';
   await db.appMeta.put({key:selectorKey,value:picked.state});return {task,intro:undefined,waitingUntil:undefined};
