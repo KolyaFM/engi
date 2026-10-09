@@ -17,12 +17,52 @@ import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {groupProposals} from './group-candidates';
 import {chronologyPractice} from './chronology-practice';
 import {buildLearningChronology} from './learning-chronology';
+import {MISTAKE_EPISODES_KEY,type MistakeEpisode} from './mistake-episodes';
 /** One source of eligible work: acquisition, due reviews, repair, admission, then safe practice. */
 export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now()){
  const catalog=buildGoalCatalog(b,enabled),ledger=await ensureLifecycle(db,catalog,new Date(now));
  const rows=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id)),memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
  const plan=await lifecycleProjection(db,catalog,[...memories.values()],await ensureDayPlan(db,catalog,[...memories.values()],new Date(now),s),undefined,new Date(now));
  await db.appMeta.put({key:'studyCore:lifecycleDayPlan',value:plan});
+ const episodes=(await db.appMeta.get(MISTAKE_EPISODES_KEY))?.value.episodes as MistakeEpisode[]|undefined;
+ const hasRepair=!!episodes?.some(e=>e.status==='open'||e.status==='unavailable'&&e.unavailableReason);
+ // A fresh collection has no review proposals yet. Open its first object before
+ // compiling the full question pool; the normal path takes over after exposure.
+ if(s.mode!=='practice'&&!ledger.units.length&&!memories.size&&!hasRepair&&!plan.mistakes?.length){
+  const configuration=enabled.map(m=>({...m,bootstrap:undefined,card:{...m.card,due:new Date(now+365*86400000)}}));
+  const next=pickFeed(b,configuration,{...s,repairQueue:[],mode:'daily'},{...daily,extraBudget:0,introducedEntityIds:[]},introduced,1);
+  if(next.intro&&(next.intro.newProperty||plan.newBudget>0))return next;
+ }
+ const introduce=()=>{
+  if(s.mode==='practice')return;
+  const configuration=enabled.map(m=>({...m,bootstrap:undefined,card:{...m.card,due:new Date(now+365*86400000)}}));
+  const next=pickFeed(b,configuration,{...s,repairQueue:[],mode:'daily'},{...daily,extraBudget:0,introducedEntityIds:[]},introduced,1);
+  if(next.intro&&(next.intro.newProperty||plan.newBudget>0)){s.playRound=undefined;return next;}
+ };
+ // Immediately after an introduction, all recently shown goals may still be
+ // behind their disclosure interval. Decide that before compiling every task.
+ if(s.mode!=='practice'&&s.cooldown?.at(-1)?.reason==='intro'){
+  if(!hasRepair){
+   const scoped=b.studyScope?new Set(b.studyScope.targetIds):undefined;
+   const activeGoals=catalog.filter(e=>!e.suspended&&(!scoped||e.targetIds.every(id=>scoped.has(id)))&&(
+    ledger.units.some(u=>u.stage!=='completed'&&u.goal.id===e.goal.id)||memories.has(e.goal.id)));
+   const shown=await db.appMeta.bulkGet(activeGoals.map(e=>'studyCore:exposure:'+e.goal.id));
+   const readyGoals=activeGoals.filter((e,i)=>{
+    const unit=ledger.units.find(u=>u.stage!=='completed'&&u.goal.id===e.goal.id),exposure=shown[i]?.value as ExposureEntry|undefined;
+    const due=unit?new Date(unit.availableAt).getTime():new Date(memories.get(e.goal.id)?.card.due??8640000000000000).getTime();
+    const visible=exposure?(unit&&unit.stage==='confirmation'?new Date(exposure.lastVisibleAt).getTime()+ACQUISITION_CONFIRMATION_MS:unit?0:exposureAvailableAt(exposure)):0;
+    return Math.max(due,visible)<=now;
+   });
+   const lastOwners=new Set((s.cooldown?.at(-1)?.items??[]).map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId));
+   const onlyLastObject=readyGoals.length>0&&readyGoals.every(e=>e.entityIds.some(id=>lastOwners.has(id)));
+   if(!readyGoals.length||onlyLastObject){
+    const first=ledger.units.filter(u=>u.stage==='first-check'&&activeGoals.some(e=>e.goal.id===u.goal.id));
+    const canIntroduce=shouldIntroduce({firstChecks:first.length,firstCheckObjects:new Set(first.map(u=>u.entityId)).size,actionsSinceIntro:0,hasReady:readyGoals.length>0,onlyLastObject});
+    const next=introduce();
+    if(next?.intro?.newProperty||canIntroduce&&next)return next;
+   }
+  }
+ }
  const pool=goalProposalPool(b,enabled,s.tag,'mixed'),ids=[...new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id)))];
  const exposureRows=await db.appMeta.bulkGet(ids.map(id=>'studyCore:exposure:'+id)),exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
  const active=new Map(ledger.units.filter(u=>u.stage!=='completed').map(u=>[u.key,u])),activeIds=new Set(catalog.filter(e=>!e.suspended).map(e=>e.goal.id));
@@ -38,13 +78,6 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const objectRank=(p:typeof pool.proposals[number])=>Number(owners(p.items).some(id=>lastObjects.has(id)))*100+owners(p.items).reduce((sum,id)=>sum+history.slice(-5).reduce((n,t,index)=>n+Number(owners(t.items).includes(id))*(index+1),0),0)/p.items.length;
  const scopedIds=new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id))),firstChecks=ledger.units.filter(u=>u.stage==='first-check'&&scopedIds.has(u.goal.id)&&activeIds.has(u.goal.id));
  const introIndex=history.map(t=>t.reason).lastIndexOf('intro'),sinceIntro=history.slice(introIndex+1).reduce((n,t)=>n+Math.max(1,t.studyContract?.primaryGoals.length??t.items.length),0);
- const introduce=()=>{
-  if(s.mode==='practice')return;
-  const configuration=enabled.map(m=>({...m,bootstrap:undefined,card:{...m.card,due:new Date(now+365*86400000)}}));
-  // The lifecycle owns admission; the old composer only materializes the next intro.
-  const next=pickFeed(b,configuration,{...s,repairQueue:[],mode:'daily'},{...daily,extraBudget:0,introducedEntityIds:[]},introduced,1);
-  if(next.intro&&(next.intro.newProperty||plan.newBudget>0)){s.playRound=undefined;return next;}
- };
  const due=eligible.filter(p=>p.goals.some(g=>active.get(acquisitionKey(g))?.stage!=='first-check')),first=eligible.filter(p=>p.goals.every(g=>active.get(acquisitionKey(g))?.stage==='first-check'));
  const admission=shouldIntroduce({firstChecks:firstChecks.length,firstCheckObjects:new Set(firstChecks.map(u=>u.entityId)).size,actionsSinceIntro:sinceIntro,hasReady:eligible.length>0,onlyLastObject:eligible.length>0&&eligible.every(p=>owners(p.items).some(id=>lastObjects.has(id)))});
  const candidateIntroduction=introduce(),nextIntroduction=candidateIntroduction?.intro?.newProperty||admission?candidateIntroduction:undefined;

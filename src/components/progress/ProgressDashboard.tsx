@@ -7,12 +7,13 @@ import {conflicts} from '../../services/knowledge-service';
 import {saveBackup} from '../../services/backup-service';
 import {ConflictResolver} from '../knowledge/ConflictResolver';
 import {GoalProgressDashboard} from './GoalProgressDashboard';
+import type {createDeckTargetIndex} from '../../services/deck-overview';
 
-export function ProgressDashboard({snapshot,onStudy,onReload}:{snapshot:Snapshot;onStudy:()=>void;onReload:()=>Promise<void>}){
- if(snapshot.goalCatalog)return <GoalProgressDashboard snapshot={snapshot} onStudy={onStudy} onReload={onReload}/>;
+export function ProgressDashboard({snapshot,targetIndex,onStudy,onReload}:{snapshot:Snapshot;targetIndex:ReturnType<typeof createDeckTargetIndex>;onStudy:()=>void;onReload:()=>Promise<void>}){
+ if(snapshot.goalCatalog)return <GoalProgressDashboard snapshot={snapshot} targetIndex={targetIndex} onStudy={onStudy} onReload={onReload}/>;
  const s=snapshot,p=progress(s),today=todayLearning(s),b=s.bundle,targets=canonicalTargets(b),problem=conflicts(b);
  const targetById=new Map(targets.map(t=>[t.targetId,t]));
- return <><div className="page-heading"><h1>Что остаётся в памяти?</h1><button className="button outline" onClick={()=>void saveBackup()}>Сохранить копию</button></div>
+ return <><div className="page-heading"><h1>Статистика</h1><button className="button outline" onClick={()=>void saveBackup()}>Сохранить копию</button></div>
  <div className="stat-strip">{[['Охват',`${p.covered} / ${p.total}`],['Помню сейчас',p.retention===null?'—':p.retention+'%'],['Пора повторить',p.due],['Сегодня проверено',today.retrievals]].map(([label,n])=><div key={label}><span>{label}</span><strong key={String(n)}>{n}</strong></div>)}</div>
  <p>Активных знаний: {p.total} · Ещё не открыто: {p.new} · Отложено ★: {p.suspended}</p>
  <div className="stability-strip">{[[7,p.week],[30,p.month],[90,p.quarter]].map(([days,n])=><div key={days}><strong key={n}>{n}</strong><span>Закреплено ≥{days} дней</span></div>)}</div>

@@ -2,6 +2,7 @@ import {deckStudyScope,SELECTED_DECKS} from './deck-study-scope';
 import {db,type EngiDB,type SessionRow,type InteractionDraft} from '../db/engi-db';
 import type {Familiarity} from '../lib/engi/types';
 import {getSnapshot,getBundle,putBundle,contentTables,learningRow} from '../db/repositories';
+import {reconcileKnowledgeUnits} from '../db/learning-migration';
 import {saveEntity} from './knowledge-service';
 import {validateImport} from '../lib/engi/validate';
 import {commitReview,reviewReceiptKey,abandonReview,type AnswerInput} from './review-commit';
@@ -26,7 +27,7 @@ import {pickEndlessFeed} from './endless-study-service';
 import {traceStudySelection,startStudyTrace,stopStudyTrace,studyTraceReport} from './study-selection-trace';
 import {pickLifecycleFeed} from './lifecycle-feed-service';
 import {groupContext} from './group-affinity';
-import {acceptLifecycleIntro,lifecycleProjection} from './learning-lifecycle-service';
+import {acceptLifecycleIntro,lifecycleProjection,LIFECYCLE_KEY} from './learning-lifecycle-service';
 import {studyWorkload} from '../lib/engi/study-core/workload';
 
 async function selectNext(d:EngiDB,s:SessionRow){
@@ -41,7 +42,7 @@ export function createTrainerService(d:EngiDB){return {
   const bundle=deckStudyScope(await getBundle(d),deckIds);if(deckIds!==undefined)tag=SELECTED_DECKS;const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
   const plan=await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value));
-  if(format){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
+  if(format&&!await d.appMeta.get(LIFECYCLE_KEY)){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
   const exposed=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:exposure:'+e.goal.id)),introduced=exposed.filter(r=>!!r).map(r=>r!.value.goalId),memory=rows.filter(r=>!!r).map(r=>r!.value);
   const counterIds=new Set(catalog.filter(e=>!e.suspended&&(!format||format==='mixed'||e.goal.skill===(format==='recall_reveal'?'recall':'recognition'))).map(e=>e.goal.id));
   if(tag==='all')return lifecycleProjection(d,catalog,memory,{...plan,workload:studyWorkload(plan,memory,introduced,counterIds)});
@@ -64,7 +65,7 @@ export function createTrainerService(d:EngiDB){return {
  async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
   if(options.deckIds!==undefined){const active=(await d.decks.toArray()).filter(deck=>!deck.archived);if(!options.deckIds.length||options.deckIds.some(id=>!active.some(deck=>deck.id===id)))throw Error('Выберите доступные колоды');tag=SELECTED_DECKS;}
-  await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
+  await reconcileKnowledgeUnits(d);const now=new Date().toISOString(),s:SessionRow={deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);}await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },
  async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{

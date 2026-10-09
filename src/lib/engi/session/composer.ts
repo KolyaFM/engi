@@ -13,10 +13,22 @@ function distinctSetDistractors(answers:Bundle['entities']){
  return (e:Bundle['entities'][number])=>{const name=normalize(e.name);if(names.has(name)||[e.name,...e.aliases].some(label=>labels.has(normalize(label))))return false;names.add(name);return true;};
 }
 export type CompositionContext={recipes:Recipe[];pools:Map<Recipe,Item[]>;targets:Map<string,{r:Recipe;i:Item}[]>};
+// Derived question structure depends on content and scope, not progress or time.
+// Value keys retain invalidation for imports, edits and freshly read DB bundles.
+const contextCache:{key:string;context:CompositionContext}[]=[];
+function freezeContext(value:unknown,seen=new WeakSet<object>()){
+ if(!value||typeof value!=='object'||seen.has(value))return;seen.add(value);
+ if(value instanceof Map)for(const [key,item]of value){freezeContext(key,seen);freezeContext(item,seen);}
+ else for(const item of Object.values(value))freezeContext(item,seen);
+ Object.freeze(value);
+}
 export function compositionContext(b:Bundle):CompositionContext{
+ const key=JSON.stringify(b),cached=contextCache.find(e=>e.key===key);
+ if(cached){contextCache.splice(contextCache.indexOf(cached),1);contextCache.push(cached);return cached.context;}
+ b=structuredClone(b);
  const all=recipes(b),pools=new Map(all.map(r=>[r,eligible(b,r)])),targets=new Map<string,{r:Recipe;i:Item}[]>();
  for(const r of all)for(const i of pools.get(r)!){const list=targets.get(i.targetId)??[];list.push({r,i});targets.set(i.targetId,list);}
- return {recipes:all,pools,targets};
+ const context={recipes:all,pools,targets};freezeContext(context);contextCache.push({key,context});if(contextCache.length>4)contextCache.shift();return context;
 }
 export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:Task[]=[],context?:CompositionContext):Task|undefined{
  const poolFor=(r:Recipe)=>context?.pools.get(r)??eligible(b,r);
@@ -28,7 +40,11 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
  for(const {r,i} of shuffle(candidates).sort((a,c)=>rank(a.r)-rank(c.r))){
   if(r.format==='multi_choice'){const facts=b.facts.filter(f=>f.entityId===i.entityId&&f.key===r.answerKey&&!f.archived&&['verified','direct','user_confirmed'].includes(f.verification));const correct=[...new Set(facts.map(f=>f.valueEntityId!))];const items=[i,...poolFor(r).filter(x=>x.entityId===i.entityId&&x.targetId!==i.targetId)];const targetCorrect=[...new Set(items.map(x=>x.answerId))];const answers=b.entities.filter(e=>targetCorrect.includes(e.id)&&!e.archived);const wrong=shuffle(b.entities.filter(e=>e.type===answers[0]?.type&&!e.archived&&!correct.includes(e.id))).filter(distinctSetDistractors(answers)).slice(0,Math.max(1,4-correct.length));const task:Task={id:crypto.randomUUID(),recipe:{...r,prompt:questionPrompt(properties(b).find(p=>p.id===r.answerKey),i.name,r.format,r.direction)+' Выберите все подходящие варианты.'},items,answerSet:targetCorrect,options:shuffle([...answers,...wrong].map(e=>({id:e.id,name:e.name}))),reason:'due'};if(preflight(task))return task;continue;}
   const item={...i},recipe={...r},pool=poolFor(r),exemplar=selectExemplar(b,i.entityId,r,m);if(r.cue==='image'){if(!exemplar)continue;item.image=exemplar.url;item.mediaId=exemplar.id}
-  const wrong=distractors(b,item,pool,m,history),twin=r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
+  // A selected scope still uses global context distractors. Reuse that pool
+  // rather than resolving every object's images and facts for each proposal.
+  const globalRecipe=b.studyScope&&r.tag===b.studyScope.id?context?.recipes.find(g=>g.tag===undefined&&g.subjectType===r.subjectType&&g.answerKey===r.answerKey&&g.cue===r.cue&&g.direction===r.direction&&g.format===r.format&&g.answerPresentation===r.answerPresentation&&JSON.stringify(g.mediaRoles)===JSON.stringify(r.mediaRoles)):undefined;
+  const answerPool=b.studyScope&&r.tag===b.studyScope.id?(globalRecipe?poolFor(globalRecipe):eligible(b,{...r,tag:undefined})):pool;
+  const wrong=distractors(b,item,answerPool,m,history),twin=r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
   if(r.answerPresentation==='image')for(const o of options){const candidate=pool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
   const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.name,r.format,r.direction);
@@ -59,4 +75,6 @@ export function repairTask(original:Task,index:number,wrongChoices:string[]=[]):
  const format=discrimination?'choice':original.recipe.format==='recall_reveal'&&original.options.length>=3?'choice':'recall_reveal';
  return {...original,studyContract:undefined,studyContractIssue:undefined,id:crypto.randomUUID(),retryOf:original.id,reason:'retry',items:[item],repairChoices:wrongChoices,discrimination,pretest:false,practice:false,options:discrimination?shuffle([{id:item.answerId,name:item.answer},wrong[0]]):original.options,recipe:{...original.recipe,id:original.recipe.id+':repair',format,diagnostic:false,evidence:{level:'direct',fsrsEnabled:true,gradeCap:'good',selfReport:format==='recall_reveal'},feed:{presentation:'atomic',autoAdvanceOnCorrect:true,correctHoldMs:320,maxOptions:4}}};
 }
+
+
 

@@ -1,3 +1,4 @@
+import {propertyWorkload} from '../lib/engi/knowledge/property-workload';
 import type {EngiDB} from '../db/engi-db';
 import type {GoalCatalogEntry} from '../lib/engi/knowledge/goal-progress';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
@@ -53,13 +54,10 @@ export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=n
 }
 export async function lifecycleProjection(db:EngiDB,catalog:GoalCatalogEntry[],memories:GoalMemory[],plan:GoalDayPlan,scope?:Set<string>,now=new Date()){
  const ledger=await readLifecycle(db);if(!ledger)return plan;
- const relevant=catalog.filter(e=>!e.suspended&&(!scope||scope.has(e.goal.id))),keys=new Set(relevant.map(e=>acquisitionKey(e.goal))),activeGoalIds=new Set(relevant.map(e=>e.goal.id));
- const learning=ledger.units.filter(u=>keys.has(u.key)&&u.stage!=='completed'&&activeGoalIds.has(u.goal.id)),learningKeys=new Set(learning.map(u=>u.key));
+ const {relevant,activeGoalIds,learning,repeats}=propertyWorkload(catalog,memories,ledger,scope,now.getTime());
  const introduced=new Set(ledger.cards.map(c=>c.entityId)),knownObjects=new Set(catalog.filter(e=>memories.some(m=>m.goalId===e.goal.id)).flatMap(e=>e.entityIds));
  const fresh=new Set(relevant.flatMap(e=>e.entityIds).filter(id=>!introduced.has(id)&&!knownObjects.has(id)));
  const {newCardsPerDay}=await readStudyPreferences(db),today=ledger.cards.filter(c=>c.source==='daily'&&dayBoundary(new Date(c.introducedAt)).day===dayBoundary(now).day),left=Math.max(0,newCardsPerDay-today.length),newCount=Math.min(left,fresh.size);
- const repeats=new Map<string,GoalMemory>();
- for(const m of memories){const entry=relevant.find(e=>e.goal.id===m.goalId);if(entry&&!learningKeys.has(acquisitionKey(entry.goal))&&new Date(m.card.due)<=now)repeats.set(acquisitionKey(entry.goal),m);}
  const dates=[...learning.map(u=>new Date(u.availableAt).getTime()),...memories.filter(m=>activeGoalIds.has(m.goalId)).map(m=>new Date(m.card.due).getTime())].filter(t=>t>now.getTime());
  return {...plan,lifecycle:true,dailyTarget:Math.min(newCardsPerDay,today.length+fresh.size),newBudget:newCardsPerDay,newTarget:today.length+newCount,newGoalIds:today.map(c=>c.entityId),learningGoalIds:learning.map(u=>u.goal.id),admissionGoalIds:[],
   workload:{new:newCount,learning:learning.length,repeat:repeats.size,mistakes:plan.mistakes?.length??0},available:{new:newCount,reinforce:learning.filter(u=>new Date(u.availableAt)<=now).length,repeat:repeats.size},

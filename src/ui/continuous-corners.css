@@ -1,0 +1,11 @@
+/* Every authored rounded surface uses the same continuous-corner family. */
+@supports(corner-shape:squircle){body :where(button,input,textarea,select,section,article,aside,dialog,div,span,img){corner-shape:squircle}.deck-selection-mark,.deck-details-button,.icon-button{corner-shape:round}}
+.g2-fallback{mask-image:var(--g2-mask);mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-image:var(--g2-mask);-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat;border-image:linear-gradient(transparent,transparent) 1;background-origin:border-box}
+.g2-border-frame>path{stroke:var(--g2-stroke,var(--g2-border-color))}
+.g2-fallback:focus-visible>.g2-border-frame>path{stroke:#4368ed;stroke-width:3}
+.g2-fallback:focus-visible{outline:none;box-shadow:inset 0 0 0 3px #a4512a}
+@media(prefers-reduced-motion:reduce){.deck-select,.deck-selection-mark{transition:none}}
+/* State borders change immediately so the fallback reads the final colour. */
+:where(.button,.feed-option,.learning22-choice,.learning22-action,.conveyor-category,.icon-button,.settings-link){-webkit-tap-highlight-color:transparent;transition:transform 160ms cubic-bezier(.2,.8,.3,1),background-color 120ms,opacity 160ms}
+:where(.button,.feed-option,.learning22-choice,.learning22-action,.conveyor-category,.icon-button,.settings-link):active:not(:disabled){transform:scale(.98);transition-duration:80ms}
+@media(prefers-reduced-motion:reduce){:where(.button,.feed-option,.learning22-choice,.learning22-action,.conveyor-category,.icon-button,.settings-link){transition:none}:where(.button,.feed-option,.learning22-choice,.learning22-action,.conveyor-category,.icon-button,.settings-link):active{transform:none}}

@@ -14,6 +14,7 @@ export function buildIndexes(b:Bundle){
  if(b.studyScope)entitiesByScope.set(b.studyScope.id,b.studyScope.entityIds.flatMap(id=>{const e=entityById.get(id);return e?[e]:[]}));
  if(b.studyScope)entitiesByScope.set(b.studyScope.id,b.studyScope.entityIds.flatMap(id=>{const e=entityById.get(id);return e?[e]:[]}));
  const searchByEntity=new Map<string,string>();for(const e of entityById.values())searchByEntity.set(e.id,[e.name,...e.aliases,e.type,...[...tagsByEntity.get(e.id)??[]].map(id=>tagById.get(id)?.name??''),...(factsByEntity.get(e.id)??[]).map(f=>entityById.get(f.valueEntityId??'')?.name??f.valueText??f.valueNumber??'')].join(' ').toLowerCase().replace(/ё/g,'е'));
- return {entityById,factsByEntity,factsByEntityAndKey,factsByProperty,incomingFactsByTarget,mediaByEntity,tagsByEntity,entitiesByTag,entitiesByDeck,entitiesByScope,entitiesByType,propertyById:new Map(properties(b).map(p=>[p.id,p])),searchByEntity};
+ const mediaById=new Map(b.media.map(m=>[m.id,m])),propertyImageUrls=new Set(b.facts.filter(f=>f.valueKind==='image'&&!f.archived).map(f=>mediaById.get(f.valueMediaId??'')?.url));
+ return {entityById,factsByEntity,factsByEntityAndKey,factsByProperty,incomingFactsByTarget,mediaByEntity,mediaById,propertyImageUrls,tagsByEntity,entitiesByTag,entitiesByDeck,entitiesByScope,entitiesByType,propertyById:new Map(properties(b).map(p=>[p.id,p])),searchByEntity};
 }
 export function indexes(b:Bundle){let context=contexts.get(b);if(!context){context=buildIndexes(b);contexts.set(b,context)}return context}

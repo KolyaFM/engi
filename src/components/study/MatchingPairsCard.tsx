@@ -1,3 +1,4 @@
+import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import type {Task} from '../../lib/engi/types';
 import type {InteractionDraft} from '../../db/engi-db';
@@ -49,18 +50,19 @@ export function MatchingPairsCard({task,progress,busy,onPair,onComplete,onMediaR
   <div className="matching-columns">
    <div className="matching-column" role="group" aria-label="Объекты">{task.items.map(item=>{
     const state=tileState('left',item.entityId);
-    return <button key={item.entityId} className={`matching-tile matching-object ${imageCue&&item.image?'is-image':''} ${state}`} data-entity-id={item.entityId} aria-label={imageCue?`Объект ${task.items.indexOf(item)+1}`:item.name} aria-pressed={state==='selected'} disabled={busy||pending||!!matched[item.entityId]} onClick={()=>choose('left',item.entityId)}>
+    return <SurfaceButton key={item.entityId} className={`matching-tile matching-object ${imageCue&&item.image?'is-image':''} ${state}`} data-entity-id={item.entityId} aria-label={imageCue?`Объект ${task.items.indexOf(item)+1}`:item.name} aria-pressed={state==='selected'} disabled={busy||pending||!!matched[item.entityId]} onClick={()=>choose('left',item.entityId)}>
      {task.recipe.cue==='image'&&item.image?<KnowledgeImage src={item.image} alt="Объект для соотнесения" onReady={()=>setLoaded(ids=>ids.includes(item.entityId)?ids:[...ids,item.entityId])} onFail={onMediaFail}/>:<span>{item.name}</span>}
      <span className="matching-mark" aria-hidden="true">{state==='correct'||state==='matched'?'✓':state==='incorrect'?'×':''}</span>
      {state==='matched'&&<span className="sr-only">Пара найдена</span>}
-    </button>;
+    </SurfaceButton>;
    })}</div>
    <div className="matching-column matching-answers" role="group" aria-label="Ответы">{task.options.map(option=>{
     const state=tileState('right',option.id);
-    return <button key={option.id} className={`matching-tile matching-answer ${state}`} data-answer-id={option.id} aria-pressed={state==='selected'} disabled={busy||pending||solved.has(option.id)} onClick={()=>choose('right',option.id)}><span>{option.name}</span><span className="matching-mark" aria-hidden="true">{state==='correct'||state==='matched'?'✓':state==='incorrect'?'×':''}</span>{state==='matched'&&<span className="sr-only">Пара найдена</span>}</button>;
+    return <SurfaceButton key={option.id} className={`matching-tile matching-answer ${state}`} data-answer-id={option.id} aria-pressed={state==='selected'} disabled={busy||pending||solved.has(option.id)} onClick={()=>choose('right',option.id)}><span>{option.name}</span><span className="matching-mark" aria-hidden="true">{state==='correct'||state==='matched'?'✓':state==='incorrect'?'×':''}</span>{state==='matched'&&<span className="sr-only">Пара найдена</span>}</SurfaceButton>;
    })}</div>
   </div>
   {task.recipe.format==='categorize'&&<p className="matching-note">Один ответ может подходить к нескольким {imageCue?'картинкам':'объектам'}</p>}
   <span className="sr-only" role="status" aria-live="polite">{status}</span>
  </section>;
 }
+

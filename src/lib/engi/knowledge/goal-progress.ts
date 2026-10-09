@@ -5,6 +5,7 @@ import {canonicalTargets} from '../questions/recipe-factory';
 import {retention} from '../engine';
 export type GoalCatalogEntry={goal:LearningGoal;targetIds:string[];entityIds:string[];propertyId:string;suspended:boolean};
 export function scopedGoals(s:Snapshot,tag='all'){
+ if(tag==='all')return s.goalCatalog??[];
  const allowed=new Set(canonicalTargets(s.bundle,tag).map(i=>i.targetId));
  return (s.goalCatalog??[]).filter(e=>e.targetIds.every(id=>allowed.has(id)));
 }

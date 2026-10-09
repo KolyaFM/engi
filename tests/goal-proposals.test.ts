@@ -12,6 +12,7 @@ import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
 import {pickGoalFeed} from '../src/services/goal-feed';
 import {dailyNewState} from '../src/lib/engi/session/candidate-pool';
 import type {Bundle,Memory} from '../src/lib/engi/types';
+import {compositionContext} from '../src/lib/engi/session/composer';
 function fixture(many=false):Bundle{
  const b:Bundle={entities:[],facts:[],media:[],tags:[{id:'subset',name:'Часть'}],entityTags:[],missing:[],unresolved:[],properties:[{id:'rel',name:'Автор',learnable:true,valueKind:'entity',cardinality:many?'many':'one',subjectTypes:['subject'],targetTypes:['answer']}],entityTypes:[{id:'subject',name:'Объект'},{id:'answer',name:'Ответ'}]};
  for(let n=0;n<4;n++)b.entities.push({id:'a'+n,type:'answer',name:'Ответ '+n,aliases:[],externalIds:{}});
@@ -19,6 +20,13 @@ function fixture(many=false):Bundle{
  if(many)b.facts.push({...b.facts[0],id:'extra',valueEntityId:'a1'});return b;
 }
 async function run(fn:(d:EngiDB,b:Bundle,enabled:Memory[])=>Promise<void>,many=false){const d=new EngiDB('proposals-'+crypto.randomUUID());try{await putBundle(d,fixture(many));await prepareDue(d);await fn(d,await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload));}finally{d.close();await d.delete();}}
+test('cached question structure is detached, immutable and invalidates on edits without progress dependencies',()=>{
+ const b=fixture(),first=compositionContext(b);assert.equal(compositionContext(structuredClone(b)),first);
+ const recipe=first.recipes.find(r=>r.answerKey==='rel'&&r.tag===undefined)!,item=first.pools.get(recipe)![0],oldAliases=[...item.aliases];
+ b.entities.find(e=>e.id===item.answerId)!.aliases.push('Changed alias');assert.deepEqual(item.aliases,oldAliases);
+ assert.notEqual(compositionContext(b),first);b.entities.find(e=>e.id===item.answerId)!.aliases.pop();assert.equal(compositionContext(b),first);
+ assert.throws(()=>item.aliases.push('Poisoned'));assert.throws(()=>{item.answer='Poisoned';});assert(!Object.isFrozen(b.entities[0]));
+});
 test('proposal pool and validated eager generator have the same goal/format coverage in scopes and complete sets',async()=>{
  for(const many of [false,true])await run(async(_d,b,enabled)=>{
   for(const tag of ['all','subset'])for(const format of ['mixed','choice','recall_reveal','match','categorize','multi_choice']){

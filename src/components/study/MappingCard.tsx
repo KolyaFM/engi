@@ -1,3 +1,4 @@
+import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useEffect,useState} from 'react';
 import type {Task} from '../../lib/engi/types';
 import {KnowledgeImage} from '../knowledge/KnowledgeImage';
@@ -14,13 +15,14 @@ export function MappingCard({task,initial,feedback,busy,onPersist,onSubmit,onNex
  return <div className="mapping-card"><p className="muted">{task.recipe.format==='match'?'Выберите объект, затем ответ. Каждый ответ используется один раз.':'Выберите объект, затем категорию. Категории могут повторяться.'}</p>
   <div className="mapping-objects">{task.items.map((item,n)=>{
    const chosen=mapping[item.entityId],correct=chosen===item.answerId;
-   return <button key={item.entityId} className={`mapping-object ${active===item.entityId?'is-active':''} ${feedback?correct?'answer-correct':'answer-wrong':''}`} aria-pressed={active===item.entityId} aria-label={`Объект ${n+1}${task.recipe.cue==='image'&&item.image?'':': '+item.name}`} disabled={busy||!!feedback} onClick={()=>setActive(item.entityId)}>
+   return <SurfaceButton key={item.entityId} className={`mapping-object ${active===item.entityId?'is-active':''} ${feedback?correct?'answer-correct':'answer-wrong':''}`} aria-pressed={active===item.entityId} aria-label={`Объект ${n+1}${task.recipe.cue==='image'&&item.image?'':': '+item.name}`} disabled={busy||!!feedback} onClick={()=>setActive(item.entityId)}>
     {task.recipe.cue==='image'&&item.image?<KnowledgeImage src={item.image} alt={`Объект ${n+1}`} onReady={()=>setLoaded(previous=>previous.includes(item.entityId)?previous:[...previous,item.entityId])} onFail={onMediaFail}/>:<strong>{item.name}</strong>}
     <span>{task.options.find(o=>o.id===chosen)?.name??'Выберите ответ'}</span>
     {feedback&&<small>{correct?'Верно ✓':'Правильно: '+item.answer}</small>}
-   </button>;
+   </SurfaceButton>;
   })}</div>
-  {!feedback&&<div className="feed-options">{task.options.map(option=><button className="feed-option" key={option.id} disabled={busy} aria-pressed={mapping[active]===option.id} onClick={()=>assign(option.id)}><span>{option.name}</span><span>{Object.values(mapping).includes(option.id)?'●':''}</span></button>)}</div>}
-  {feedback?<><p role="status">Верно {task.items.filter(i=>mapping[i.entityId]===i.answerId).length} из {task.items.length}</p><button className="button primary" onClick={onNext}>Дальше</button></>:<button className="button primary" disabled={busy||!complete} onClick={()=>onSubmit({...mapping})}>Проверить</button>}
+  {!feedback&&<div className="feed-options">{task.options.map(option=><SurfaceButton className="feed-option" key={option.id} disabled={busy} aria-pressed={mapping[active]===option.id} onClick={()=>assign(option.id)}><span>{option.name}</span><span>{Object.values(mapping).includes(option.id)?'●':''}</span></SurfaceButton>)}</div>}
+  {feedback?<><p role="status">Верно {task.items.filter(i=>mapping[i.entityId]===i.answerId).length} из {task.items.length}</p><SurfaceButton className="button primary" onClick={onNext}>Дальше</SurfaceButton></>:<SurfaceButton className="button primary" disabled={busy||!complete} onClick={()=>onSubmit({...mapping})}>Проверить</SurfaceButton>}
  </div>;
 }
+

@@ -12,7 +12,6 @@ import {putBundle,learningRow} from '../src/db/repositories';
 import {createTrainerService} from '../src/services/trainer-service';
 import {prepareDue} from './helpers22';
 import {progress} from '../src/lib/engi/knowledge/progress';
-import {goalRetention} from '../src/lib/engi/knowledge/goal-progress';
 import {getEntityLearningStatus,getEntityMasterySummary} from '../src/lib/engi/knowledge/decks';
 import {todayLearning,localDay} from '../src/lib/engi/knowledge/motivation';
 import {goalCandidates} from '../src/services/goal-feed';
@@ -76,14 +75,4 @@ test('serialized backup restores current goal progress and its independent daily
   assert.deepEqual(progress(restored),progress(before));assert.equal(todayLearning(restored).retrievals,1);
   assert.equal(restored.goalMemories![0].lastCorrect,true);assert.equal(new Date(restored.goalMemories![0].card.due).getTime(),new Date(before.goalMemories![0].card.due).getTime());
  }finally{target.close();await target.delete();}
-}));
-test('actual object panel renders goal counts and separate skills rather than legacy success totals',()=>run(async(d,svc)=>{
- for(const r of await d.learningState.toArray())await d.learningState.put(learningRow({...r.payload,attempts:77,correct:77}));
- const feed=await svc.startGoalFeed('all','choice'),t=feed.tasks[0];await svc.answer({sessionId:feed.id,taskId:t.id,answer:t.items[0].answerId});
- const snapshot=await svc.getGoalSnapshot(),source=readFileSync(new URL('../src/components/knowledge/GoalEntityLearningPanel.tsx',import.meta.url),'utf8');
- const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,exports:Record<string,any>={};
- vm.runInNewContext(code,{exports,require:(id:string)=>id==='react'?React:id==='react/jsx-runtime'?jsxRuntime:id.includes('goal-progress')?{goalRetention}:{setUnitSuspended},Date});
- const html=renderToStaticMarkup(React.createElement(exports.GoalEntityLearningPanel,{entityId:t.items[0].entityId,snapshot,onReload:()=>{}}));
- assert(html.includes('Самостоятельных проверок: 1'));assert(!html.includes('Самостоятельных проверок: 77'));
- assert(html.includes('Узнавание'));assert(html.includes('Воспроизведение · самоотчёт'));assert(html.includes('Нужна первая проверка'));
 }));

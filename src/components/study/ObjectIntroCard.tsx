@@ -1,3 +1,4 @@
+import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import type {SessionRow} from '../../db/engi-db';
@@ -96,7 +97,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
     transition:swiping?'none':'transform 220ms cubic-bezier(.22,1,.36,1)',
    }}
   >
-   <button type="button" className="learning22-close" onClick={onExit} disabled={disabled} aria-label="Закончить знакомство">✕</button>
+   <SurfaceButton type="button" className="learning22-close" onClick={onExit} disabled={disabled} aria-label="Закончить знакомство">✕</SurfaceButton>
    {swipeOffset>15&&<div className="learning22-stamp learning22-stamp-know" style={{opacity:stampOpacity,transform:`rotate(-10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">ЗНАЮ</div>}
    {swipeOffset<-15&&<div className="learning22-stamp learning22-stamp-plan" style={{opacity:stampOpacity,transform:`rotate(10deg) scale(${0.85+stampOpacity*0.15})`}} aria-hidden="true">В ПЛАН</div>}
    <div className="learning22-scroll">
@@ -137,8 +138,8 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
          {fact?.valueKind==='image'?<KnowledgeImage src={bundle.media.find(m=>m.id===fact.valueMediaId&&!m.archived)?.url} alt={label} className="learning22-property-image"/>:<span className="learning22-value">{val}</span>}
         </div>
         <div className="learning22-controls" role="group" aria-label={`Знакомство: ${label}`}>
-         <button type="button" className={`learning22-choice ${!known?'is-selected':''}`} aria-label={`${label}: Не знаю`} aria-pressed={!known} disabled={disabled} onClick={()=>void choose(item.targetId,'red')}>Не знаю</button>
-         <button type="button" className={`learning22-choice ${known?'is-selected is-known':''}`} aria-label={`${label}: Знаю`} aria-pressed={known} disabled={disabled} onClick={()=>void choose(item.targetId,'green')}>Знаю</button>
+         <SurfaceButton type="button" className={`learning22-choice ${!known?'is-selected':''}`} aria-label={`${label}: Не знаю`} aria-pressed={!known} disabled={disabled} onClick={()=>void choose(item.targetId,'red')}>Не знаю</SurfaceButton>
+         <SurfaceButton type="button" className={`learning22-choice ${known?'is-selected is-known':''}`} aria-label={`${label}: Знаю`} aria-pressed={known} disabled={disabled} onClick={()=>void choose(item.targetId,'green')}>Знаю</SurfaceButton>
         </div>       </div>;
       })}
      </div>
@@ -163,9 +164,10 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
   </div>
    <footer className="learning22-footer">
     {displayError&&<p className="learning22-error" role="alert">{displayError}</p>}
-    <button type="button" className="learning22-action learning22-primary" onClick={()=>void finish()} disabled={disabled}>Готово</button>
+    <SurfaceButton type="button" className="learning22-action learning22-primary" onClick={()=>void finish()} disabled={disabled}>Готово</SurfaceButton>
     <span className="learning22-status" role="status">{saving?'Сохраняем выбор…':''}</span>
    </footer>
   </div>
  </main>;
 }
+

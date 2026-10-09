@@ -1,3 +1,4 @@
+import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useRef,useState} from 'react';
 import type {Task} from '../../lib/engi/types';
@@ -18,7 +19,7 @@ export function ConveyorCard({task,progress,busy,onPair,onComplete,onMediaReady,
  }
  if(!item)return <p role="status">Все объекты распределены</p>;
  return <section className="feed-conveyor" aria-label="Распределение свайпами"><div className="matching-heading"><h2>{task.contextual?'До или после?':'Распределите объекты'}</h2><span>{Object.keys(progress?.matched??{}).length} / {task.items.length}</span></div><p className="matching-help">{task.contextual&&task.recipe.label&&<>{task.recipe.label}. </>}Смахните объект к подходящей категории или нажмите на неё</p>
-  <div className="conveyor-categories">{task.options.map((o,n)=><button key={o.id} type="button" className="conveyor-category" disabled={busy||lock.current} onClick={()=>void answer(n)}>{n===0&&'← '}<span>{o.name}</span>{n===1&&' →'}</button>)}</div>
+  <div className="conveyor-categories">{task.options.map((o,n)=><SurfaceButton key={o.id} type="button" className="conveyor-category" disabled={busy||lock.current} onClick={()=>void answer(n)}>{n===0&&'← '}<span>{o.name}</span>{n===1&&' →'}</SurfaceButton>)}</div>
   <div className="conveyor-stage"><div key={item.entityId} className={`conveyor-object ${dragging?'dragging':''} ${verdict??''}`} data-conveyor-id={item.entityId} tabIndex={0} style={{transform:`translateX(${offset}px) rotate(${Math.max(-10,Math.min(10,offset/25))}deg)`}} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();void answer(e.key==='ArrowLeft'?0:1)}}}
    {...swipe}>
     {image?<KnowledgeImage src={image} alt="Объект для распределения" onReady={()=>setLoaded(old=>old.includes(item.entityId)?old:[...old,item.entityId])} onFail={onMediaFail}/>:<strong>{item.name}</strong>}
@@ -26,3 +27,4 @@ export function ConveyorCard({task,progress,busy,onPair,onComplete,onMediaReady,
    </div></div><p className={`conveyor-status ${verdict??''}`} role="status" aria-live="polite">{status}</p>
  </section>;
 }
+

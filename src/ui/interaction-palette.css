@@ -1,0 +1,85 @@
+/* Shared selection and feedback language for decks and learning. */
+:root{
+ --interaction-surface:#fffefc;--interaction-border:#e5dfd7;
+ --selection-surface:#f0ecfa;--selection-border:#9a89b8;--selection-ink:#645080;
+ --success-surface:#e8f3ec;--success-border:#86b49a;--success-ink:#35634b;
+ --error-surface:#faebe8;--error-border:#ce958d;--error-ink:#94544e;
+}
+.dark{
+ --interaction-surface:#29262e;--interaction-border:#49424f;
+ --selection-surface:#373044;--selection-border:#a797c4;--selection-ink:#d5c9eb;
+ --success-surface:#26382e;--success-border:#789f87;--success-ink:#bad5c4;
+ --error-surface:#402d2c;--error-border:#b7827b;--error-ink:#e6bab4;
+}
+body .study-feed{--color-success:var(--success-ink);--color-success-surface:var(--success-surface);--color-error:var(--error-ink);--color-error-surface:var(--error-surface)}
+body .dark .study-feed{--practice-ink:#ebe5ef}
+body .study-feed .matching-tile,body .study-feed .feed-option,body .study-feed .conveyor-category{
+ background:var(--interaction-surface);border:1px solid var(--interaction-border);--g2-stroke:var(--interaction-border);color:var(--practice-ink,#292524);box-shadow:none;
+ transition:transform 180ms cubic-bezier(.2,.8,.3,1),background-color 160ms,opacity 200ms;
+ -webkit-tap-highlight-color:transparent;
+}
+body .study-feed .matching-tile.selected,body .study-feed .feed-option[aria-pressed=true]:not(.answer-correct):not(.answer-wrong),body .study-feed .mapping-object.is-active{
+ background:var(--selection-surface);border-color:var(--selection-border);--g2-stroke:var(--selection-border);box-shadow:none;
+}
+body .study-feed .matching-tile.correct,body .study-feed .feed-option.answer-correct,body .study-feed .mapping-object.answer-correct,body .study-feed .conveyor-object.correct{
+ background:var(--success-surface);border-color:var(--success-border);--g2-stroke:var(--success-border);color:var(--success-ink);animation:none;
+}
+body .study-feed .matching-tile.incorrect,body .study-feed .feed-option.answer-wrong,body .study-feed .mapping-object.answer-wrong,body .study-feed .conveyor-object.wrong{
+ background:var(--error-surface);border-color:var(--error-border);--g2-stroke:var(--error-border);color:var(--error-ink);animation:none;
+}
+body .study-feed .matching-tile.correct .matching-mark{background:var(--success-border);color:white}
+body .study-feed .matching-tile.incorrect .matching-mark{background:var(--error-border);color:white}
+body .study-feed .matching-tile.matched:disabled{opacity:.22}
+body .study-feed .conveyor-category:active:not(:disabled){background:var(--selection-surface);border-color:var(--selection-border);--g2-stroke:var(--selection-border)}
+body .learning22-screen .learning22-controls{background:#f0ece6}
+body .learning22-screen .learning22-choice{border:1px solid transparent;box-shadow:none;transition:transform 180ms cubic-bezier(.2,.8,.3,1),background-color 160ms}
+body .learning22-screen .learning22-choice.is-selected{background:var(--selection-surface);border-color:var(--selection-border);--g2-stroke:var(--selection-border);color:var(--selection-ink);box-shadow:none}
+body .learning22-screen .learning22-choice.is-known{background:var(--selection-surface);border-color:var(--selection-border);color:var(--selection-ink)}
+body .learning22-screen .learning22-property.is-known{border-color:var(--selection-border)}
+body .study-feed .chronology-slot:has(.is-correct){background:var(--success-surface);border-color:var(--success-border);--g2-stroke:var(--success-border)}
+body .study-feed .chronology-slot:has(.is-wrong){background:var(--error-surface);border-color:var(--error-border);--g2-stroke:var(--error-border)}
+body .study-feed .chronology-list.is-sorting .sort-row.is-correct{background:var(--success-surface)}
+body .study-feed .chronology-list.is-sorting .sort-row.is-wrong{background:var(--error-surface)}
+body .study-feed .chronology-list .sort-row.is-dragging{background:var(--selection-surface)}
+body .study-feed .chronology-slot.is-drop-target:after{background:var(--selection-border)}
+body .study-feed .sort-position.is-correct{color:var(--success-ink)}
+body .study-feed .sort-position.is-wrong{color:var(--error-ink)}
+body .study-feed .sort-position.is-correct .sort-rank{background:var(--success-surface)}
+body .study-feed .sort-position.is-wrong .sort-rank{background:var(--error-surface)}
+body .deck-app .deck-cover.is-selected .deck-outline{color:var(--selection-border)}
+body .deck-app .is-selected .deck-selection-mark{background:var(--selection-ink)}
+body .deck-app .header .main-tab.is-active:after{background:var(--selection-border)}
+body :is(.matching-tile,.feed-option,.learning22-choice,.learning22-action,.button,.conveyor-category,.icon-button,.settings-link):active:not(:disabled){transform:scale(.985);transition-duration:80ms}
+body :is(.matching-tile,.feed-option,.learning22-choice,.learning22-action,.button,.conveyor-category,.icon-button,.settings-link,.deck-select):focus-visible{outline:2px solid var(--selection-border);outline-offset:3px}
+body .g2-fallback:focus-visible{outline:none;box-shadow:none}
+body .g2-fallback:focus-visible>.g2-border-frame>path{stroke:var(--selection-border);stroke-width:2}
+@media(prefers-reduced-motion:reduce){
+ body :is(.matching-tile,.feed-option,.learning22-choice,.learning22-action,.button,.conveyor-category,.icon-button,.settings-link){transition:none}
+ body :is(.matching-tile,.feed-option,.learning22-choice,.learning22-action,.button,.conveyor-category,.icon-button,.settings-link):active:not(:disabled){transform:none}
+}
+/* Explicit control renderer: one path paints the face and its 1px stroke.
+ * Neither native borders nor the global corner fallback paint over this layer. */
+body button.continuous-control{
+ position:relative;isolation:isolate;overflow:visible;background:transparent!important;border-color:transparent!important;
+ box-shadow:none!important;outline:none!important;transform:none!important;mask:none!important;-webkit-mask:none!important;
+ --control-fill:var(--interaction-surface);--control-stroke:var(--interaction-border);
+ transition:opacity 180ms;
+}
+.continuous-control>.control-surface,.continuous-control>.control-layer{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);overflow:visible;pointer-events:none;z-index:-1}
+.control-face{fill:var(--control-fill);stroke:var(--control-stroke);stroke-width:1}
+.control-layer{opacity:0;transition:opacity 140ms ease-out}
+.control-layer>path{stroke-width:1}
+.control-selection>path{fill:var(--selection-surface);stroke:var(--selection-border)}
+.control-success>path{fill:var(--success-surface);stroke:var(--success-border)}
+.control-error>path{fill:var(--error-surface);stroke:var(--error-border)}
+.control-focus{fill:none;stroke:var(--selection-border);stroke-width:5;opacity:0}
+.continuous-control:focus-visible>.control-surface>.control-focus{opacity:1}
+.continuous-control:is(.selected,.is-selected,[aria-pressed=true]):not(.correct):not(.incorrect):not(.answer-correct):not(.answer-wrong)>.control-selection,.continuous-control.conveyor-category:active:not(:disabled)>.control-selection{opacity:1}
+.continuous-control:is(.correct,.answer-correct)>.control-success{opacity:1}
+.continuous-control:is(.incorrect,.answer-wrong)>.control-error{opacity:1}
+.continuous-control.primary,.continuous-control.learning22-primary{--control-fill:#c2410c;--control-stroke:#c2410c}
+.continuous-control.primary:hover,.continuous-control.learning22-primary:hover{--control-fill:#a83a0b;--control-stroke:#a83a0b}
+.continuous-control.learning22-choice,.continuous-control.learning22-quiet{--control-fill:transparent;--control-stroke:transparent}
+.continuous-control>span,.continuous-control>img{transition:translate 120ms ease-out}
+.continuous-control:active:not(:disabled)>span,.continuous-control:active:not(:disabled)>img{translate:0 1px}
+@media(prefers-reduced-motion:reduce){.control-layer,.continuous-control>span,.continuous-control>img{transition:none}.continuous-control:active:not(:disabled)>span,.continuous-control:active:not(:disabled)>img{translate:none}}
