@@ -3,7 +3,7 @@ import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {TaskContract} from '../lib/engi/study-core/contracts';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import {graduateGoalMemory} from '../lib/engi/study-core/memory';
-import {advanceAcquisition,ACQUISITION_CONFIRMATION_MS} from '../lib/engi/study-core/acquisition';
+import {advanceAcquisition,acquisitionKey,ACQUISITION_CONFIRMATION_MS} from '../lib/engi/study-core/acquisition';
 import {readLifecycle,LIFECYCLE_KEY} from './learning-lifecycle-service';
 export async function acquisitionBlocks(db:EngiDB,goalIds:string[],now:Date,selfReportAttemptId?:string){
  const ledger=await readLifecycle(db),active=new Map(ledger?.units.filter(u=>u.stage!=='completed').map(u=>[u.goal.id,u]));
@@ -24,6 +24,7 @@ export async function acquisitionBlocks(db:EngiDB,goalIds:string[],now:Date,self
 export async function applyAcquisitionEvidence(db:EngiDB,attempt:Attempt,contract:TaskContract,previous:GoalMemory[]){
  let ledger=await readLifecycle(db);if(!ledger)return {attempt,graduated:[] as GoalMemory[]};
  const now=new Date(attempt.submittedAt!),blocks=await acquisitionBlocks(db,contract.primaryGoals.map(g=>g.id),now,contract.response.kind==='self-report'?attempt.id:undefined),graduated:GoalMemory[]=[];
+ if(contract.learningRecall){const next=structuredClone(ledger),results=(attempt.results??[]).map(result=>{const goal=contract.primaryGoals.find(g=>g.id===result.goalId)!,unit=next.units.find(u=>u.key===acquisitionKey(goal)&&u.stage==='first-check');const eligible=!!unit&&!unit.rehearsedAt&&new Date(unit.availableAt)<=now&&!attempt.ineligibleGoalIds.includes(result.goalId);if(unit&&!unit.rehearsedAt){unit.rehearsedAt=now.toISOString();unit.lastAttemptAt=now.toISOString();unit.attemptIds.push(attempt.id);unit.availableAt=new Date(now.getTime()+ACQUISITION_CONFIRMATION_MS).toISOString();if(eligible&&result.correct){unit.stage='confirmation';unit.requiredSuccesses=1;unit.successes=0;}}return {...result,credit:false,contextCredit:eligible&&result.correct};});await db.appMeta.put({key:LIFECYCLE_KEY,value:next});return {attempt:{...attempt,results},graduated};}
  if(contract.contextual){const next=structuredClone(ledger),results=(attempt.results??[]).map(result=>{
   const unit=next.units.find(u=>u.goal.id===result.goalId&&u.stage==='first-check');
   const eligible=!!unit&&!contract.practice&&result.correct&&!attempt.ineligibleGoalIds.includes(result.goalId)&&!blocks.blocked.includes(result.goalId)&&!unit.attemptIds.includes(attempt.id);

@@ -8,25 +8,26 @@
       "size": 16,
       "limit": 3,
       "format": "mixed",
-      "screens": 203,
-      "credited": 173,
-      "repairs": 29,
-      "groupScreens": 10,
-      "errorsCreated": 31,
+      "screens": 201,
+      "credited": 177,
+      "repairs": 28,
+      "groupScreens": 9,
+      "errorsCreated": 26,
       "hints": 9,
-      "restarts": 27,
+      "restarts": 34,
       "uniqueKnowledge": 16,
       "formats": [
         "choice",
         "recall_reveal",
-        "match",
-        "categorize"
+        "categorize",
+        "match"
       ],
-      "adjacent": 202,
-      "repeatedObjects": 38,
-      "repeatedLearningObjects": 19,
+      "adjacent": 200,
+      "repeatedObjects": 35,
+      "repeatedLearningObjects": 18,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.188,
+      "avoidableRepeatTrace": [],
+      "repeatRate": 0.175,
       "dailyNew": [
         3,
         3,
@@ -51,7 +52,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.972
+      "retentionModel": 0.96
     },
     {
       "seed": 1,
@@ -60,23 +61,24 @@
       "size": 16,
       "limit": 7,
       "format": "choice",
-      "screens": 516,
-      "credited": 307,
-      "repairs": 189,
+      "screens": 529,
+      "credited": 302,
+      "repairs": 205,
       "groupScreens": 0,
-      "errorsCreated": 209,
-      "hints": 30,
-      "restarts": 81,
+      "errorsCreated": 230,
+      "hints": 32,
+      "restarts": 76,
       "uniqueKnowledge": 16,
       "formats": [
         "choice",
         "recall_reveal"
       ],
-      "adjacent": 515,
-      "repeatedObjects": 114,
-      "repeatedLearningObjects": 16,
+      "adjacent": 528,
+      "repeatedObjects": 124,
+      "repeatedLearningObjects": 22,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.221,
+      "avoidableRepeatTrace": [],
+      "repeatRate": 0.235,
       "dailyNew": [
         7,
         7,
@@ -101,7 +103,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.954
+      "retentionModel": 0.955
     },
     {
       "seed": 1,
@@ -126,6 +128,7 @@
       "repeatedObjects": 2,
       "repeatedLearningObjects": 1,
       "avoidableLearningRepeats": 0,
+      "avoidableRepeatTrace": [],
       "repeatRate": 0.033,
       "dailyNew": [
         3,
@@ -160,25 +163,26 @@
       "size": 16,
       "limit": 3,
       "format": "mixed",
-      "screens": 196,
-      "credited": 169,
-      "repairs": 27,
-      "groupScreens": 9,
-      "errorsCreated": 26,
-      "hints": 10,
-      "restarts": 28,
+      "screens": 169,
+      "credited": 157,
+      "repairs": 16,
+      "groupScreens": 11,
+      "errorsCreated": 17,
+      "hints": 7,
+      "restarts": 26,
       "uniqueKnowledge": 16,
       "formats": [
         "choice",
         "recall_reveal",
-        "match",
-        "categorize"
+        "categorize",
+        "match"
       ],
-      "adjacent": 195,
-      "repeatedObjects": 40,
-      "repeatedLearningObjects": 20,
+      "adjacent": 168,
+      "repeatedObjects": 24,
+      "repeatedLearningObjects": 16,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.205,
+      "avoidableRepeatTrace": [],
+      "repeatRate": 0.143,
       "dailyNew": [
         3,
         3,
@@ -203,7 +207,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.967
+      "retentionModel": 0.97
     },
     {
       "seed": 17,
@@ -228,6 +232,7 @@
       "repeatedObjects": 78,
       "repeatedLearningObjects": 19,
       "avoidableLearningRepeats": 0,
+      "avoidableRepeatTrace": [],
       "repeatRate": 0.246,
       "dailyNew": [
         7,
@@ -278,6 +283,7 @@
       "repeatedObjects": 3,
       "repeatedLearningObjects": 2,
       "avoidableLearningRepeats": 0,
+      "avoidableRepeatTrace": [],
       "repeatRate": 0.048,
       "dailyNew": [
         3,
@@ -325,6 +331,7 @@
       "repeatedObjects": 0,
       "repeatedLearningObjects": 0,
       "avoidableLearningRepeats": 0,
+      "avoidableRepeatTrace": [],
       "repeatRate": 0,
       "dailyNew": [
         0,
@@ -345,13 +352,13 @@
       "size": 64,
       "limit": 7,
       "format": "mixed",
-      "screens": 632,
-      "credited": 597,
-      "repairs": 82,
-      "groupScreens": 72,
-      "errorsCreated": 84,
-      "hints": 32,
-      "restarts": 85,
+      "screens": 600,
+      "credited": 579,
+      "repairs": 71,
+      "groupScreens": 62,
+      "errorsCreated": 77,
+      "hints": 29,
+      "restarts": 83,
       "uniqueKnowledge": 64,
       "formats": [
         "choice",
@@ -359,11 +366,12 @@
         "match",
         "categorize"
       ],
-      "adjacent": 631,
-      "repeatedObjects": 42,
-      "repeatedLearningObjects": 16,
+      "adjacent": 599,
+      "repeatedObjects": 47,
+      "repeatedLearningObjects": 21,
       "avoidableLearningRepeats": 0,
-      "repeatRate": 0.067,
+      "avoidableRepeatTrace": [],
+      "repeatRate": 0.078,
       "dailyNew": [
         7,
         7,
@@ -388,7 +396,7 @@
         0
       ],
       "remainingErrors": 0,
-      "retentionModel": 0.964
+      "retentionModel": 0.961
     }
   ]
 }

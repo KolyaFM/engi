@@ -28,8 +28,9 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  const dateAnswer=f.valueKind==='date'?(f.datePrecision==='day'?f.dateStart!.split('-').reverse().join('.'):f.datePrecision==='month'?f.dateStart!.slice(0,7).split('-').reverse().join('.'):f.datePrecision==='circa'?`Около ${year}`:f.datePrecision==='range'?`${f.dateStart} — ${f.dateEnd}`:String(year)):undefined;
  const answer=obj?.name??f.valueText??(f.valueKind==='boolean'?(f.valueBoolean?'Да':'Нет'):dateAnswer??String(f.valueNumber??year??'')+(f.unit?' '+f.unit:''));if(!answer)return [];
  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:knowledgeUnitId(b,e.id,f.id,r.direction,r.cue,f.key),answer,aliases:obj?.aliases??[],answerId:obj?.id??answer,answerEntityId:obj?.id,year,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
-})}
+}).filter(i=>!b.studyScope||r.tag!==b.studyScope.id||b.studyScope.targetIds.includes(i.targetId))}
 export function recipes(b:Bundle):Recipe[]{const ix=indexes(b);const result:Recipe[]=[];const scopes:[string|undefined,typeof b.entities][]=[[undefined,[...ix.entityById.values()]],...[...b.tags,...b.decks??[]].filter(t=>!t.archived).map(t=>[t.id,ix.entitiesByScope.get(t.id)??[]] as [string,typeof b.entities])];
+ if(b.studyScope)scopes.push([b.studyScope.id,ix.entitiesByScope.get(b.studyScope.id)??[]]);
  if(ix.entitiesByScope.has('__untagged__'))scopes.push(['__untagged__',ix.entitiesByScope.get('__untagged__')!]);
  for(const [tag,members] of scopes)for(const type of new Set(members.map(e=>e.type))){const typed=members.filter(e=>e.type===type);const image=typed.some(e=>ix.mediaByEntity.has(e.id));
  if(image){const base=recipe(tag,type,'identity','image','image_to_name','choice','Кто или что на изображении?');const pool=eligible(b,base);if(pool.length){result.push({...base,format:'recall_reveal',id:base.id.replace(/choice$/,'recall_reveal'),evidence:{...base.evidence!,selfReport:true}});if(new Set(pool.map(i=>i.answerId)).size>=3){result.push(base);if(pool.length>=3)result.push({...base,id:base.id.replace(/choice$/,'match'),format:'match',feed:{...base.feed!,presentation:'rapid_sequence'}})}}}

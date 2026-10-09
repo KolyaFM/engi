@@ -2,6 +2,7 @@ import { defineGoal, type LearningGoal } from './goals';
 export type Claim = { key: string; revision: string; revealsGoalIds: string[]; when?: 'incorrect'|'order-complete' };
 export type Binding = { responseKey: string; goalId: string; expected: string; support?:boolean };
 export type ResponseRule =
+  | {kind:'practice-view';cards:{entityId:string;claimKey:string}[]}
   | { kind: 'choice'; goalId: string; options: string[]; expected: string }
   | { kind: 'mapping'; bindings: Binding[]; options: string[]; bijective: boolean; exhaustive?:boolean }
   | { kind: 'set'; goalId: string; options: string[]; expected: string[]; complete: true }
@@ -11,6 +12,7 @@ export type ResponseRule =
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'self-report'; goalId: string };
 export type TaskContract = {
+  learningRecall?:true;
   contextual?:{kind:'order'|'boundary';threshold?:number;supportTargetIds:string[]};
   game?:boolean;
   intent?: 'learn'|'repair'|'practice';
@@ -18,7 +20,7 @@ export type TaskContract = {
   id: string;
   primaryGoals: LearningGoal[];
   supportGoalIds: string[];
-  actionFamily: 'select' | 'match' | 'categorize' | 'select-set' | 'order' | 'place-date' | 'recall';
+  actionFamily: 'select' | 'match' | 'categorize' | 'select-set' | 'order' | 'place-date' | 'recall'|'explore';
   visibleEntities: string[];
   shownClaims: Claim[];
   hintClaims: Claim[];
@@ -30,6 +32,7 @@ export type TaskContract = {
 const unique = (values: string[]) => new Set(values).size === values.length;
 const permutation = (values: string[], expected: string[]) => unique(values) && values.length === expected.length && values.every(v => expected.includes(v));
 export function validateContract(contract: TaskContract): void {
+  if(contract.learningRecall&&(contract.response.kind!=='self-report'||contract.practice))throw Error('Learning recall must be an unassisted rehearsal');
   const ids = contract.primaryGoals.map(g => g.id), rule = contract.response;
   if (!contract.id || !unique(ids) || !unique(contract.visibleEntities)) throw Error('Invalid contract identity');
   if (contract.supportGoalIds.some(id => ids.includes(id))) throw Error('Support cannot receive primary credit');
@@ -38,12 +41,13 @@ export function validateContract(contract: TaskContract): void {
     if (goal.id !== canonical.id || goal.semanticKey !== canonical.semanticKey) throw Error('Noncanonical goal identity');
     if (contract.contentRevisions[goal.semanticKey] !== goal.revision) throw Error('Missing goal revision');
   }
-  const requiredAction = { choice: 'select', 'practice-choice': 'select', set: 'select-set', order: 'order', number: 'place-date', 'practice-number': 'place-date', 'self-report': 'recall' } as const;
+  const requiredAction = { 'practice-view':'explore', choice: 'select', 'practice-choice': 'select', set: 'select-set', order: 'order', number: 'place-date', 'practice-number': 'place-date', 'self-report': 'recall' } as const;
   if (rule.kind === 'mapping') {
     if (contract.actionFamily !== (rule.bijective ? 'match' : 'categorize')) throw Error('Mapping action mismatch');
   } else if (contract.actionFamily !== requiredAction[rule.kind]) throw Error('Response action mismatch');
   let graded: string[] = [];
-  if (rule.kind === 'choice' || rule.kind === 'practice-choice') {
+  if(rule.kind==='practice-view'){if(!contract.practice||rule.cards.length<3||rule.cards.length>4||!unique(rule.cards.map(c=>c.entityId))||rule.cards.some(c=>!contract.visibleEntities.includes(c.entityId)||!contract.feedbackClaims.some(f=>f.key===c.claimKey)))throw Error('Invalid self-check');}
+  else if (rule.kind === 'choice' || rule.kind === 'practice-choice') {
     if (!unique(rule.options) || rule.options.length < 2 || !rule.options.includes(rule.expected)) throw Error('Ambiguous choice');
     if (rule.kind === 'choice') graded = [rule.goalId];
     else if (!contract.practice) throw Error('Untracked choice must be practice');
@@ -85,6 +89,7 @@ export function gradeResponse(contract: TaskContract, answer: unknown): GoalResu
     if (typeof answer !== 'string' || !rule.options.includes(answer)) throw Error('Unknown choice');
     return rule.kind === 'choice' ? [result(rule.goalId, answer === rule.expected)] : [];
   }
+  if(rule.kind==='practice-view')return [];
   if (rule.kind === 'mapping') {
     if (!answer || typeof answer !== 'object' || Array.isArray(answer)) throw Error('Submit the complete mapping');
     const values = answer as Record<string, unknown>, keys = rule.bindings.map(b => b.responseKey);

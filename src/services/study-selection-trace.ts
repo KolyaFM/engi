@@ -10,6 +10,7 @@ import {knowledgeMistakeKey} from '../lib/engi/study-core/mistakes';
 import {exposureAvailableAt,type ExposureEntry} from '../lib/engi/study-core/exposure';
 import {buildGoalCatalog} from './goal-catalog';
 import {goalProposalPool} from './goal-proposals';
+import {readGroupContext} from './group-affinity';
 import {admitStudyCandidates} from '../lib/engi/session/study-availability';
 import Dexie from 'dexie';
 
@@ -44,10 +45,12 @@ export async function traceStudySelection(db:EngiDB,b:Bundle,enabled:Memory[],se
  }
  const admitted=admitStudyCandidates(pool.proposals,p=>p.goals,plan,memories,exposures,now);
  const task=session.tasks[session.currentPosition],primary=task?.studyContract?.primaryGoals??[];
+ const affinity=task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)?await readGroupContext(db,b,session.cooldown):undefined;
  append(db,{at:new Date(now).toISOString(),kind:'selection',sessionId:session.id,taskId:task?.id,intent:task?.intent,format:task?.recipe.format,reason:task?.reason,
   objects:task?.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId)??(session.intro?[session.intro.entityId]:[]),goals:primary.map(g=>g.id),knowledge:primary.map(knowledgeMistakeKey),intro:!!session.intro,exhausted:!!session.exhausted,
   counters:{newLeft,activeLearning:plan.learningGoalIds?.length??0,activeFirstChecks:lifecycle?[...activeUnits.values()].filter(u=>u.stage==='first-check').length:admission.active,capacity:lifecycle?FIRST_CHECK_BACKLOG_LIMIT:admission.limit,newDone:plan.newGoalIds.length,newTarget:plan.newTarget,mistakes:plan.mistakes?.length??0},
   ordinaryAvailable:lifecycle?candidates.filter(c=>!c.blocks.length).length:admitted.available.length,completed:session.completedCount??0,acquisition:lifecycle?{activeObjects:new Set([...activeUnits.values()].map(u=>u.entityId)).size,firstChecks:[...activeUnits.values()].filter(u=>u.stage==='first-check').length,capacity:FIRST_CHECK_BACKLOG_LIMIT,confirmationGapMs:ACQUISITION_CONFIRMATION_MS,units:[...activeUnits.values()].map(u=>({key:u.key,stage:u.stage,successes:u.successes,availableAt:u.availableAt}))}:undefined,round:structuredClone(session.playRound),lastAutoNewAt:session.lastAutoNewAt,
+  grouping:affinity&&task?{signatures:task.items.map(i=>affinity.signature(i,task.recipe)),pairs:task.items.flatMap((item,n)=>task.items.slice(n+1).map(other=>({objects:[item.entityId,other.entityId],affinity:affinity.similarity(item,other,task.items)})))}:undefined,
   candidateCount:candidates.length,candidates:candidates.slice(0,160),truncated:candidates.length>160});
 }
 export async function traceStudyAnswer(db:EngiDB,contract:TaskContract,attempt:Attempt,before:GoalMemory[]){

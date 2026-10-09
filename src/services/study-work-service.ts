@@ -27,6 +27,9 @@ export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],sessi
   const contract=compileTaskContract(b,task),shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));
   if(contract.primaryGoals.some(g=>shown.has(g.id))){blocked.add(episode.id);candidates.splice(index,1);continue;}
   if(episode.status==='unavailable'){const current=await db.appMeta.get(MISTAKE_EPISODES_KEY),stored=current?.value.episodes.find((e:MistakeEpisode)=>e.id===episode.id);if(stored){stored.status='open';stored.unavailableReason=undefined;await db.appMeta.put({key:current!.key,value:current!.value});}}
+  // Repairs also occupy the feed. Keep presentation history across visits so
+  // the regular selector does not immediately repeat the last repaired object.
+  const selector=await db.appMeta.get('studyCore:goalSelector');if(selector?.value.version===1){const objectIds=[...new Set(task.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId))];await db.appMeta.put({key:selector.key,value:{...selector.value,recent:[...selector.value.recent,{objectIds,format:task.recipe.format}].slice(-3)}});}
   return task;
  }
  if(blocked.size)await markRepairUnavailable(db,[...blocked]);

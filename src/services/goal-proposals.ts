@@ -6,7 +6,7 @@ import {goalCandidates} from './goal-candidates';
 import {composeUnit,compositionContext,type CompositionContext} from '../lib/engi/session/composer';
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {feedSpan} from './feed-performance';
-export type GoalProposal={presentation?:'conveyor';recipe:Recipe;items:Item[];goals:LearningGoal[];group?:boolean;options?:Task['options']};
+export type GoalProposal={presentation?:'conveyor'|'flip-grid';recipe:Recipe;items:Item[];goals:LearningGoal[];group?:boolean;options?:Task['options']};
 type Pool={proposals:GoalProposal[];context:CompositionContext};
 // Bounded by two configurations/scopes. No schedule, exposure, day plan or selected task is cached.
 const cache:{key:string;pool:Pool}[]=[];

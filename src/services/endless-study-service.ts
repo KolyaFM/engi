@@ -1,4 +1,5 @@
 import type {EngiDB,SessionRow} from '../db/engi-db';
+import {readGroupContext} from './group-affinity';
 import type {Bundle,Memory,Snapshot,Task} from '../lib/engi/types';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import {newAdmission} from '../lib/engi/study-core/day-plan';
@@ -52,7 +53,7 @@ export async function pickEndlessFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Sess
   const ordered=shuffle(availableKeys).sort((a,b)=>(frequencies.get(a)??0)-(frequencies.get(b)??0));s.playRound={version:1,startedAtCount:completed,knowledgeKeys:ordered.filter(k=>k!==protectedKey).slice(0,3),protectedKey};
  }else prior.protectedKey=protectedKey;
  const round=s.playRound!,focus=new Set(round.knowledgeKeys),safe=(task:Task)=>!protectedKey||![...task.studyContract!.shownClaims,...task.studyContract!.feedbackClaims,...task.studyContract!.hintClaims].some(c=>c.revealsGoalIds.some(id=>definitions.get(id)===protectedKey));
- const proposals=[...candidates,...groupProposals(candidates,new Set(memory.keys()),3)];
+ const proposals=[...candidates,...groupProposals(b,candidates,new Set(memory.keys()),3,{context:await readGroupContext(db,b,s.cooldown)})];
  const rank=(p:GoalProposal)=>{
   const keys=p.goals.map(knowledgeMistakeKey),last=s.cooldown?.at(-1);
   return Number(!keys.some(k=>focus.has(k)))*10+Number(p.items.some(i=>last?.items.some(j=>j.entityId===i.entityId)))*5+

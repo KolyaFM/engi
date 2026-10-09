@@ -42,7 +42,7 @@ export function submitAttempt(attempt: Attempt, contract: TaskContract, answer: 
     return { ...attempt, phase: 'stale', submittedAt: now.toISOString(), results: [] };
   }
   const shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));
-  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.contextual&&contract.intent!=='repair'&&!contract.practice &&
+  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.learningRecall&&!contract.contextual&&contract.intent!=='repair'&&!contract.practice &&
     !attempt.ineligibleGoalIds.includes(r.goalId) && !automaticGoalIds.includes(r.goalId),
     ...(contract.intent==='repair'?{repairEligible:!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
   return { ...attempt, phase: 'submitted', firstAnswer: structuredClone(answer), submittedAt: now.toISOString(), results };

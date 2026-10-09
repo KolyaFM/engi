@@ -11,6 +11,8 @@ export function buildIndexes(b:Bundle){
  for(const [id,tags] of tagsByEntity){const e=entityById.get(id);if(e)for(const tag of tags)append(entitiesByTag,tag,e)}
  const entitiesByDeck=new Map<string,Entity[]>();for(const member of b.deckMembers??[]){const e=entityById.get(member.entityId);if(e&&!member.archived&&b.decks?.some(d=>d.id===member.deckId&&!d.archived))append(entitiesByDeck,member.deckId,e)}
  const entitiesByScope=new Map([...entitiesByTag,...entitiesByDeck]);if(b.decks){const memberIds=new Set([...entitiesByDeck.values()].flat().map(e=>e.id));entitiesByScope.set('__untagged__',[...entityById.values()].filter(e=>!memberIds.has(e.id)))}
+ if(b.studyScope)entitiesByScope.set(b.studyScope.id,b.studyScope.entityIds.flatMap(id=>{const e=entityById.get(id);return e?[e]:[]}));
+ if(b.studyScope)entitiesByScope.set(b.studyScope.id,b.studyScope.entityIds.flatMap(id=>{const e=entityById.get(id);return e?[e]:[]}));
  const searchByEntity=new Map<string,string>();for(const e of entityById.values())searchByEntity.set(e.id,[e.name,...e.aliases,e.type,...[...tagsByEntity.get(e.id)??[]].map(id=>tagById.get(id)?.name??''),...(factsByEntity.get(e.id)??[]).map(f=>entityById.get(f.valueEntityId??'')?.name??f.valueText??f.valueNumber??'')].join(' ').toLowerCase().replace(/ё/g,'е'));
  return {entityById,factsByEntity,factsByEntityAndKey,factsByProperty,incomingFactsByTarget,mediaByEntity,tagsByEntity,entitiesByTag,entitiesByDeck,entitiesByScope,entitiesByType,propertyById:new Map(properties(b).map(p=>[p.id,p])),searchByEntity};
 }

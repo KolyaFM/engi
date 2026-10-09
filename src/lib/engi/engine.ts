@@ -23,6 +23,7 @@ export function preflight(t:Task){
 }
 export function assess(t:Task,answer:any){
  const fmt=t.recipe.format,evidence:{item:Item;correct:boolean;chosen?:string;level:string}[]=[];
+ if(fmt==='self_check')return {score:0,evidence:[],expected:[]};
  if(fmt==='multi_choice'){if(!Array.isArray(answer)||new Set(answer).size!==answer.length||answer.some(id=>typeof id!=='string'||!t.options.some(o=>o.id===id)))throw Error('Выберите варианты из списка');const selected=new Set(answer),extra=answer.some(id=>!t.answerSet!.includes(id));for(const item of t.items)evidence.push({item,correct:selected.has(item.answerId)&&!extra,chosen:extra?answer.find(id=>!t.answerSet!.includes(id)):undefined,level:'direct'});const right=t.answerSet!.filter(id=>selected.has(id)).length,score=extra?0:right/t.answerSet!.length;return {score,evidence,expected:t.answerSet};}
  if(fmt==='timeline'){
   if(!answer||typeof answer!=='object')throw Error('Укажите годы');

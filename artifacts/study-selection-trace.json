@@ -20,7 +20,7 @@
         {
           "at": "2026-10-08T07:00:00.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s0"
           ],
@@ -49,7 +49,7 @@
         {
           "at": "2026-10-08T07:00:02.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s1"
           ],
@@ -79,7 +79,7 @@
         {
           "at": "2026-10-08T07:00:04.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s10"
           ],
@@ -109,7 +109,7 @@
         {
           "at": "2026-10-08T07:00:06.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s11"
           ],
@@ -139,7 +139,7 @@
         {
           "at": "2026-10-08T07:00:08.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s12"
           ],
@@ -169,8 +169,8 @@
         {
           "at": "2026-10-08T07:00:10.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "ebc20b29-4788-4779-b24a-4f878595bced",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "36b49a65-8601-4ae7-b33c-5cfdd4b064b3",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -227,7 +227,7 @@
         {
           "at": "2026-10-08T07:00:12.000Z",
           "kind": "answer",
-          "taskId": "ebc20b29-4788-4779-b24a-4f878595bced",
+          "taskId": "36b49a65-8601-4ae7-b33c-5cfdd4b064b3",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -244,8 +244,8 @@
         {
           "at": "2026-10-08T07:00:18.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "2cfb3f84-a4d1-4883-b301-fcb379931b4a",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "0f5dea16-2095-4e32-8475-77e77126a02c",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -300,7 +300,7 @@
         {
           "at": "2026-10-08T07:00:20.000Z",
           "kind": "answer",
-          "taskId": "2cfb3f84-a4d1-4883-b301-fcb379931b4a",
+          "taskId": "0f5dea16-2095-4e32-8475-77e77126a02c",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -325,8 +325,8 @@
         {
           "at": "2026-10-08T07:00:26.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "4087429e-836c-46be-9e77-d2a7258dd8e7",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f336b10e-7dea-4112-956f-c948843836a7",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -382,7 +382,7 @@
         {
           "at": "2026-10-08T07:00:28.000Z",
           "kind": "answer",
-          "taskId": "4087429e-836c-46be-9e77-d2a7258dd8e7",
+          "taskId": "f336b10e-7dea-4112-956f-c948843836a7",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -407,8 +407,8 @@
         {
           "at": "2026-10-08T07:00:34.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "9e60f7db-6f69-4b33-a4a0-1b9dd23b99ab",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f9d1de6c-ab19-4b33-92c2-e34828191e0c",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -464,7 +464,7 @@
         {
           "at": "2026-10-08T07:00:36.000Z",
           "kind": "answer",
-          "taskId": "9e60f7db-6f69-4b33-a4a0-1b9dd23b99ab",
+          "taskId": "f9d1de6c-ab19-4b33-92c2-e34828191e0c",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -489,8 +489,8 @@
         {
           "at": "2026-10-08T07:00:42.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "76f12eb2-1813-42be-ba65-978f50a0db6b",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f15095c7-ddb9-4d53-95e2-45fc7f271117",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -546,7 +546,7 @@
         {
           "at": "2026-10-08T07:00:44.000Z",
           "kind": "answer",
-          "taskId": "76f12eb2-1813-42be-ba65-978f50a0db6b",
+          "taskId": "f15095c7-ddb9-4d53-95e2-45fc7f271117",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -571,8 +571,8 @@
         {
           "at": "2026-10-08T07:00:50.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "ce1b1d6d-c06a-4560-8129-24a17b95eb31",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "e38b50ee-dbdd-4300-82de-7371f4272341",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -632,7 +632,7 @@
         {
           "at": "2026-10-08T07:00:52.000Z",
           "kind": "answer",
-          "taskId": "ce1b1d6d-c06a-4560-8129-24a17b95eb31",
+          "taskId": "e38b50ee-dbdd-4300-82de-7371f4272341",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -657,8 +657,8 @@
         {
           "at": "2026-10-08T07:00:58.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "941187ae-daaf-4f3f-bc64-9195c375de4c",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "a2da4f01-35e9-49a9-90d0-9baa96a5348c",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -718,7 +718,7 @@
         {
           "at": "2026-10-08T07:01:00.000Z",
           "kind": "answer",
-          "taskId": "941187ae-daaf-4f3f-bc64-9195c375de4c",
+          "taskId": "a2da4f01-35e9-49a9-90d0-9baa96a5348c",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -743,8 +743,8 @@
         {
           "at": "2026-10-08T07:01:06.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "8df73722-a75b-4432-b901-cf764da15bd9",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f86aaf24-df1e-42d2-a883-6cdaaf5e2d5a",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -804,7 +804,7 @@
         {
           "at": "2026-10-08T07:01:08.000Z",
           "kind": "answer",
-          "taskId": "8df73722-a75b-4432-b901-cf764da15bd9",
+          "taskId": "f86aaf24-df1e-42d2-a883-6cdaaf5e2d5a",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -829,8 +829,8 @@
         {
           "at": "2026-10-08T07:01:14.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "e08c8ee5-a2f6-47ef-8945-1192184d3ac3",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "2fe82a5d-54db-45ae-a74c-0a02eed5aa3a",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -886,7 +886,7 @@
         {
           "at": "2026-10-08T07:01:16.000Z",
           "kind": "answer",
-          "taskId": "e08c8ee5-a2f6-47ef-8945-1192184d3ac3",
+          "taskId": "2fe82a5d-54db-45ae-a74c-0a02eed5aa3a",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -911,7 +911,7 @@
         {
           "at": "2026-10-08T07:01:22.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s13"
           ],
@@ -953,8 +953,8 @@
         {
           "at": "2026-10-08T07:01:24.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "49875586-3dc4-4366-9d38-bcd3a4fd9eb7",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "b2c97646-8a8c-48f1-adf0-efe80ddbdde3",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1015,7 +1015,7 @@
         {
           "at": "2026-10-08T07:01:26.000Z",
           "kind": "answer",
-          "taskId": "49875586-3dc4-4366-9d38-bcd3a4fd9eb7",
+          "taskId": "b2c97646-8a8c-48f1-adf0-efe80ddbdde3",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1040,8 +1040,8 @@
         {
           "at": "2026-10-08T07:01:32.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "4715f25c-425c-4b10-bff3-7a632b6d7bc1",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "68084418-ff8b-4393-86a6-f10fbc867749",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1102,7 +1102,7 @@
         {
           "at": "2026-10-08T07:01:34.000Z",
           "kind": "answer",
-          "taskId": "4715f25c-425c-4b10-bff3-7a632b6d7bc1",
+          "taskId": "68084418-ff8b-4393-86a6-f10fbc867749",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1127,8 +1127,8 @@
         {
           "at": "2026-10-08T07:01:40.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "2195668b-cf33-4e58-95e9-1c8d75604707",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "a8a72c00-0489-4f30-b4d5-31953f0f0243",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -1185,7 +1185,7 @@
         {
           "at": "2026-10-08T07:01:42.000Z",
           "kind": "answer",
-          "taskId": "2195668b-cf33-4e58-95e9-1c8d75604707",
+          "taskId": "a8a72c00-0489-4f30-b4d5-31953f0f0243",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1210,7 +1210,7 @@
         {
           "at": "2026-10-08T07:01:48.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s14"
           ],
@@ -1252,8 +1252,8 @@
         {
           "at": "2026-10-08T07:01:50.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "9cc6bb60-1e71-4073-8268-820ae83ddeb6",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "82647f1f-e849-4ac1-a999-226ec6840c3f",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1314,7 +1314,7 @@
         {
           "at": "2026-10-08T07:01:52.000Z",
           "kind": "answer",
-          "taskId": "9cc6bb60-1e71-4073-8268-820ae83ddeb6",
+          "taskId": "82647f1f-e849-4ac1-a999-226ec6840c3f",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1339,8 +1339,8 @@
         {
           "at": "2026-10-08T07:01:58.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "a63988ab-582f-4212-b414-58c4305954e8",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "91be5fd7-eb27-4ebd-9780-3ef6c293109b",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1400,7 +1400,7 @@
         {
           "at": "2026-10-08T07:02:00.000Z",
           "kind": "answer",
-          "taskId": "a63988ab-582f-4212-b414-58c4305954e8",
+          "taskId": "91be5fd7-eb27-4ebd-9780-3ef6c293109b",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1425,8 +1425,8 @@
         {
           "at": "2026-10-08T07:02:06.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "592620d5-91da-4d35-8efd-33def653c7ba",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "164ead13-60b2-40f6-8bab-dd51f8ef309c",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -1483,7 +1483,7 @@
         {
           "at": "2026-10-08T07:02:08.000Z",
           "kind": "answer",
-          "taskId": "592620d5-91da-4d35-8efd-33def653c7ba",
+          "taskId": "164ead13-60b2-40f6-8bab-dd51f8ef309c",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1508,7 +1508,7 @@
         {
           "at": "2026-10-08T07:02:14.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s15"
           ],
@@ -1550,8 +1550,8 @@
         {
           "at": "2026-10-08T07:02:16.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "c0aaf613-d420-4f71-a898-b960baca72f1",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "1d72ba0a-84d1-470b-8cbc-856d974c84ee",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1612,7 +1612,7 @@
         {
           "at": "2026-10-08T07:02:18.000Z",
           "kind": "answer",
-          "taskId": "c0aaf613-d420-4f71-a898-b960baca72f1",
+          "taskId": "1d72ba0a-84d1-470b-8cbc-856d974c84ee",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1637,8 +1637,8 @@
         {
           "at": "2026-10-08T07:02:24.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "821538d5-c78d-47aa-b3f9-f98e6cdcff49",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "6d1d1303-3155-4b89-9906-4f1751ac7fe5",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1699,7 +1699,7 @@
         {
           "at": "2026-10-08T07:02:26.000Z",
           "kind": "answer",
-          "taskId": "821538d5-c78d-47aa-b3f9-f98e6cdcff49",
+          "taskId": "6d1d1303-3155-4b89-9906-4f1751ac7fe5",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1724,8 +1724,8 @@
         {
           "at": "2026-10-08T07:02:32.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "92c0b26b-229e-4c56-b5ec-ce04bc566034",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "02b2fc85-b1d8-4d0d-85c2-8e55891a2f2f",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -1782,7 +1782,7 @@
         {
           "at": "2026-10-08T07:02:34.000Z",
           "kind": "answer",
-          "taskId": "92c0b26b-229e-4c56-b5ec-ce04bc566034",
+          "taskId": "02b2fc85-b1d8-4d0d-85c2-8e55891a2f2f",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1807,7 +1807,7 @@
         {
           "at": "2026-10-08T07:02:40.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s16"
           ],
@@ -1849,8 +1849,8 @@
         {
           "at": "2026-10-08T07:02:42.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "25963033-ed0c-41af-b0be-eb4d76f9ad5b",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "d945ccd9-226e-4231-890d-4a25b8906b85",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1910,7 +1910,7 @@
         {
           "at": "2026-10-08T07:02:44.000Z",
           "kind": "answer",
-          "taskId": "25963033-ed0c-41af-b0be-eb4d76f9ad5b",
+          "taskId": "d945ccd9-226e-4231-890d-4a25b8906b85",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -1935,8 +1935,8 @@
         {
           "at": "2026-10-08T07:02:50.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "7877c9a4-224a-4a37-92d1-3f81ef3384cd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f0c14f69-910b-4498-80db-1b6221f093d5",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -1996,7 +1996,7 @@
         {
           "at": "2026-10-08T07:02:52.000Z",
           "kind": "answer",
-          "taskId": "7877c9a4-224a-4a37-92d1-3f81ef3384cd",
+          "taskId": "f0c14f69-910b-4498-80db-1b6221f093d5",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2021,8 +2021,8 @@
         {
           "at": "2026-10-08T07:02:58.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "bcd44916-e931-4f32-b0f4-2f0172cda49c",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "4669aba8-ff43-454b-bb71-5d30edc6f388",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -2079,7 +2079,7 @@
         {
           "at": "2026-10-08T07:03:00.000Z",
           "kind": "answer",
-          "taskId": "bcd44916-e931-4f32-b0f4-2f0172cda49c",
+          "taskId": "4669aba8-ff43-454b-bb71-5d30edc6f388",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2104,7 +2104,7 @@
         {
           "at": "2026-10-08T07:03:06.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s17"
           ],
@@ -2146,8 +2146,8 @@
         {
           "at": "2026-10-08T07:03:08.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "b5d735af-e5f8-4761-b120-55b57b55a20b",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "01df498d-e63f-4ca3-bcda-1b60ecd1f61f",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2207,7 +2207,7 @@
         {
           "at": "2026-10-08T07:03:10.000Z",
           "kind": "answer",
-          "taskId": "b5d735af-e5f8-4761-b120-55b57b55a20b",
+          "taskId": "01df498d-e63f-4ca3-bcda-1b60ecd1f61f",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2232,8 +2232,8 @@
         {
           "at": "2026-10-08T07:03:16.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "b86c76ca-2016-4042-9fd8-42af5ae84ed9",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "57459798-3395-4fbf-ae19-8a38aff4f86b",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2294,7 +2294,7 @@
         {
           "at": "2026-10-08T07:03:18.000Z",
           "kind": "answer",
-          "taskId": "b86c76ca-2016-4042-9fd8-42af5ae84ed9",
+          "taskId": "57459798-3395-4fbf-ae19-8a38aff4f86b",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2319,8 +2319,8 @@
         {
           "at": "2026-10-08T07:03:24.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "028bc147-8aed-4569-a5d9-ff66fa8c0be6",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "11e85325-91c1-4de0-88ae-e9f714dc79f8",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -2377,7 +2377,7 @@
         {
           "at": "2026-10-08T07:03:26.000Z",
           "kind": "answer",
-          "taskId": "028bc147-8aed-4569-a5d9-ff66fa8c0be6",
+          "taskId": "11e85325-91c1-4de0-88ae-e9f714dc79f8",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f17\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s17\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2402,7 +2402,7 @@
         {
           "at": "2026-10-08T07:03:32.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s18"
           ],
@@ -2444,8 +2444,8 @@
         {
           "at": "2026-10-08T07:03:34.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "027c97a1-c898-4833-9828-bf78b05b4810",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "5ddd14ae-d663-4146-92ee-7543b7994370",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2505,7 +2505,7 @@
         {
           "at": "2026-10-08T07:03:36.000Z",
           "kind": "answer",
-          "taskId": "027c97a1-c898-4833-9828-bf78b05b4810",
+          "taskId": "5ddd14ae-d663-4146-92ee-7543b7994370",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2530,8 +2530,8 @@
         {
           "at": "2026-10-08T07:03:42.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "3117f8d0-bbb3-4f98-88b0-d94a5ff93f00",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "0aad0579-76f0-4840-9984-2ec244e8b1c4",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2591,7 +2591,7 @@
         {
           "at": "2026-10-08T07:03:44.000Z",
           "kind": "answer",
-          "taskId": "3117f8d0-bbb3-4f98-88b0-d94a5ff93f00",
+          "taskId": "0aad0579-76f0-4840-9984-2ec244e8b1c4",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2616,8 +2616,8 @@
         {
           "at": "2026-10-08T07:03:50.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "3fe10a90-9c1e-44c8-8c84-3b53f5e01c9c",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "98dd7ffe-00cd-4c1c-a080-b93968cc4fca",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -2674,7 +2674,7 @@
         {
           "at": "2026-10-08T07:03:52.000Z",
           "kind": "answer",
-          "taskId": "3fe10a90-9c1e-44c8-8c84-3b53f5e01c9c",
+          "taskId": "98dd7ffe-00cd-4c1c-a080-b93968cc4fca",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f18\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s18\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2699,7 +2699,7 @@
         {
           "at": "2026-10-08T07:03:58.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s19"
           ],
@@ -2741,8 +2741,8 @@
         {
           "at": "2026-10-08T07:04:00.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "95fe802c-d4d0-47bf-9e18-13fd8608a215",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "0d7ac5fa-3cd6-471d-b196-00451cc6deb5",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2802,7 +2802,7 @@
         {
           "at": "2026-10-08T07:04:02.000Z",
           "kind": "answer",
-          "taskId": "95fe802c-d4d0-47bf-9e18-13fd8608a215",
+          "taskId": "0d7ac5fa-3cd6-471d-b196-00451cc6deb5",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2827,8 +2827,8 @@
         {
           "at": "2026-10-08T07:04:08.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "7d373fcf-4475-446b-8875-b87baaa3825d",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "b2b76628-06b6-40e4-b21f-e70a0ad4e384",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -2889,7 +2889,7 @@
         {
           "at": "2026-10-08T07:04:10.000Z",
           "kind": "answer",
-          "taskId": "7d373fcf-4475-446b-8875-b87baaa3825d",
+          "taskId": "b2b76628-06b6-40e4-b21f-e70a0ad4e384",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2914,8 +2914,8 @@
         {
           "at": "2026-10-08T07:04:16.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "64115e45-c4b0-4f78-855b-e41cbb3080a4",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "d8f738de-068c-423c-9ec0-d1b9387308c8",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -2972,7 +2972,7 @@
         {
           "at": "2026-10-08T07:04:18.000Z",
           "kind": "answer",
-          "taskId": "64115e45-c4b0-4f78-855b-e41cbb3080a4",
+          "taskId": "d8f738de-068c-423c-9ec0-d1b9387308c8",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f19\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s19\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -2997,7 +2997,7 @@
         {
           "at": "2026-10-08T07:04:24.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s2"
           ],
@@ -3039,8 +3039,8 @@
         {
           "at": "2026-10-08T07:04:26.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "d7890024-589d-4d10-ac4e-a0db12289dc0",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "26b0847e-a869-45d8-b040-827282360a45",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3100,7 +3100,7 @@
         {
           "at": "2026-10-08T07:04:28.000Z",
           "kind": "answer",
-          "taskId": "d7890024-589d-4d10-ac4e-a0db12289dc0",
+          "taskId": "26b0847e-a869-45d8-b040-827282360a45",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3125,8 +3125,8 @@
         {
           "at": "2026-10-08T07:04:34.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "610f38f9-6af7-4fa1-8c6e-afc251fcb36e",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "8dbda1e4-a11f-43d0-a64f-ea438f75013b",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3186,7 +3186,7 @@
         {
           "at": "2026-10-08T07:04:36.000Z",
           "kind": "answer",
-          "taskId": "610f38f9-6af7-4fa1-8c6e-afc251fcb36e",
+          "taskId": "8dbda1e4-a11f-43d0-a64f-ea438f75013b",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3211,8 +3211,8 @@
         {
           "at": "2026-10-08T07:04:42.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "babd2858-f259-4af0-9005-732b9e4d7507",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "0ba74958-c159-454f-9d65-0dd6c949c4db",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -3269,7 +3269,7 @@
         {
           "at": "2026-10-08T07:04:44.000Z",
           "kind": "answer",
-          "taskId": "babd2858-f259-4af0-9005-732b9e4d7507",
+          "taskId": "0ba74958-c159-454f-9d65-0dd6c949c4db",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f2\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s2\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3294,7 +3294,7 @@
         {
           "at": "2026-10-08T07:04:50.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s20"
           ],
@@ -3336,8 +3336,8 @@
         {
           "at": "2026-10-08T07:04:52.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "4b0f0e74-d4ae-4bf2-bae5-75ebebb5a3d9",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f142367d-8724-4c46-a03c-3475da8a1a71",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3397,7 +3397,7 @@
         {
           "at": "2026-10-08T07:04:54.000Z",
           "kind": "answer",
-          "taskId": "4b0f0e74-d4ae-4bf2-bae5-75ebebb5a3d9",
+          "taskId": "f142367d-8724-4c46-a03c-3475da8a1a71",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3422,8 +3422,8 @@
         {
           "at": "2026-10-08T07:05:00.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "634fae0a-485a-4a45-9425-e9eb2a7c3cfe",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "b4949352-9327-4627-bc82-3a247d99d3ac",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3484,7 +3484,7 @@
         {
           "at": "2026-10-08T07:05:02.000Z",
           "kind": "answer",
-          "taskId": "634fae0a-485a-4a45-9425-e9eb2a7c3cfe",
+          "taskId": "b4949352-9327-4627-bc82-3a247d99d3ac",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3509,8 +3509,8 @@
         {
           "at": "2026-10-08T07:05:08.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "7a5e705e-75a3-4492-b46e-e2ee72a66172",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "1d9a773f-cb74-4f01-88d7-da29db884317",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -3567,7 +3567,7 @@
         {
           "at": "2026-10-08T07:05:10.000Z",
           "kind": "answer",
-          "taskId": "7a5e705e-75a3-4492-b46e-e2ee72a66172",
+          "taskId": "1d9a773f-cb74-4f01-88d7-da29db884317",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f20\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s20\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3592,7 +3592,7 @@
         {
           "at": "2026-10-08T07:05:16.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s21"
           ],
@@ -3634,8 +3634,8 @@
         {
           "at": "2026-10-08T07:05:18.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "b1ce44f1-edf5-4a32-b9ed-070c4f33f5b8",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "8cc2467b-d8c5-4b58-90f5-1d0aafba1af2",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3695,7 +3695,7 @@
         {
           "at": "2026-10-08T07:05:20.000Z",
           "kind": "answer",
-          "taskId": "b1ce44f1-edf5-4a32-b9ed-070c4f33f5b8",
+          "taskId": "8cc2467b-d8c5-4b58-90f5-1d0aafba1af2",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3720,8 +3720,8 @@
         {
           "at": "2026-10-08T07:05:26.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "5619153a-f7d7-4e71-be32-1af14beac237",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "20643eb9-5f55-4ab7-a948-0685a50121b4",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3781,7 +3781,7 @@
         {
           "at": "2026-10-08T07:05:28.000Z",
           "kind": "answer",
-          "taskId": "5619153a-f7d7-4e71-be32-1af14beac237",
+          "taskId": "20643eb9-5f55-4ab7-a948-0685a50121b4",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3806,8 +3806,8 @@
         {
           "at": "2026-10-08T07:05:34.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "5b24d6a6-d441-4ea4-885e-fc5509db5e0c",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "d511397a-d547-4557-bb02-daa14763ad3d",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -3864,7 +3864,7 @@
         {
           "at": "2026-10-08T07:05:36.000Z",
           "kind": "answer",
-          "taskId": "5b24d6a6-d441-4ea4-885e-fc5509db5e0c",
+          "taskId": "d511397a-d547-4557-bb02-daa14763ad3d",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f21\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s21\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -3889,7 +3889,7 @@
         {
           "at": "2026-10-08T07:05:42.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s22"
           ],
@@ -3931,8 +3931,8 @@
         {
           "at": "2026-10-08T07:05:44.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "cc770021-9283-4412-99b8-4e24ba7ed7ee",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "612f91ba-5955-4ddc-ac24-e14a26058e20",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -3992,7 +3992,7 @@
         {
           "at": "2026-10-08T07:05:46.000Z",
           "kind": "answer",
-          "taskId": "cc770021-9283-4412-99b8-4e24ba7ed7ee",
+          "taskId": "612f91ba-5955-4ddc-ac24-e14a26058e20",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f17\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s17\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4017,8 +4017,8 @@
         {
           "at": "2026-10-08T07:05:52.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "1d9a222b-2af4-47d4-bd40-2b182a2a8341",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "4454ce5c-f0d8-4821-aa8c-772680711160",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4079,7 +4079,7 @@
         {
           "at": "2026-10-08T07:05:54.000Z",
           "kind": "answer",
-          "taskId": "1d9a222b-2af4-47d4-bd40-2b182a2a8341",
+          "taskId": "4454ce5c-f0d8-4821-aa8c-772680711160",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4104,8 +4104,8 @@
         {
           "at": "2026-10-08T07:06:00.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "604b4934-8b26-418f-b1dd-ae7317834264",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "49171b97-5332-4857-8b9f-67b6d1dc1bd3",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -4162,7 +4162,7 @@
         {
           "at": "2026-10-08T07:06:02.000Z",
           "kind": "answer",
-          "taskId": "604b4934-8b26-418f-b1dd-ae7317834264",
+          "taskId": "49171b97-5332-4857-8b9f-67b6d1dc1bd3",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f22\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s22\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4187,7 +4187,7 @@
         {
           "at": "2026-10-08T07:06:08.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s23"
           ],
@@ -4229,8 +4229,8 @@
         {
           "at": "2026-10-08T07:06:10.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "215c8fd8-3399-45c9-9036-fe4d791c98e6",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "a98d61cf-68e1-4189-8f16-de45cac779de",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4290,7 +4290,7 @@
         {
           "at": "2026-10-08T07:06:12.000Z",
           "kind": "answer",
-          "taskId": "215c8fd8-3399-45c9-9036-fe4d791c98e6",
+          "taskId": "a98d61cf-68e1-4189-8f16-de45cac779de",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4315,8 +4315,8 @@
         {
           "at": "2026-10-08T07:06:18.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "c4856a3e-3263-44b7-89d3-963f84d2d921",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "8994a6d6-0929-4734-be90-7840832ca8fd",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4376,7 +4376,7 @@
         {
           "at": "2026-10-08T07:06:20.000Z",
           "kind": "answer",
-          "taskId": "c4856a3e-3263-44b7-89d3-963f84d2d921",
+          "taskId": "8994a6d6-0929-4734-be90-7840832ca8fd",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f18\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s18\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4401,8 +4401,8 @@
         {
           "at": "2026-10-08T07:06:26.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "e4d47166-9896-4fe7-aafb-53bdd10d2a41",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "80cfea38-d660-49a4-b771-b22c65052944",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -4459,7 +4459,7 @@
         {
           "at": "2026-10-08T07:06:28.000Z",
           "kind": "answer",
-          "taskId": "e4d47166-9896-4fe7-aafb-53bdd10d2a41",
+          "taskId": "80cfea38-d660-49a4-b771-b22c65052944",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f23\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s23\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4484,7 +4484,7 @@
         {
           "at": "2026-10-08T07:06:34.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s24"
           ],
@@ -4526,8 +4526,8 @@
         {
           "at": "2026-10-08T07:06:36.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "d982cdd3-c5a5-4cde-8ad7-b64da1f13661",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "27265d07-3ec3-4642-8621-fb6f84f5234e",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4587,7 +4587,7 @@
         {
           "at": "2026-10-08T07:06:38.000Z",
           "kind": "answer",
-          "taskId": "d982cdd3-c5a5-4cde-8ad7-b64da1f13661",
+          "taskId": "27265d07-3ec3-4642-8621-fb6f84f5234e",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f2\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s2\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4612,8 +4612,8 @@
         {
           "at": "2026-10-08T07:06:44.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "3a7ff24c-cff5-4f02-89ac-f58695ec5bc0",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "bf61665b-2c5e-4ffc-aa21-e0500ee0786a",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4674,7 +4674,7 @@
         {
           "at": "2026-10-08T07:06:46.000Z",
           "kind": "answer",
-          "taskId": "3a7ff24c-cff5-4f02-89ac-f58695ec5bc0",
+          "taskId": "bf61665b-2c5e-4ffc-aa21-e0500ee0786a",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4699,8 +4699,8 @@
         {
           "at": "2026-10-08T07:06:52.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "93323185-3487-413e-8aa3-4255cd7d7905",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "3c38deeb-63af-4d24-80e2-45e3dedf9209",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -4757,7 +4757,7 @@
         {
           "at": "2026-10-08T07:06:54.000Z",
           "kind": "answer",
-          "taskId": "93323185-3487-413e-8aa3-4255cd7d7905",
+          "taskId": "3c38deeb-63af-4d24-80e2-45e3dedf9209",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f24\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s24\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4782,7 +4782,7 @@
         {
           "at": "2026-10-08T07:07:00.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s25"
           ],
@@ -4824,8 +4824,8 @@
         {
           "at": "2026-10-08T07:07:02.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "aa94ce67-f41e-43b0-a344-4d839e96c199",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "2d575d5b-edb0-4f90-8612-8dee7e25887c",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4885,7 +4885,7 @@
         {
           "at": "2026-10-08T07:07:04.000Z",
           "kind": "answer",
-          "taskId": "aa94ce67-f41e-43b0-a344-4d839e96c199",
+          "taskId": "2d575d5b-edb0-4f90-8612-8dee7e25887c",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4910,8 +4910,8 @@
         {
           "at": "2026-10-08T07:07:10.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "6288bd27-2f33-4930-a14d-02948272314e",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "6622950f-a95e-4573-8dd2-cd5090b10287",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -4971,7 +4971,7 @@
         {
           "at": "2026-10-08T07:07:12.000Z",
           "kind": "answer",
-          "taskId": "6288bd27-2f33-4930-a14d-02948272314e",
+          "taskId": "6622950f-a95e-4573-8dd2-cd5090b10287",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f20\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s20\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -4996,8 +4996,8 @@
         {
           "at": "2026-10-08T07:07:18.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "13d0cd4b-8bf9-4ee5-bd49-e47e4e7839e3",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "549b43ea-e2c5-4023-9a60-fc2b637d816d",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -5054,7 +5054,7 @@
         {
           "at": "2026-10-08T07:07:20.000Z",
           "kind": "answer",
-          "taskId": "13d0cd4b-8bf9-4ee5-bd49-e47e4e7839e3",
+          "taskId": "549b43ea-e2c5-4023-9a60-fc2b637d816d",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f25\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s25\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5079,7 +5079,7 @@
         {
           "at": "2026-10-08T07:07:26.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s26"
           ],
@@ -5121,8 +5121,8 @@
         {
           "at": "2026-10-08T07:07:28.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "3c346ae7-a882-41a6-ac67-4ea8d2b3ebd0",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "a819c75c-9de3-45cd-9d0b-4f8d5c9d8e97",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5182,7 +5182,7 @@
         {
           "at": "2026-10-08T07:07:30.000Z",
           "kind": "answer",
-          "taskId": "3c346ae7-a882-41a6-ac67-4ea8d2b3ebd0",
+          "taskId": "a819c75c-9de3-45cd-9d0b-4f8d5c9d8e97",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f21\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s21\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5207,8 +5207,8 @@
         {
           "at": "2026-10-08T07:07:36.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "63c89d59-077a-451e-a47f-b817b475757c",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "0587a035-8b27-47fd-a0f9-fc87736542bf",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5269,7 +5269,7 @@
         {
           "at": "2026-10-08T07:07:38.000Z",
           "kind": "answer",
-          "taskId": "63c89d59-077a-451e-a47f-b817b475757c",
+          "taskId": "0587a035-8b27-47fd-a0f9-fc87736542bf",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5294,8 +5294,8 @@
         {
           "at": "2026-10-08T07:07:44.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "a456b8f9-6780-4952-b762-876348fa5c63",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "8676fa47-882f-40ed-91e1-ac080e742bf0",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -5352,7 +5352,7 @@
         {
           "at": "2026-10-08T07:07:46.000Z",
           "kind": "answer",
-          "taskId": "a456b8f9-6780-4952-b762-876348fa5c63",
+          "taskId": "8676fa47-882f-40ed-91e1-ac080e742bf0",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f26\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s26\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5377,7 +5377,7 @@
         {
           "at": "2026-10-08T07:07:52.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s27"
           ],
@@ -5419,8 +5419,8 @@
         {
           "at": "2026-10-08T07:07:54.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "721b8b2e-c029-4fec-9f03-528e48b91622",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "37971a89-60c6-4aa2-b312-9e3923d77c66",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5480,7 +5480,7 @@
         {
           "at": "2026-10-08T07:07:56.000Z",
           "kind": "answer",
-          "taskId": "721b8b2e-c029-4fec-9f03-528e48b91622",
+          "taskId": "37971a89-60c6-4aa2-b312-9e3923d77c66",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5505,8 +5505,8 @@
         {
           "at": "2026-10-08T07:08:02.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "c294f1c4-54f3-4874-9724-7f5693a60654",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "a188a193-bf9c-4066-94cc-90da5e5308f9",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5566,7 +5566,7 @@
         {
           "at": "2026-10-08T07:08:04.000Z",
           "kind": "answer",
-          "taskId": "c294f1c4-54f3-4874-9724-7f5693a60654",
+          "taskId": "a188a193-bf9c-4066-94cc-90da5e5308f9",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5591,8 +5591,8 @@
         {
           "at": "2026-10-08T07:08:10.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "599746a3-243e-41c5-9dc7-54ec110cf565",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "f56932bd-43bf-4b25-9a0f-a540f8ccbcfb",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -5649,7 +5649,7 @@
         {
           "at": "2026-10-08T07:08:12.000Z",
           "kind": "answer",
-          "taskId": "599746a3-243e-41c5-9dc7-54ec110cf565",
+          "taskId": "f56932bd-43bf-4b25-9a0f-a540f8ccbcfb",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f27\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s27\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5674,7 +5674,7 @@
         {
           "at": "2026-10-08T07:08:18.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
           "objects": [
             "s28"
           ],
@@ -5716,8 +5716,8 @@
         {
           "at": "2026-10-08T07:08:20.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "064628e8-bc78-458e-9cf9-b7a3428252d7",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "d7da650f-f262-4edf-adcf-355df7bb879a",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5777,7 +5777,7 @@
         {
           "at": "2026-10-08T07:08:22.000Z",
           "kind": "answer",
-          "taskId": "064628e8-bc78-458e-9cf9-b7a3428252d7",
+          "taskId": "d7da650f-f262-4edf-adcf-355df7bb879a",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f22\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s22\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -5802,8 +5802,8 @@
         {
           "at": "2026-10-08T07:08:28.000Z",
           "kind": "selection",
-          "sessionId": "564c6d35-f344-4a6b-9492-06fa426b4ccd",
-          "taskId": "61ab86af-ba8f-42cf-ae7f-e0d3b9b060b1",
+          "sessionId": "cdf9f98e-e45f-470f-9ce6-81666cbef716",
+          "taskId": "1caffba5-4ab5-43f9-b313-6b8dfd3abe24",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -5882,7 +5882,7 @@
         {
           "at": "2026-10-08T07:00:00.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s0"
           ],
@@ -5911,7 +5911,7 @@
         {
           "at": "2026-10-08T07:00:02.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s1"
           ],
@@ -5941,7 +5941,7 @@
         {
           "at": "2026-10-08T07:00:04.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s10"
           ],
@@ -5971,7 +5971,7 @@
         {
           "at": "2026-10-08T07:00:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s11"
           ],
@@ -6001,7 +6001,7 @@
         {
           "at": "2026-10-08T07:00:08.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s12"
           ],
@@ -6031,7 +6031,7 @@
         {
           "at": "2026-10-08T07:00:10.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s13"
           ],
@@ -6061,8 +6061,8 @@
         {
           "at": "2026-10-08T07:00:12.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "3e991b8f-b2ab-4ecd-aeba-6bfb7f1e1e30",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "2f969904-0cfc-49de-9098-e3e889782d62",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6107,7 +6107,7 @@
         {
           "at": "2026-10-08T07:00:14.000Z",
           "kind": "answer",
-          "taskId": "3e991b8f-b2ab-4ecd-aeba-6bfb7f1e1e30",
+          "taskId": "2f969904-0cfc-49de-9098-e3e889782d62",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6132,8 +6132,8 @@
         {
           "at": "2026-10-08T07:00:20.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "9ae28308-2a52-4eea-ad45-437284c97749",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "7c3ee85c-3d2e-4711-ae24-41a500a32dd7",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6179,7 +6179,7 @@
         {
           "at": "2026-10-08T07:00:22.000Z",
           "kind": "answer",
-          "taskId": "9ae28308-2a52-4eea-ad45-437284c97749",
+          "taskId": "7c3ee85c-3d2e-4711-ae24-41a500a32dd7",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6204,8 +6204,8 @@
         {
           "at": "2026-10-08T07:00:28.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "2d5c7f8d-e6dd-4a5c-b958-010463b4883d",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "e94b6742-952d-42c2-9cb7-47d98bd32473",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6251,7 +6251,7 @@
         {
           "at": "2026-10-08T07:00:30.000Z",
           "kind": "answer",
-          "taskId": "2d5c7f8d-e6dd-4a5c-b958-010463b4883d",
+          "taskId": "e94b6742-952d-42c2-9cb7-47d98bd32473",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6276,8 +6276,8 @@
         {
           "at": "2026-10-08T07:00:36.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "6e1ed473-0a0d-46b8-a6b8-8c60d7d35b60",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "dc08456c-4dea-481a-b992-c8d55de5158a",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6323,7 +6323,7 @@
         {
           "at": "2026-10-08T07:00:38.000Z",
           "kind": "answer",
-          "taskId": "6e1ed473-0a0d-46b8-a6b8-8c60d7d35b60",
+          "taskId": "dc08456c-4dea-481a-b992-c8d55de5158a",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6348,8 +6348,8 @@
         {
           "at": "2026-10-08T07:00:44.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "50549e01-7af2-4cda-abcc-76056eb66407",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "263bf3e3-79f7-4337-b880-da7e511e7b84",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6395,7 +6395,7 @@
         {
           "at": "2026-10-08T07:00:46.000Z",
           "kind": "answer",
-          "taskId": "50549e01-7af2-4cda-abcc-76056eb66407",
+          "taskId": "263bf3e3-79f7-4337-b880-da7e511e7b84",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6420,8 +6420,8 @@
         {
           "at": "2026-10-08T07:00:52.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "c23058be-7dbd-4544-b81c-74ec06ed622d",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "585640e3-acac-43a3-bdad-77c0b2f7693e",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6467,7 +6467,7 @@
         {
           "at": "2026-10-08T07:00:54.000Z",
           "kind": "answer",
-          "taskId": "c23058be-7dbd-4544-b81c-74ec06ed622d",
+          "taskId": "585640e3-acac-43a3-bdad-77c0b2f7693e",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6492,7 +6492,7 @@
         {
           "at": "2026-10-08T07:01:00.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s14"
           ],
@@ -6523,7 +6523,7 @@
         {
           "at": "2026-10-08T07:01:02.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s15"
           ],
@@ -6554,7 +6554,7 @@
         {
           "at": "2026-10-08T07:01:04.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s16"
           ],
@@ -6585,7 +6585,7 @@
         {
           "at": "2026-10-08T07:01:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s17"
           ],
@@ -6616,8 +6616,8 @@
         {
           "at": "2026-10-08T07:01:08.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "c15dc534-62d8-447b-8990-3ad94a62b17d",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "08e615c3-22b0-4243-b24d-3761748690fa",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -6675,7 +6675,7 @@
         {
           "at": "2026-10-08T07:01:10.000Z",
           "kind": "answer",
-          "taskId": "c15dc534-62d8-447b-8990-3ad94a62b17d",
+          "taskId": "08e615c3-22b0-4243-b24d-3761748690fa",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6692,8 +6692,8 @@
         {
           "at": "2026-10-08T07:01:16.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "bb73bf18-edad-499f-89ee-0442318fcebb",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "e4f0a702-bd75-4c5f-9034-bea2275f2656",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6749,7 +6749,7 @@
         {
           "at": "2026-10-08T07:01:18.000Z",
           "kind": "answer",
-          "taskId": "bb73bf18-edad-499f-89ee-0442318fcebb",
+          "taskId": "e4f0a702-bd75-4c5f-9034-bea2275f2656",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6774,8 +6774,8 @@
         {
           "at": "2026-10-08T07:01:24.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "0e81c486-506f-4d6f-b886-f7f13da2ff7e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "10bc5cf5-45e5-4daf-adb1-cc7d32b060d1",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6831,7 +6831,7 @@
         {
           "at": "2026-10-08T07:01:26.000Z",
           "kind": "answer",
-          "taskId": "0e81c486-506f-4d6f-b886-f7f13da2ff7e",
+          "taskId": "10bc5cf5-45e5-4daf-adb1-cc7d32b060d1",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6856,8 +6856,8 @@
         {
           "at": "2026-10-08T07:01:32.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "b4986d91-d00b-47de-9238-8ce41f131d56",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "63a631ee-b924-42db-9b11-1b0e94a0635d",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -6913,7 +6913,7 @@
         {
           "at": "2026-10-08T07:01:34.000Z",
           "kind": "answer",
-          "taskId": "b4986d91-d00b-47de-9238-8ce41f131d56",
+          "taskId": "63a631ee-b924-42db-9b11-1b0e94a0635d",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f17\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s17\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -6938,8 +6938,8 @@
         {
           "at": "2026-10-08T07:01:40.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "07579f38-8ff5-43f0-88e6-44b4e28e890f",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "00de23d7-b61f-4340-856d-b7b0e7308d74",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -6999,7 +6999,7 @@
         {
           "at": "2026-10-08T07:01:42.000Z",
           "kind": "answer",
-          "taskId": "07579f38-8ff5-43f0-88e6-44b4e28e890f",
+          "taskId": "00de23d7-b61f-4340-856d-b7b0e7308d74",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7024,8 +7024,8 @@
         {
           "at": "2026-10-08T07:01:48.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "0fc1ab5a-dcd1-4832-aecc-5ada21346cf4",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "f8650a96-c217-4453-ac28-b7917895acd8",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7085,7 +7085,7 @@
         {
           "at": "2026-10-08T07:01:50.000Z",
           "kind": "answer",
-          "taskId": "0fc1ab5a-dcd1-4832-aecc-5ada21346cf4",
+          "taskId": "f8650a96-c217-4453-ac28-b7917895acd8",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f17\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s17\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7110,8 +7110,8 @@
         {
           "at": "2026-10-08T07:01:56.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "d48c1520-307d-41b5-8bcc-87d785001287",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "007046d0-9c6f-493a-9a21-8ec2571efa8d",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7170,7 +7170,7 @@
         {
           "at": "2026-10-08T07:01:58.000Z",
           "kind": "answer",
-          "taskId": "d48c1520-307d-41b5-8bcc-87d785001287",
+          "taskId": "007046d0-9c6f-493a-9a21-8ec2571efa8d",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7195,8 +7195,8 @@
         {
           "at": "2026-10-08T07:02:04.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "1cd4fcfc-90f6-454c-a814-d5c0a0c365a4",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "c5714798-ca68-4334-afa0-294479fdf0ce",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7255,7 +7255,7 @@
         {
           "at": "2026-10-08T07:02:06.000Z",
           "kind": "answer",
-          "taskId": "1cd4fcfc-90f6-454c-a814-d5c0a0c365a4",
+          "taskId": "c5714798-ca68-4334-afa0-294479fdf0ce",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7280,8 +7280,8 @@
         {
           "at": "2026-10-08T07:02:12.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "803ebf40-2da6-453e-a1f7-32952092f0cb",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "37042060-9fa2-43f7-b85d-2202e0b93d5d",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -7337,7 +7337,7 @@
         {
           "at": "2026-10-08T07:02:14.000Z",
           "kind": "answer",
-          "taskId": "803ebf40-2da6-453e-a1f7-32952092f0cb",
+          "taskId": "37042060-9fa2-43f7-b85d-2202e0b93d5d",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7362,7 +7362,7 @@
         {
           "at": "2026-10-08T07:02:20.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s18"
           ],
@@ -7404,8 +7404,8 @@
         {
           "at": "2026-10-08T07:02:22.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "0ea2e0fd-fa25-4fa3-b50a-abbde7740c4e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "c2d8bd49-6251-45f6-9930-6b99bb6570d7",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7465,7 +7465,7 @@
         {
           "at": "2026-10-08T07:02:24.000Z",
           "kind": "answer",
-          "taskId": "0ea2e0fd-fa25-4fa3-b50a-abbde7740c4e",
+          "taskId": "c2d8bd49-6251-45f6-9930-6b99bb6570d7",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7490,8 +7490,8 @@
         {
           "at": "2026-10-08T07:02:30.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "0efeba38-79fc-4675-9f52-43bc5edae87a",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "2c13bfbf-85d8-490c-bc5f-acc8288c8e06",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7552,7 +7552,7 @@
         {
           "at": "2026-10-08T07:02:32.000Z",
           "kind": "answer",
-          "taskId": "0efeba38-79fc-4675-9f52-43bc5edae87a",
+          "taskId": "2c13bfbf-85d8-490c-bc5f-acc8288c8e06",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7577,8 +7577,8 @@
         {
           "at": "2026-10-08T07:02:38.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "57c9358c-d106-4f80-9c86-bb855caf243c",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "9d69b7b4-fc5d-479f-86bb-78b8a475d30a",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -7635,7 +7635,7 @@
         {
           "at": "2026-10-08T07:02:40.000Z",
           "kind": "answer",
-          "taskId": "57c9358c-d106-4f80-9c86-bb855caf243c",
+          "taskId": "9d69b7b4-fc5d-479f-86bb-78b8a475d30a",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f18\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s18\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7660,7 +7660,7 @@
         {
           "at": "2026-10-08T07:02:46.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s19"
           ],
@@ -7702,8 +7702,8 @@
         {
           "at": "2026-10-08T07:02:48.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "25e4fda7-e5f4-429f-b6f6-83553338f4ad",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "89260e16-61d9-41a1-801b-82dd974c0d76",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7763,7 +7763,7 @@
         {
           "at": "2026-10-08T07:02:50.000Z",
           "kind": "answer",
-          "taskId": "25e4fda7-e5f4-429f-b6f6-83553338f4ad",
+          "taskId": "89260e16-61d9-41a1-801b-82dd974c0d76",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7788,8 +7788,8 @@
         {
           "at": "2026-10-08T07:02:56.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "5c9a1ea9-6d10-4189-94c6-03c54b6b35a4",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "7725c20c-6563-499f-979e-e2ae1adc60e5",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -7849,7 +7849,7 @@
         {
           "at": "2026-10-08T07:02:58.000Z",
           "kind": "answer",
-          "taskId": "5c9a1ea9-6d10-4189-94c6-03c54b6b35a4",
+          "taskId": "7725c20c-6563-499f-979e-e2ae1adc60e5",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7874,8 +7874,8 @@
         {
           "at": "2026-10-08T07:03:04.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "e90c9fcb-317d-45d0-a4f1-593592262d84",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "888e9c7e-ffb4-4a60-b62c-b65d6f4b4cb2",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -7932,7 +7932,7 @@
         {
           "at": "2026-10-08T07:03:06.000Z",
           "kind": "answer",
-          "taskId": "e90c9fcb-317d-45d0-a4f1-593592262d84",
+          "taskId": "888e9c7e-ffb4-4a60-b62c-b65d6f4b4cb2",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f19\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s19\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -7957,7 +7957,7 @@
         {
           "at": "2026-10-08T07:03:12.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s2"
           ],
@@ -7999,8 +7999,8 @@
         {
           "at": "2026-10-08T07:03:14.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "dd1a94d7-643f-4810-8360-d185fc7ad03c",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "1f204caf-2b03-4645-9240-d72df160ce3e",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8060,7 +8060,7 @@
         {
           "at": "2026-10-08T07:03:16.000Z",
           "kind": "answer",
-          "taskId": "dd1a94d7-643f-4810-8360-d185fc7ad03c",
+          "taskId": "1f204caf-2b03-4645-9240-d72df160ce3e",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8085,8 +8085,8 @@
         {
           "at": "2026-10-08T07:03:22.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "18f981ea-0be9-4e80-9b20-219b9e47f0a6",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "3d39c4cf-c1b3-468c-b105-fb0ed5c38161",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8147,7 +8147,7 @@
         {
           "at": "2026-10-08T07:03:24.000Z",
           "kind": "answer",
-          "taskId": "18f981ea-0be9-4e80-9b20-219b9e47f0a6",
+          "taskId": "3d39c4cf-c1b3-468c-b105-fb0ed5c38161",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8172,8 +8172,8 @@
         {
           "at": "2026-10-08T07:03:30.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "e33d1089-299d-4778-a2e9-76716a0414fa",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "0b8a971f-2844-4422-b8c2-adf7b9bb04d3",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -8230,7 +8230,7 @@
         {
           "at": "2026-10-08T07:03:32.000Z",
           "kind": "answer",
-          "taskId": "e33d1089-299d-4778-a2e9-76716a0414fa",
+          "taskId": "0b8a971f-2844-4422-b8c2-adf7b9bb04d3",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f2\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s2\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8255,7 +8255,7 @@
         {
           "at": "2026-10-08T07:03:38.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s20"
           ],
@@ -8297,8 +8297,8 @@
         {
           "at": "2026-10-08T07:03:40.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "a286a745-7167-4717-8b88-9a0e65abf076",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "a20ca76d-de87-42c0-ba7d-20ca971a6b66",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8358,7 +8358,7 @@
         {
           "at": "2026-10-08T07:03:42.000Z",
           "kind": "answer",
-          "taskId": "a286a745-7167-4717-8b88-9a0e65abf076",
+          "taskId": "a20ca76d-de87-42c0-ba7d-20ca971a6b66",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8383,8 +8383,8 @@
         {
           "at": "2026-10-08T07:03:48.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "4340ba98-610e-4bfb-a384-0fdcf8c75cad",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "c68d4a22-0a89-467d-9174-0ad2a1df903d",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8444,7 +8444,7 @@
         {
           "at": "2026-10-08T07:03:50.000Z",
           "kind": "answer",
-          "taskId": "4340ba98-610e-4bfb-a384-0fdcf8c75cad",
+          "taskId": "c68d4a22-0a89-467d-9174-0ad2a1df903d",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f13\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s13\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8469,8 +8469,8 @@
         {
           "at": "2026-10-08T07:03:56.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "1e97fec1-8de2-484b-81d4-2ba8baea49ba",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "ec8fb424-7841-4db6-88c4-6187901ba669",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -8527,7 +8527,7 @@
         {
           "at": "2026-10-08T07:03:58.000Z",
           "kind": "answer",
-          "taskId": "1e97fec1-8de2-484b-81d4-2ba8baea49ba",
+          "taskId": "ec8fb424-7841-4db6-88c4-6187901ba669",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f20\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s20\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8552,7 +8552,7 @@
         {
           "at": "2026-10-08T07:04:04.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s21"
           ],
@@ -8594,8 +8594,8 @@
         {
           "at": "2026-10-08T07:04:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "0e05247d-ac2b-48c4-bae5-e3e5d16b9be3",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "9c4c3530-7278-47b1-b9e9-99d74a3b3b74",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8655,7 +8655,7 @@
         {
           "at": "2026-10-08T07:04:08.000Z",
           "kind": "answer",
-          "taskId": "0e05247d-ac2b-48c4-bae5-e3e5d16b9be3",
+          "taskId": "9c4c3530-7278-47b1-b9e9-99d74a3b3b74",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f16\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s16\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8680,8 +8680,8 @@
         {
           "at": "2026-10-08T07:04:14.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "e9d6f0e6-ec94-4fe2-9266-bea5c7a8bf33",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "a5422cc8-c37b-424a-86f2-b76236b15be2",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8742,7 +8742,7 @@
         {
           "at": "2026-10-08T07:04:16.000Z",
           "kind": "answer",
-          "taskId": "e9d6f0e6-ec94-4fe2-9266-bea5c7a8bf33",
+          "taskId": "a5422cc8-c37b-424a-86f2-b76236b15be2",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8767,8 +8767,8 @@
         {
           "at": "2026-10-08T07:04:22.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "305dabfb-b371-4443-a33f-bc8ceca235c3",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "79ac74b5-9c84-4602-ba19-1d62a89e9184",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -8825,7 +8825,7 @@
         {
           "at": "2026-10-08T07:04:24.000Z",
           "kind": "answer",
-          "taskId": "305dabfb-b371-4443-a33f-bc8ceca235c3",
+          "taskId": "79ac74b5-9c84-4602-ba19-1d62a89e9184",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f21\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s21\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8850,7 +8850,7 @@
         {
           "at": "2026-10-08T07:04:30.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s22"
           ],
@@ -8892,8 +8892,8 @@
         {
           "at": "2026-10-08T07:04:32.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "88b652a9-4ca9-4dd9-b797-00301885f06e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "17585c17-9a2b-426a-bf7e-e664757281f7",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -8953,7 +8953,7 @@
         {
           "at": "2026-10-08T07:04:34.000Z",
           "kind": "answer",
-          "taskId": "88b652a9-4ca9-4dd9-b797-00301885f06e",
+          "taskId": "17585c17-9a2b-426a-bf7e-e664757281f7",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -8978,8 +8978,8 @@
         {
           "at": "2026-10-08T07:04:40.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "ac933242-32e3-42b1-bb85-4e104bbb0569",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "8276edcb-0178-40c4-9950-461013daaa3b",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9039,7 +9039,7 @@
         {
           "at": "2026-10-08T07:04:42.000Z",
           "kind": "answer",
-          "taskId": "ac933242-32e3-42b1-bb85-4e104bbb0569",
+          "taskId": "8276edcb-0178-40c4-9950-461013daaa3b",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f14\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s14\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9064,8 +9064,8 @@
         {
           "at": "2026-10-08T07:04:48.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "847490dc-9c74-4b9a-9465-f2564072193a",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "0b917b39-c878-418b-adb4-eef699d9f40e",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -9122,7 +9122,7 @@
         {
           "at": "2026-10-08T07:04:50.000Z",
           "kind": "answer",
-          "taskId": "847490dc-9c74-4b9a-9465-f2564072193a",
+          "taskId": "0b917b39-c878-418b-adb4-eef699d9f40e",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f22\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s22\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9147,7 +9147,7 @@
         {
           "at": "2026-10-08T07:04:56.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s23"
           ],
@@ -9189,8 +9189,8 @@
         {
           "at": "2026-10-08T07:04:58.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "a068c400-6802-43ad-aa52-ac102db58a9e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "082a2ecc-5f2f-4609-a04f-a4b951528438",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9250,7 +9250,7 @@
         {
           "at": "2026-10-08T07:05:00.000Z",
           "kind": "answer",
-          "taskId": "a068c400-6802-43ad-aa52-ac102db58a9e",
+          "taskId": "082a2ecc-5f2f-4609-a04f-a4b951528438",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9275,8 +9275,8 @@
         {
           "at": "2026-10-08T07:05:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "bf028339-9e33-4865-9e78-ebe07342ff17",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "12b86956-7055-4f95-8c5d-12ab6d23785f",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9337,7 +9337,7 @@
         {
           "at": "2026-10-08T07:05:08.000Z",
           "kind": "answer",
-          "taskId": "bf028339-9e33-4865-9e78-ebe07342ff17",
+          "taskId": "12b86956-7055-4f95-8c5d-12ab6d23785f",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f0\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s0\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9362,8 +9362,8 @@
         {
           "at": "2026-10-08T07:05:14.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "75bf65db-007b-4227-b194-10882dd86d08",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "5c6a65b0-d217-419c-bc7d-9e6f7d29b713",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -9420,7 +9420,7 @@
         {
           "at": "2026-10-08T07:05:16.000Z",
           "kind": "answer",
-          "taskId": "75bf65db-007b-4227-b194-10882dd86d08",
+          "taskId": "5c6a65b0-d217-419c-bc7d-9e6f7d29b713",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f23\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s23\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9445,7 +9445,7 @@
         {
           "at": "2026-10-08T07:05:22.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s24"
           ],
@@ -9487,8 +9487,8 @@
         {
           "at": "2026-10-08T07:05:24.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "ebe8e95b-4355-4597-8f39-2ab1d2e3eba6",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "a5b326a3-44e9-47fd-a4e0-65b84470588e",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9548,7 +9548,7 @@
         {
           "at": "2026-10-08T07:05:26.000Z",
           "kind": "answer",
-          "taskId": "ebe8e95b-4355-4597-8f39-2ab1d2e3eba6",
+          "taskId": "a5b326a3-44e9-47fd-a4e0-65b84470588e",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f18\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s18\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9573,8 +9573,8 @@
         {
           "at": "2026-10-08T07:05:32.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "82145edf-2994-475d-b7e3-fb05d013d2ca",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "b2e5e6b6-f1c0-4d93-85cb-36b62b5e4d73",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9634,7 +9634,7 @@
         {
           "at": "2026-10-08T07:05:34.000Z",
           "kind": "answer",
-          "taskId": "82145edf-2994-475d-b7e3-fb05d013d2ca",
+          "taskId": "b2e5e6b6-f1c0-4d93-85cb-36b62b5e4d73",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f19\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s19\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9659,8 +9659,8 @@
         {
           "at": "2026-10-08T07:05:40.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "8c3a722d-14fa-445f-ae73-92d62ead1e7b",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "23ae32c2-75a5-4ae9-b179-d18a5ceec8b6",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -9717,7 +9717,7 @@
         {
           "at": "2026-10-08T07:05:42.000Z",
           "kind": "answer",
-          "taskId": "8c3a722d-14fa-445f-ae73-92d62ead1e7b",
+          "taskId": "23ae32c2-75a5-4ae9-b179-d18a5ceec8b6",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f24\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s24\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9742,7 +9742,7 @@
         {
           "at": "2026-10-08T07:05:48.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s25"
           ],
@@ -9784,8 +9784,8 @@
         {
           "at": "2026-10-08T07:05:50.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "17e3d39d-6c4e-468f-95a8-005c35d847d9",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "5701ebee-ba56-4e28-a7e0-ddb0d0fe5476",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9845,7 +9845,7 @@
         {
           "at": "2026-10-08T07:05:52.000Z",
           "kind": "answer",
-          "taskId": "17e3d39d-6c4e-468f-95a8-005c35d847d9",
+          "taskId": "5701ebee-ba56-4e28-a7e0-ddb0d0fe5476",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f1\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s1\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9870,8 +9870,8 @@
         {
           "at": "2026-10-08T07:05:58.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "f6110c00-98ff-48b5-a5b8-56e7a4744bec",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "4be74ce0-638f-499d-b01b-194f538a8905",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -9932,7 +9932,7 @@
         {
           "at": "2026-10-08T07:06:00.000Z",
           "kind": "answer",
-          "taskId": "f6110c00-98ff-48b5-a5b8-56e7a4744bec",
+          "taskId": "4be74ce0-638f-499d-b01b-194f538a8905",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f18\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s18\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -9957,8 +9957,8 @@
         {
           "at": "2026-10-08T07:06:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "cad7b687-45a8-4cc4-a0c4-b77498ee551b",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "ceb42a6d-89f4-4671-97d2-ea32c524db2f",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -10015,7 +10015,7 @@
         {
           "at": "2026-10-08T07:06:08.000Z",
           "kind": "answer",
-          "taskId": "cad7b687-45a8-4cc4-a0c4-b77498ee551b",
+          "taskId": "ceb42a6d-89f4-4671-97d2-ea32c524db2f",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f25\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s25\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10040,7 +10040,7 @@
         {
           "at": "2026-10-08T07:06:14.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s26"
           ],
@@ -10082,8 +10082,8 @@
         {
           "at": "2026-10-08T07:06:16.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "c3078f3f-ab47-48bf-b3eb-85bc9487cf56",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "42f61386-898e-4f44-9faa-649de0b84318",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10143,7 +10143,7 @@
         {
           "at": "2026-10-08T07:06:18.000Z",
           "kind": "answer",
-          "taskId": "c3078f3f-ab47-48bf-b3eb-85bc9487cf56",
+          "taskId": "42f61386-898e-4f44-9faa-649de0b84318",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10168,8 +10168,8 @@
         {
           "at": "2026-10-08T07:06:24.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "b11c53c2-1c81-4906-80f9-b638d57437ba",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "fcf0da82-45cb-4e28-9865-9c206068dc28",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10229,7 +10229,7 @@
         {
           "at": "2026-10-08T07:06:26.000Z",
           "kind": "answer",
-          "taskId": "b11c53c2-1c81-4906-80f9-b638d57437ba",
+          "taskId": "fcf0da82-45cb-4e28-9865-9c206068dc28",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f17\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s17\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a1\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10254,8 +10254,8 @@
         {
           "at": "2026-10-08T07:06:32.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "c3371554-8475-4b88-a027-a14d60c1d9a8",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "d576797b-2de3-4c8d-9bf9-04039d2cdf7e",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -10312,7 +10312,7 @@
         {
           "at": "2026-10-08T07:06:34.000Z",
           "kind": "answer",
-          "taskId": "c3371554-8475-4b88-a027-a14d60c1d9a8",
+          "taskId": "d576797b-2de3-4c8d-9bf9-04039d2cdf7e",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f26\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s26\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10337,7 +10337,7 @@
         {
           "at": "2026-10-08T07:06:40.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s27"
           ],
@@ -10379,8 +10379,8 @@
         {
           "at": "2026-10-08T07:06:42.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "f51c3bd3-c7a4-4ead-b4c8-f65ab15fad19",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "72853145-6d65-47b0-8b86-0362d1cda528",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10440,7 +10440,7 @@
         {
           "at": "2026-10-08T07:06:44.000Z",
           "kind": "answer",
-          "taskId": "f51c3bd3-c7a4-4ead-b4c8-f65ab15fad19",
+          "taskId": "72853145-6d65-47b0-8b86-0362d1cda528",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f20\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s20\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10465,8 +10465,8 @@
         {
           "at": "2026-10-08T07:06:50.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "8ab7aa36-d26e-44d6-afbb-6469b823478b",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "1b147c89-392a-4d50-9b41-3d9b4e8545f0",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10527,7 +10527,7 @@
         {
           "at": "2026-10-08T07:06:52.000Z",
           "kind": "answer",
-          "taskId": "8ab7aa36-d26e-44d6-afbb-6469b823478b",
+          "taskId": "1b147c89-392a-4d50-9b41-3d9b4e8545f0",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f10\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s10\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a2\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10552,8 +10552,8 @@
         {
           "at": "2026-10-08T07:06:58.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "474d9103-729a-4c87-808d-7db57b95f1e4",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "7f38595f-a107-459b-8eb0-8d8d60f8beed",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -10610,7 +10610,7 @@
         {
           "at": "2026-10-08T07:07:00.000Z",
           "kind": "answer",
-          "taskId": "474d9103-729a-4c87-808d-7db57b95f1e4",
+          "taskId": "7f38595f-a107-459b-8eb0-8d8d60f8beed",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f27\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s27\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10635,7 +10635,7 @@
         {
           "at": "2026-10-08T07:07:06.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s28"
           ],
@@ -10677,8 +10677,8 @@
         {
           "at": "2026-10-08T07:07:08.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "63e1963e-0826-4e6f-870d-2713530641a4",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "bc5154aa-5607-4a64-a742-5148b426230d",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10738,7 +10738,7 @@
         {
           "at": "2026-10-08T07:07:10.000Z",
           "kind": "answer",
-          "taskId": "63e1963e-0826-4e6f-870d-2713530641a4",
+          "taskId": "bc5154aa-5607-4a64-a742-5148b426230d",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10763,8 +10763,8 @@
         {
           "at": "2026-10-08T07:07:16.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "8c7dd75b-7cc2-4466-9b37-8a1cb00a0116",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "9c78bbff-fe24-4dbe-b296-c525fc506399",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -10824,7 +10824,7 @@
         {
           "at": "2026-10-08T07:07:18.000Z",
           "kind": "answer",
-          "taskId": "8c7dd75b-7cc2-4466-9b37-8a1cb00a0116",
+          "taskId": "9c78bbff-fe24-4dbe-b296-c525fc506399",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f12\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s12\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10849,8 +10849,8 @@
         {
           "at": "2026-10-08T07:07:24.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "5e25a2e8-7a7b-40ea-a2b4-93d4104395d9",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "4ebcff8f-016d-4786-a640-19044473196e",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -10907,7 +10907,7 @@
         {
           "at": "2026-10-08T07:07:26.000Z",
           "kind": "answer",
-          "taskId": "5e25a2e8-7a7b-40ea-a2b4-93d4104395d9",
+          "taskId": "4ebcff8f-016d-4786-a640-19044473196e",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f28\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s28\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a4\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -10932,7 +10932,7 @@
         {
           "at": "2026-10-08T07:07:32.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s29"
           ],
@@ -10974,8 +10974,8 @@
         {
           "at": "2026-10-08T07:07:34.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "7070c6de-bd07-43a8-b6d3-7ff672e2af4b",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "d815d51b-a2f7-4732-a75f-100f6499b13f",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -11035,7 +11035,7 @@
         {
           "at": "2026-10-08T07:07:36.000Z",
           "kind": "answer",
-          "taskId": "7070c6de-bd07-43a8-b6d3-7ff672e2af4b",
+          "taskId": "d815d51b-a2f7-4732-a75f-100f6499b13f",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f15\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s15\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a7\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -11060,8 +11060,8 @@
         {
           "at": "2026-10-08T07:07:42.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "e01edaa6-eee6-4c2b-bbae-28747dc37b33",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "613ee75c-7be4-491c-8183-4170f776b49f",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -11122,7 +11122,7 @@
         {
           "at": "2026-10-08T07:07:44.000Z",
           "kind": "answer",
-          "taskId": "e01edaa6-eee6-4c2b-bbae-28747dc37b33",
+          "taskId": "613ee75c-7be4-491c-8183-4170f776b49f",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f11\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s11\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a3\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -11147,8 +11147,8 @@
         {
           "at": "2026-10-08T07:07:50.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "e06b56ab-3964-4d93-ad84-f297369570ef",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "8f651224-822b-424f-8438-6883446ff610",
           "intent": "learn",
           "format": "choice",
           "reason": "new",
@@ -11205,7 +11205,7 @@
         {
           "at": "2026-10-08T07:07:52.000Z",
           "kind": "answer",
-          "taskId": "e06b56ab-3964-4d93-ad84-f297369570ef",
+          "taskId": "8f651224-822b-424f-8438-6883446ff610",
           "intent": "learn",
           "goals": [
             "goal:[\"fact\",\"f29\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s29\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a5\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -11230,7 +11230,7 @@
         {
           "at": "2026-10-08T07:07:58.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
           "objects": [
             "s3"
           ],
@@ -11272,8 +11272,8 @@
         {
           "at": "2026-10-08T07:08:00.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "433ec627-4c4d-4c2c-93be-b41f3da835d9",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "43726b08-1c38-48b2-9d7d-853e08dd4fe1",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -11333,7 +11333,7 @@
         {
           "at": "2026-10-08T07:08:02.000Z",
           "kind": "answer",
-          "taskId": "433ec627-4c4d-4c2c-93be-b41f3da835d9",
+          "taskId": "43726b08-1c38-48b2-9d7d-853e08dd4fe1",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f22\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s22\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a6\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -11358,8 +11358,8 @@
         {
           "at": "2026-10-08T07:08:08.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "2eb8c793-7a46-452e-b30f-4e50a293b9a1",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "5a9a61e5-3ab9-48f7-ab8a-66cbf0dd4dea",
           "intent": "practice",
           "format": "choice",
           "reason": "game",
@@ -11419,7 +11419,7 @@
         {
           "at": "2026-10-08T07:08:10.000Z",
           "kind": "answer",
-          "taskId": "2eb8c793-7a46-452e-b30f-4e50a293b9a1",
+          "taskId": "5a9a61e5-3ab9-48f7-ab8a-66cbf0dd4dea",
           "intent": "practice",
           "goals": [
             "goal:[\"fact\",\"f24\",\"recognition\",\"forward\",\"subject-to-value\",\"value\",\"[\\\"s24\\\",\\\"author\\\",\\\"[\\\\\\\"entity\\\\\\\",\\\\\\\"a0\\\\\\\",null,null,null,null,null,null,null]\\\"]\"]"
@@ -11444,8 +11444,8 @@
         {
           "at": "2026-10-08T07:08:16.000Z",
           "kind": "selection",
-          "sessionId": "84781629-15ee-40a1-92e1-efa38812c68e",
-          "taskId": "20746425-33a8-4ae4-8d88-d1a861d887dd",
+          "sessionId": "fde9c77a-bc23-4d77-9809-31835201efdf",
+          "taskId": "8846546a-1c4d-4dbb-8e40-0ba4687a4258",
           "intent": "learn",
           "format": "choice",
           "reason": "new",

@@ -1,4 +1,5 @@
 import type {EngiDB,SessionRow} from '../db/engi-db';
+import {readGroupContext} from './group-affinity';
 import type {Bundle,Memory,Task,Snapshot} from '../lib/engi/types';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import type {ExposureEntry} from '../lib/engi/study-core/exposure';
@@ -25,7 +26,7 @@ export async function pickGoalFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Session
  const exposureRows=await db.appMeta.bulkGet(ids.map(id=>'studyCore:exposure:'+id));
  const exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
  const {available,waitingUntil,newLeft,newSlots}=admitStudyCandidates(pool.proposals,p=>p.goals,plan,memory,exposures,now,s.mode==='practice');
- available.push(...groupProposals(available,known,s.mode==='practice'?3:newSlots));
+ available.push(...groupProposals(b,available,known,s.mode==='practice'?3:newSlots,{context:await readGroupContext(db,b,s.cooldown)}));
  const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0,new Set(available.flatMap(p=>p.goals.map(knowledgeMistakeKey))));
  if(repair)return {task:repair,intro:undefined,waitingUntil:undefined};
  const owners=new Map(b.facts.map(f=>[f.id,f.entityId]));
@@ -70,7 +71,7 @@ export async function pickGoalFeedEager(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
  if(s.mode==='practice')tasks.forEach(t=>{t.practice=true;});
  const {available,waitingUntil,newSlots}=admitStudyCandidates(tasks,t=>t.studyContract?.primaryGoals??[],plan,memory,exposures,now,s.mode==='practice');
- available.push(...groupCandidates(b,available,known,s.mode==='practice'?3:newSlots));
+ available.push(...groupCandidates(b,available,known,s.mode==='practice'?3:newSlots,await readGroupContext(db,b,s.cooldown)));
  const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0,new Set(available.flatMap(t=>t.studyContract?.primaryGoals.map(knowledgeMistakeKey)??[])));
  if(repair)return {task:repair,intro:undefined,waitingUntil:undefined};
  if(available.length){

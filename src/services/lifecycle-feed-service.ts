@@ -1,3 +1,5 @@
+import {buildSelfCheck} from './self-check-composition';
+import {readGroupContext} from './group-affinity';
 import type {EngiDB,SessionRow} from '../db/engi-db';
 import type {Bundle,Memory,Task,Snapshot} from '../lib/engi/types';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
@@ -50,6 +52,12 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  if(nextIntroduction&&(!due.length||history.slice(introIndex+1).some(t=>['due','confirmation'].includes(t.reason))))return nextIntroduction;
  const dueStreak=dueTurnsSinceFirstCheck(history.map(t=>t.reason));
  const lane=chooseWorkLane(due.length>0,first.length>0,dueStreak),selected=lane==='due'?due:first;
+ const affinity=await readGroupContext(db,b,history),sinceSelfCheck=history.slice(history.map(t=>t.recipe.format).lastIndexOf('self_check')+1).length;
+ if((!s.format||s.format==='mixed')&&sinceSelfCheck>=9){const targets=selected.filter(p=>!active.get(acquisitionKey(p.goals[0]))?.selfCheckedAt).sort((a,c)=>objectRank(a)-objectRank(c));const task=buildSelfCheck(b,targets,affinity);if(task)return {task,intro:undefined};}
+ // An optional timed rehearsal is a presentation of existing first-check work,
+ // never another memory obligation or an objective graduation.
+ const sinceRecall=history.slice(history.map(t=>t.recipe.format).lastIndexOf('recall_reveal')+1).length;
+ if((!s.format||s.format==='mixed')&&lane==='first'&&sinceRecall>=5){const readyKeys=new Set(first.filter(p=>!owners(p.items).some(id=>lastObjects.has(id))).flatMap(p=>p.goals.map(acquisitionKey))),recalls=pool.proposals.filter(p=>p.recipe.format==='recall_reveal'&&p.goals.length===1&&readyKeys.has(acquisitionKey(p.goals[0]))&&!active.get(acquisitionKey(p.goals[0]))?.rehearsedAt);recalls.sort((a,c)=>objectRank(a)-objectRank(c));for(const proposal of recalls){const task=materializeGoalProposal(b,enabled,proposal,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.learningRecall=true;task.intent='learn';task.reason='rehearsal';return {task,intro:undefined};}}}
  const protectedGoals=new Set([...active.values()].map(u=>u.goal.id));
  const completedKeys=new Set([...ledger.units.filter(u=>u.stage==='completed').map(u=>u.key),...catalog.filter(e=>memories.has(e.goal.id)&&!active.has(acquisitionKey(e.goal))).map(e=>acquisitionKey(e.goal))]);
  const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(acquisitionKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
@@ -62,12 +70,13 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   if(lane==='first'||!due.length){const task=buildLearningChronology(b,targets,supports,history,s.completedCount??0);if(task)return {task,intro:undefined};}
  }
  if((s.format==='mixed'&&contextActions>=8&&!eligible.length||['timeline','sort','missing'].includes(s.format??''))){const task=diagnostic();if(task)return {task,intro:undefined};}
- const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(selected,new Set(memories.keys()),12,{spareAnswer:true,conveyor:true}).filter(compatible):[];
+ const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(b,selected,new Set(memories.keys()),12,{spareAnswer:true,conveyor:true,context:affinity}).filter(compatible):[];
  const proposals=[...selected,...groups],earliest=selected.length?Math.min(...selected.flatMap(p=>p.goals.map(g=>at(g.id)))):now;
  const formatRank=(p:typeof pool.proposals[number])=>history.slice(-5).filter(t=>t.recipe.format===p.recipe.format).length*3+Number(p.recipe.format===history.at(-1)?.recipe.format)*8+(p.group?(history.at(-1)?.items.length??0)>1?8:-2:0);
  proposals.sort((a,c)=>{
   const urgency=(p:typeof a)=>lane==='due'?Math.floor(Math.max(0,Math.min(...p.goals.map(g=>at(g.id)))-earliest)/60000):0;
-  return urgency(a)-urgency(c)||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id)+a.recipe.format)-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)+c.recipe.format);
+  const repeatsLast=(p:typeof a)=>Number(owners(p.items).some(id=>lastObjects.has(id)));
+  return repeatsLast(a)-repeatsLast(c)||urgency(a)-urgency(c)||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id)+a.recipe.format)-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)+c.recipe.format);
  });
  for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(acquisitionKey(g)))?'confirmation':'due';return {task,intro:undefined};}}
  const remainingRepair=await selectRepairWork(db,b,enabled,s,memories,false,new Set(),repairOptions);if(remainingRepair){remainingRepair.learningLifecycle=1;return {task:remainingRepair,intro:undefined};}

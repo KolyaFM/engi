@@ -18,7 +18,7 @@ export async function simulateLiveStudy(scenario:LiveScenario,setTime:(at:number
  const originalRandom=Math.random;Math.random=random;
  const d=new EngiDB('live-model-'+crypto.randomUUID()),bundle=fixture(scenario.size),start=new Date(2026,9,8,10).getTime(),trace:string[]=[];
  let screens=0,credited=0,repairs=0,groupScreens=0,repeatedObjects=0,repeatedLearningObjects=0,avoidableLearningRepeats=0,adjacent=0,restarts=0,errorsCreated=0,hints=0,lastObject:string|undefined;
- const formats=new Set<string>(),visited=new Set<string>(),daily:number[]=[];
+ const formats=new Set<string>(),visited=new Set<string>(),daily:number[]=[],avoidableRepeatTrace:unknown[]=[];
  function correct(task:Task){const r=task.studyContract!.response;if(r.kind==='choice')return r.expected;if(r.kind==='set')return r.expected;if(r.kind==='self-report')return true;throw Error('Unexpected atomic format '+r.kind);}
  try{
   setTime(start);await putBundle(d,bundle);
@@ -41,7 +41,8 @@ export async function simulateLiveStudy(scenario:LiveScenario,setTime:(at:number
     if(task.intent==='learn'&&lastObject&&task.items.some(i=>i.entityId===lastObject)){
      const pool=goalProposalPool(bundle,enabled,'all',scenario.format),ids=[...new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id)))],rows=await d.appMeta.bulkGet(ids.map(id=>'studyCore:exposure:'+id)),exposures=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value]));
      const admitted=admitStudyCandidates(pool.proposals,p=>p.goals,await svc.getDayPlan(),beforeMap,exposures,now).available,kind=task.studyContract!.primaryGoals.some(g=>beforeMap.has(g.id));
-     if(admitted.some(p=>p.goals.some(g=>beforeMap.has(g.id))===kind&&p.items.every(i=>i.entityId!==lastObject)))avoidableLearningRepeats++;
+     const alternatives=admitted.filter(p=>p.goals.some(g=>beforeMap.has(g.id))===kind&&p.items.every(i=>i.entityId!==lastObject));
+     if(alternatives.length){avoidableLearningRepeats++;avoidableRepeatTrace.push({day,step,task:task.recipe.format,reason:task.reason,lastObject,history:[...trace],selector:(await d.appMeta.get('studyCore:goalSelector'))?.value,alternatives:alternatives.slice(0,5).map(p=>({format:p.recipe.format,objects:p.items.map(i=>i.entityId),goals:p.goals.map(g=>g.id)}))});}
     }
     for(const goal of task.studyContract!.primaryGoals){if(task.intent==='learn'&&beforeMap.has(goal.id))assert(new Date(beforeMap.get(goal.id).card.due).getTime()<=now,'FSRS review before due');visited.add(knowledgeMistakeKey(goal));}
     formats.add(task.recipe.format);screens++;if(lastObject){adjacent++;if(task.items.some(i=>i.entityId===lastObject)){repeatedObjects++;if(task.intent==='learn')repeatedLearningObjects++;}}lastObject=task.items[0].entityId;
@@ -82,6 +83,6 @@ export async function simulateLiveStudy(scenario:LiveScenario,setTime:(at:number
    daily.push((await svc.getDayPlan()).newGoalIds.length);
   }
   const memory=(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).map(r=>r.value),ledger=(await d.appMeta.get('studyCore:mistakeEpisodes'))?.value;
-  return {...scenario,screens,credited,repairs,groupScreens,errorsCreated,hints,restarts,uniqueKnowledge:visited.size,formats:[...formats],adjacent,repeatedObjects,repeatedLearningObjects,avoidableLearningRepeats,repeatRate:adjacent?Number((repeatedObjects/adjacent).toFixed(3)):0,dailyNew:daily,remainingErrors:ledger?.episodes.filter((e:any)=>e.status==='open').length??0,retentionModel:memory.length?Number((memory.reduce((n,m)=>n+goalRetention(m),0)/memory.length).toFixed(3)):null};
+  return {...scenario,screens,credited,repairs,groupScreens,errorsCreated,hints,restarts,uniqueKnowledge:visited.size,formats:[...formats],adjacent,repeatedObjects,repeatedLearningObjects,avoidableLearningRepeats,avoidableRepeatTrace,repeatRate:adjacent?Number((repeatedObjects/adjacent).toFixed(3)):0,dailyNew:daily,remainingErrors:ledger?.episodes.filter((e:any)=>e.status==='open').length??0,retentionModel:memory.length?Number((memory.reduce((n,m)=>n+goalRetention(m),0)/memory.length).toFixed(3)):null};
  }catch(error){throw Error(`${JSON.stringify(scenario)}\n${trace.join('\n')}\n${(error as Error).stack}`);}finally{d.close();await d.delete();Math.random=originalRandom;}
 }

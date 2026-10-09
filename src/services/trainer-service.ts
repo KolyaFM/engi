@@ -1,3 +1,4 @@
+import {deckStudyScope,SELECTED_DECKS} from './deck-study-scope';
 import {db,type EngiDB,type SessionRow,type InteractionDraft} from '../db/engi-db';
 import type {Familiarity} from '../lib/engi/types';
 import {getSnapshot,getBundle,putBundle,contentTables,learningRow} from '../db/repositories';
@@ -24,19 +25,20 @@ import {readStudyPreferences} from './study-preferences-service';
 import {pickEndlessFeed} from './endless-study-service';
 import {traceStudySelection,startStudyTrace,stopStudyTrace,studyTraceReport} from './study-selection-trace';
 import {pickLifecycleFeed} from './lifecycle-feed-service';
+import {groupContext} from './group-affinity';
 import {acceptLifecycleIntro,lifecycleProjection} from './learning-lifecycle-service';
 import {studyWorkload} from '../lib/engi/study-core/workload';
 
 async function selectNext(d:EngiDB,s:SessionRow){
- const b=await measureFeed('bundle.read',()=>getBundle(d)),memories=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
+ const b=await measureFeed('bundle.read',async()=>deckStudyScope(await getBundle(d),s.deckIds)),memories=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
  const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s);return s;
 }
 const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSessions,d.reviewEvents,d.appMeta];
 export function createTrainerService(d:EngiDB){return {
  getSnapshot:()=>getSnapshot(d),
  getGoalSnapshot:(lifecycle=false)=>getGoalSnapshot(d,lifecycle),
- async getDayPlan(tag='all',format?:string){return d.transaction('rw',sessionTables(d),async()=>{
-  const bundle=await getBundle(d),enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
+ async getDayPlan(tag='all',format?:string,deckIds?:string[]){return d.transaction('rw',sessionTables(d),async()=>{
+  const bundle=deckStudyScope(await getBundle(d),deckIds);if(deckIds!==undefined)tag=SELECTED_DECKS;const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
   const plan=await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value));
   if(format){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
@@ -52,16 +54,17 @@ export function createTrainerService(d:EngiDB){return {
  async refreshGoalFeed(id:string){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||s.memoryModel!=='goals'||!s.exhausted)throw Error('Сначала завершите текущую карточку');return selectNext(d,s)})},
  async retryUnavailableMistakes(id:string){return d.transaction('rw',sessionTables(d),async()=>{
   const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||s.memoryModel!=='goals'||!s.exhausted)throw Error('Сначала завершите текущую карточку');
-  const b=await getBundle(d),enabled=(await d.learningState.toArray()).map(r=>r.payload),targets=new Set(canonicalTargets(b,s.tag).map(i=>i.targetId));
+  const b=deckStudyScope(await getBundle(d),s.deckIds),enabled=(await d.learningState.toArray()).map(r=>r.payload),targets=new Set(canonicalTargets(b,s.tag).map(i=>i.targetId));
   const keys=new Set(buildGoalCatalog(b,enabled).filter(e=>!e.suspended&&e.targetIds.every(id=>targets.has(id))).map(e=>knowledgeMistakeKey(e.goal))),row=await d.appMeta.get(MISTAKE_EPISODES_KEY);
   if(row){for(const episode of row.value.episodes as MistakeEpisode[])if(episode.status==='unavailable'&&keys.has(episode.key)){episode.status='open';episode.failedImage=undefined;episode.unavailableReason=undefined;}await d.appMeta.put(row);}
   return selectNext(d,s);
  })},
  async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(t=>t.items.map(i=>i.image).filter((url):url is string=>!!url)))];},
- async startGoalFeed(tag='all',format='mixed',mode='daily',options:{endless?:boolean;lifecycle?:boolean}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
- async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{endless?:boolean;lifecycle?:boolean}={}){
+ async startGoalFeed(tag='all',format='mixed',mode='daily',options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
+ async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
-  await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
+  if(options.deckIds!==undefined){const active=(await d.decks.toArray()).filter(deck=>!deck.archived);if(!options.deckIds.length||options.deckIds.some(id=>!active.some(deck=>deck.id===id)))throw Error('Выберите доступные колоды');tag=SELECTED_DECKS;}
+  await getSnapshot(d);const now=new Date().toISOString(),s:SessionRow={deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);}await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },
  async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
@@ -88,7 +91,7 @@ export function createTrainerService(d:EngiDB){return {
   const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload));await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
   s.completedCount=(s.completedCount??0)+1;s.intro=undefined;if(receiptKey)await d.appMeta.put({key:receiptKey,value:true});return selectNext(d,s);
  }))},
- async getResumableSession(options:{endless?:boolean;lifecycle?:boolean}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
+ async getResumableSession(options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
   if(s.memoryModel!=='goals')return s;
   return d.transaction('rw',sessionTables(d),async()=>{
    if(options.endless&&!s.endless){s.endless=true;await d.activeSessions.put(s);}if(options.endless&&options.lifecycle!==false&&!s.learningLifecycle){s.learningLifecycle=1;await d.activeSessions.put(s);}
@@ -96,6 +99,8 @@ export function createTrainerService(d:EngiDB){return {
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
+   if(task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)&&!task.contextual){const affinity=groupContext(await getBundle(d)),signatures=task.items.map(i=>affinity.signature(i,task.recipe));if(signatures.some(signature=>!signature||signature!==signatures[0])){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
+   if(task&&((task.recipe.format==='match'&&task.items.length===2)||(task.presentation==='conveyor'&&(task.items.length<3||task.items.length>6)))){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
    if(task?.recipe.format==='sort'&&task.studyContract?.response.kind==='order'&&task.studyContract.response.direction!=='bottom-up'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
    if(task?.recipe.format==='timeline'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);s.format='sort';return selectNext(d,s);}
    if(task&&!s.learningLifecycle&&task.intent!=='repair'&&!task.practice&&!task.recipe.diagnostic){
@@ -120,7 +125,7 @@ export function createTrainerService(d:EngiDB){return {
    return core.observe(contract.id,'question',episodeId,event);
   });
  },
- async observeVisibility(sessionId:string,taskId:string,phase:'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
+ async observeVisibility(sessionId:string,taskId:string,phase:`card-reveal:${string}`|'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episodeId:string,event:'start'|'refresh'|'end'){
   return d.transaction('rw',sessionTables(d),async()=>{
    const session=await d.activeSessions.get(sessionId),task=session?.tasks[session.currentPosition];
    if(!task||task.id!==taskId||session?.status!=='active'){if(event==='end'&&(session?.tasks.some(t=>t.id===taskId)||session?.cooldown?.some(t=>t.id===taskId)))return feedStudyCore(d).observe(taskId,phase,episodeId,event);return;}
@@ -140,6 +145,7 @@ export function createTrainerService(d:EngiDB){return {
   if(delta.timelineValue!==undefined){const scale=t.timeline;if(!scale||!Number.isInteger(delta.timelineValue)||delta.timelineValue<scale.min||delta.timelineValue>scale.max)throw Error('Значение вне шкалы');draft.timelineValue=delta.timelineValue}
   if(delta.sortOrder){if(t.recipe.format!=='sort'||delta.sortOrder.length!==t.items.length||new Set(delta.sortOrder).size!==t.items.length||!t.items.every(i=>delta.sortOrder!.includes(i.entityId)))throw Error('Некорректный порядок');draft.sortOrder=delta.sortOrder}
   if(delta.sortCheckedOrder){if(t.recipe.format!=='sort'||delta.sortCheckedOrder.length!==t.items.length||new Set(delta.sortCheckedOrder).size!==t.items.length||!t.items.every(i=>delta.sortCheckedOrder!.includes(i.entityId)))throw Error('Некорректная проверка порядка');draft.sortCheckedOrder=[...delta.sortCheckedOrder];}
+  if(delta.flippedCards){if(t.recipe.format!=='self_check'||new Set(delta.flippedCards).size!==delta.flippedCards.length||delta.flippedCards.some(id=>!t.items.some(i=>i.entityId===id)))throw Error('Некорректная самопроверка');draft.flippedCards=[...delta.flippedCards];}
   if(delta.sortDirtySlots){if(t.recipe.format!=='sort'||delta.sortDirtySlots.some(n=>!Number.isInteger(n)||n<0||n>=t.items.length))throw Error('Некорректные изменённые позиции');draft.sortDirtySlots=[...new Set(delta.sortDirtySlots)];}
   if(delta.mapping){const values=Object.values(delta.mapping);if(!isMapping(t)||Object.entries(delta.mapping).some(([key,value])=>!t.items.some(i=>i.entityId===key)||!t.options.some(o=>o.id===value))||t.recipe.format==='match'&&new Set(values).size!==values.length)throw Error('Некорректное сопоставление');draft.mapping={...delta.mapping};}
   s.interaction=draft;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);return draft;

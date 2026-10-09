@@ -62,7 +62,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
   const goalFor=(i:Item)=>i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
   let response:TaskContract['response'],actionFamily:TaskContract['actionFamily'],practice=!!task.practice||task.recipe.diagnostic;
-  if(fmt==='multi_choice'){
+  if(fmt==='self_check'){response={kind:'practice-view',cards:task.items.map(i=>({entityId:i.entityId,claimKey:i.factId?`fact:${i.factId}`:`entity:${i.entityId}`}))};actionFamily='explore';practice=true;}else if(fmt==='multi_choice'){
     const g=completeSetGoal(b,first.entityId,task.recipe.answerKey),rows=b.facts.filter(f=>f.entityId===first.entityId&&f.key===task.recipe.answerKey&&!f.archived);
     const expected=[...new Set(rows.map(f=>f.valueEntityId!))].sort();
     if(!task.answerSet||version([...task.answerSet].sort())!==version(expected))throw Error('A partial set cannot be presented as all values');
@@ -89,7 +89,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   for(const g of goals)revisions[g.semanticKey]=g.revision;
   const shownClaims:Claim[]=[];
   // The feed shows a text cue unless it displays an image or a sorting/missing cue.
-  if(fmt==='sort')task.items.filter(i=>task.recipe.cue!=='image'||!i.image).forEach(i=>shownClaims.push(addClaim(claimForName(b,i.entityId))));
+  if(fmt==='self_check')task.items.filter(i=>task.recipe.cue!=='image'||!i.image).forEach(i=>shownClaims.push(addClaim(claimForName(b,i.entityId))));
+  else if(fmt==='sort')task.items.filter(i=>task.recipe.cue!=='image'||!i.image).forEach(i=>shownClaims.push(addClaim(claimForName(b,i.entityId))));
   else if(fmt==='missing')task.sequence?.filter(i=>!!i).forEach(i=>shownClaims.push(addClaim(claimForName(b,i!.entityId))));
  else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
    for(const item of task.items)if(task.recipe.cue==='name'||!item.image)shownClaims.push(addClaim(claimForName(b,item.entityId)));
@@ -117,7 +118,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
   if(task.contextual){for(const item of task.items){const f=factFor(b,item);if(f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact year data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
-  const contract:TaskContract={id:task.id,primaryGoals:goals,supportGoalIds:supportGoals.map(g=>g.id),actionFamily,visibleEntities,...(task.contextual?{contextual:task.contextual}:{}),
+  const contract:TaskContract={learningRecall:task.learningRecall,id:task.id,primaryGoals:goals,supportGoalIds:supportGoals.map(g=>g.id),actionFamily,visibleEntities,...(task.contextual?{contextual:task.contextual}:{}),
     shownClaims:[...new Map(shownClaims.map(c=>[c.key,c])).values()],hintClaims,feedbackClaims,
     contentRevisions:revisions,response,practice,...(task.reason==='game'?{game:true}:{}),...(task.intent?{intent:task.intent,repairEpisodeIds:task.repairEpisodeIds}:{})};
   validateContract(contract);return contract;

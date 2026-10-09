@@ -1,4 +1,5 @@
 import {acquisitionBlocks,applyAcquisitionEvidence} from './acquisition-evidence-service';
+import {ACQUISITION_CONFIRMATION_MS} from '../lib/engi/study-core/acquisition';
 import type { EngiDB } from '../db/engi-db';
 import { startAttempt, revealHint, submitAttempt, type Attempt } from '../lib/engi/study-core/attempts';
 import { validateContract, type TaskContract } from '../lib/engi/study-core/contracts';
@@ -49,7 +50,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         return attempt;
       });
     },
-    async observe(attemptId: string, phase: 'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
+    async observe(attemptId: string, phase: `card-reveal:${string}`|'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source', episodeId: string,
       event: 'start'|'refresh'|'end', now=new Date()) {
       return db.transaction('rw', db.appMeta, async()=>{
         const row=await db.appMeta.get(key('attempt',attemptId));
@@ -63,6 +64,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const correct=contract.response.kind==='order'?JSON.stringify(row.value.firstAnswer)===JSON.stringify(contract.response.expected):
           (row.value.results?.length?row.value.results.every((r:{correct:boolean})=>r.correct):true);
         claims=claims.filter(c=>(c.when!=='incorrect'||!correct)&&(c.when!=='order-complete'||phase==='order-reveal'));
+        if(phase.startsWith('card-reveal:')){const rule=contract.response;if(rule.kind!=='practice-view')throw Error('Not a self-check task');const card=rule.cards.find(c=>c.entityId===phase.slice('card-reveal:'.length));if(!card)throw Error('Unknown self-check card');claims=claims.filter(c=>c.key===card.claimKey);}
         const old=(await db.appMeta.get(key('episode',episodeId)))?.value as ExposureEpisode|undefined;
         // A heartbeat/cleanup reports the screen originally opened, not a newly graded screen.
         if(old&&event!=='start'&&old.attemptId===attemptId&&old.phase===phase)claims=old.claims;
@@ -76,6 +78,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         // An old heartbeat cannot reopen a closed episode or extend its pause.
         if(old?.endedAt)return old;
         await db.appMeta.put({key:key('episode',episodeId),value:episode});
+        if(phase.startsWith('card-reveal:')){const stored=await db.appMeta.get('studyCore:learningLifecycle');if(stored){const ledger=structuredClone(stored.value),affected=new Set(claims.flatMap(c=>c.revealsGoalIds));for(const unit of ledger.units){if(unit.stage==='completed'||!affected.has(unit.goal.id))continue;unit.selfCheckedAt=now.toISOString();unit.availableAt=new Date(Math.max(new Date(unit.availableAt).getTime(),now.getTime()+ACQUISITION_CONFIRMATION_MS)).toISOString();}await db.appMeta.put({key:stored.key,value:ledger});}}
         const ids=[...new Set(claims.flatMap(c=>c.revealsGoalIds))];
         for(const id of ids){
           const entry=(await db.appMeta.get(key('exposure',id)))?.value as ExposureEntry|undefined;

@@ -15,8 +15,8 @@ import type {Bundle,Task} from '../src/lib/engi/types';
 import {createEmptyCard,State} from 'ts-fsrs';
 const fixture=():Bundle=>({entities:[...Array.from({length:6},(_,n)=>({id:'s'+n,type:'subject',name:'Объект '+n,aliases:[],externalIds:{}})),...Array.from({length:3},(_,n)=>({id:'a'+n,type:'answer',name:'Ответ '+n,aliases:[],externalIds:{}}))],facts:Array.from({length:6},(_,n)=>({id:'f'+n,entityId:'s'+n,key:'rel',valueKind:'entity',valueEntityId:'a'+n%3,verification:'user_confirmed',source:{kind:'manual',name:'Тест'}})),media:[],tags:[],entityTags:[],missing:[],unresolved:[],properties:[{id:'rel',name:'Автор',learnable:true,valueKind:'entity',cardinality:'one',subjectTypes:['subject'],targetTypes:['answer']}],entityTypes:[{id:'subject',name:'Объект'},{id:'answer',name:'Ответ'}]});
 async function run(fn:(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bundle)=>Promise<void>){const d=new EngiDB('groups-'+crypto.randomUUID()),b=fixture();try{await putBundle(d,b);await prepareDue(d);await fn(d,createTrainerService(d),b);}finally{d.close();await d.delete();}}
-async function install(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bundle,format='match',repeated=false){
- const session=await svc.startGoalFeed('all',format),enabled=(await d.learningState.toArray()).map(r=>r.payload),atomic=goalCandidates(b,enabled,'all',format).filter(t=>!repeated||['s0','s3','s1'].includes(t.items[0].entityId)),task=groupCandidates(b,atomic,new Set(),3)[0];assert(task&&isMapping(task));
+async function install(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bundle,format='match',repeated=false,distinct=false){
+ const session=await svc.startGoalFeed('all',format),enabled=(await d.learningState.toArray()).map(r=>r.payload),atomic=goalCandidates(b,enabled,'all',format).filter(t=>(!repeated||['s0','s3','s1'].includes(t.items[0].entityId))&&(!distinct||['s0','s1','s2'].includes(t.items[0].entityId))),task=groupCandidates(b,atomic,new Set(),3)[0];assert(task&&isMapping(task));
  // Normal preparation/attempt opening, then select the deterministic group for exhaustive tests.
  task.studyContract=undefined;session.tasks=[task];await d.activeSessions.put(session);await svc.observeVisibility(session.id,task.id,'question','q:'+task.id,'start');
  return {session,task:(await d.activeSessions.get(session.id))!.tasks[0]};
@@ -74,7 +74,7 @@ test('categorization supports repeated categories and grades each relation separ
 }));
 test('all 27 category assignments grade each goal by its own answer, including repeated choices',async()=>{
  for(let code=0;code<27;code++)await run(async(d,svc,b)=>{
-  const {session,task}=await install(d,svc,b,'categorize');assert.equal(task.options.length,3);assert.equal(task.items.length,3);
+  const {session,task}=await install(d,svc,b,'categorize',false,true);assert.equal(task.options.length,3);assert.equal(task.items.length,3);
   const values=Object.fromEntries(task.items.map((i,n)=>[i.entityId,task.options[Math.floor(code/3**n)%3].id]));
   const result=await svc.answer({sessionId:session.id,taskId:task.id,answer:values});
   for(const [n,target] of result.event!.payload.targets.entries())assert.equal(target.correct,values[task.items[n].entityId]===task.items[n].answerId);

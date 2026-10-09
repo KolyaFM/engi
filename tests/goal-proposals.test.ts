@@ -47,7 +47,7 @@ test('materialization makes fresh task IDs, honors the proposed interaction and 
  b.facts.find(f=>f.id===proposal.items[0].factId)!.valueEntityId='a-other';assert.equal(materializeGoalProposal(b,enabled,proposal,pool.context,'all',[]),undefined);
 }));
 test('group proposals contain every graded member without compiling or persisting attempts before selection',()=>run(async(d,b,enabled)=>{
- const pool=goalProposalPool(b,enabled),groups=groupProposals(pool.proposals,new Set(),3);assert(groups.length);
+ const pool=goalProposalPool(b,enabled),groups=groupProposals(b,pool.proposals,new Set(),3);assert(groups.length);
  for(const p of groups){assert(p.group);assert(!('studyContract' in p));const task=materializeGoalProposal(b,enabled,p,pool.context,'all',[]);assert(task);assert.equal(compileTaskContract(b,task!).primaryGoals.length,p.items.length);}
  assert.equal(await d.appMeta.where('key').startsWith('studyCore:attempt:').count(),0);
 }));
@@ -67,8 +67,8 @@ test('complete-set distractors reject normalized aliases and duplicate labels be
 },true));
 test('failed materialization retries without advancing selector history or day progress twice',()=>run(async(d,b,enabled)=>{
  const svc=createTrainerService(d),s=await svc.startGoalFeed(),key='studyCore:goalSelector',prior=(await d.appMeta.get(key))!.value;let tries=0;
- const picked=await d.transaction('rw',d.appMeta,()=>pickGoalFeed(d,b,enabled,s,dailyNewState(undefined),[],Date.now(),(...args)=>++tries===1?undefined:materializeGoalProposal(...args)));
+ const picked=await d.transaction('rw',d.appMeta,d.installedPacks,()=>pickGoalFeed(d,b,enabled,s,dailyNewState(undefined),[],Date.now(),(...args)=>++tries===1?undefined:materializeGoalProposal(...args)));
  assert(picked.task);assert.equal(tries,2);assert.equal((await d.appMeta.get(key))!.value.decisions,prior.decisions+1);assert.equal((await svc.getDayPlan()).processedAttemptIds.length,0);assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);
  const before=(await d.appMeta.get(key))!.value;
- const empty=await d.transaction('rw',d.appMeta,()=>pickGoalFeed(d,b,enabled,s,dailyNewState(undefined),[],Date.now(),()=>undefined));assert(!empty.task);assert.deepEqual((await d.appMeta.get(key))!.value,before);
+ const empty=await d.transaction('rw',d.appMeta,d.installedPacks,()=>pickGoalFeed(d,b,enabled,s,dailyNewState(undefined),[],Date.now(),()=>undefined));assert(!empty.task);assert.deepEqual((await d.appMeta.get(key))!.value,before);
 }));
