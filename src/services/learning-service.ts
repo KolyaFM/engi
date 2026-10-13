@@ -9,10 +9,15 @@ import {readLifecycle,LIFECYCLE_KEY} from './learning-lifecycle-service';
 import {admitAcquisition,acquisitionKey} from '../lib/engi/study-core/acquisition';
 export async function setUnitSuspended(id:string,suspend:boolean,d:EngiDB=db){
  await d.transaction('rw',[...contentTables(d),d.learningState,d.activeSessions,d.appMeta],async()=>{
-  const item=canonicalTargets(await getBundle(d)).find(i=>i.targetId===id);if(!item)throw Error('Знание больше не доступно');
+  const targets=canonicalTargets(await getBundle(d)),item=targets.find(i=>i.targetId===id);if(!item)throw Error('Знание больше не доступно');
   const old=await d.learningState.get(id),m=old?.payload??triagedMemory(item,'red','',0);
   if(suspend){if(m.status!=='suspended')m.suspendedFrom=m.status??'review';m.status='suspended'}else {m.status=m.suspendedFrom??(m.attempts>0?(m.bootstrap?'learning':'review'):'triaged');delete m.suspendedFrom}
   if(!suspend)m.card.due=new Date();await d.learningState.put(learningRow(m));
+  for(const sibling of targets.filter(i=>!!item.factId&&i.factId===item.factId&&i.targetId!==id)){
+   const old=await d.learningState.get(sibling.targetId),row=old?.payload??triagedMemory(sibling,m.initialFamiliarity??'red','',0);
+   if(suspend){if(row.status!=='suspended')row.suspendedFrom=row.status??'triaged';row.status='suspended';}else{row.status=row.suspendedFrom??'triaged';delete row.suspendedFrom;row.card.due=new Date();}
+   await d.learningState.put(learningRow(row));
+  }
   if(!suspend){let ledger=await readLifecycle(d);if(ledger){const catalog=buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload)),entries=catalog.filter(e=>!e.suspended&&e.targetIds.includes(id)&&!ledger!.units.some(u=>u.key===acquisitionKey(e.goal)));
    for(const card of ledger.cards){const goals=entries.filter(e=>e.entityIds.includes(card.entityId)).map(e=>e.goal);if(goals.length)ledger=admitAcquisition(ledger,card.entityId,goals,new Date(),'migration');}
    await d.appMeta.put({key:LIFECYCLE_KEY,value:ledger});}}

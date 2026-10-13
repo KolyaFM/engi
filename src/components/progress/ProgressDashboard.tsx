@@ -1,27 +1,57 @@
+import {useEffect,useMemo,useState,useRef} from 'react';
 import type {Snapshot} from '../../lib/engi/types';
-import {progress} from '../../lib/engi/knowledge/progress';
-import {todayLearning} from '../../lib/engi/knowledge/motivation';
-import {canonicalTargets} from '../../lib/engi/questions/recipe-factory';
-import {properties} from '../../lib/engi/knowledge/properties';
-import {conflicts} from '../../services/knowledge-service';
-import {saveBackup} from '../../services/backup-service';
-import {ConflictResolver} from '../knowledge/ConflictResolver';
-import {GoalProgressDashboard} from './GoalProgressDashboard';
 import type {createDeckTargetIndex} from '../../services/deck-overview';
+import {db} from '../../db/engi-db';
+import {getStatisticsInput} from '../../services/statistics-service';
+import {buildStatistics,type StatisticsInput,type StatisticsDay} from '../../lib/engi/knowledge/statistics';
+import {dayBoundary} from '../../lib/engi/study-core/day-plan';
+import {KnowledgeImage} from '../knowledge/KnowledgeImage';
+import {deckCover,deckTileTitle} from '../collections/deck-presentation';
+import './statistics.css';
 
-export function ProgressDashboard({snapshot,targetIndex,onStudy,onReload}:{snapshot:Snapshot;targetIndex:ReturnType<typeof createDeckTargetIndex>;onStudy:()=>void;onReload:()=>Promise<void>}){
- if(snapshot.goalCatalog)return <GoalProgressDashboard snapshot={snapshot} targetIndex={targetIndex} onStudy={onStudy} onReload={onReload}/>;
- const s=snapshot,p=progress(s),today=todayLearning(s),b=s.bundle,targets=canonicalTargets(b),problem=conflicts(b);
- const targetById=new Map(targets.map(t=>[t.targetId,t]));
- return <><div className="page-heading"><h1>Статистика</h1><button className="button outline" onClick={()=>void saveBackup()}>Сохранить копию</button></div>
- <div className="stat-strip">{[['Охват',`${p.covered} / ${p.total}`],['Помню сейчас',p.retention===null?'—':p.retention+'%'],['Пора повторить',p.due],['Сегодня проверено',today.retrievals]].map(([label,n])=><div key={label}><span>{label}</span><strong key={String(n)}>{n}</strong></div>)}</div>
- <p>Активных знаний: {p.total} · Ещё не открыто: {p.new} · Отложено ★: {p.suspended}</p>
- <div className="stability-strip">{[[7,p.week],[30,p.month],[90,p.quarter]].map(([days,n])=><div key={days}><strong key={n}>{n}</strong><span>Закреплено ≥{days} дней</span></div>)}</div>
- {today.stability30Gains>0&&<p className="today-learning">Сегодня укреплено: +{today.stability30Gains} знаний ≥30 дней</p>}
- <div className="progress-layout"><section className="panel"><h2>По подборкам</h2>{b.tags.filter(t=>!t.archived).map(t=>{const v=progress(s,t.id);return <div className="category-row" key={t.id}><strong>{t.name}</strong><span>{v.covered} / {v.total}</span><span>Помню {v.retention??'—'}%</span></div>})}<small>Горизонт памяти — расчёт по вашим ответам. Проверки будут уточнять его.</small></section>
- <section className="panel"><h2>По полям</h2>{properties(b).filter(prop=>targets.some(i=>b.facts.find(f=>f.id===i.factId)?.key===prop.id)).map(prop=>{const ids=new Set(targets.filter(i=>b.facts.find(f=>f.id===i.factId)?.key===prop.id).map(i=>i.targetId));return <div className="review-row" key={prop.id}><strong>{prop.name}</strong><span>{s.memories.filter(m=>ids.has(m.id)&&m.status!=='suspended'&&m.attempts>0).length} / {s.memories.filter(m=>ids.has(m.id)&&m.status!=='suspended').length}</span></div>})}</section></div>
- <section className="panel"><h2>Что путается</h2>{s.memories.filter(m=>targetById.has(m.id)&&Object.values(m.confusions).some(n=>n>.1)).slice(0,20).map(m=>{const t=targetById.get(m.id)!;return <div className="review-row" key={m.id}><strong>{t.name}</strong><span>{Object.entries(m.confusions).filter(([,n])=>n>.1).map(([id])=>`${t.answer} ↔ ${b.entities.find(e=>e.id===id)?.name??id}`).join(' · ')}</span></div>})}<button className="button outline" onClick={onStudy}>Различить похожее</button></section>
- <ConflictResolver bundle={b} onReload={onReload}/>
- <section className="panel"><h2>Качество знаний</h2><p>{problem.length} фактов с неоднозначным ответом</p>{problem.slice(0,10).map(f=><p key={f.id}>{b.entities.find(e=>e.id===f.entityId)?.name} · {properties(b).find(p=>p.id===f.key)?.name}</p>)}<small>Неоднозначные факты исключены из вопросов с одним ответом.</small></section>
- <section className="panel"><h2>Последние проверки</h2>{s.events.filter(e=>e.payload.feedback).slice(0,20).map(e=><div className="history-row" key={e.id}><span>{e.payload.score===1?'✓':'✕'}</span><span>{e.payload.feedback.items?.[0]?.name??'Проверка'}</span><span>{e.payload.reason==='retry'?'Уточнение после ошибки':e.level==='direct'?'Воспоминание':'Связи'}{e.payload.metadata?.attemptCount>1?` · ${e.payload.metadata.attemptCount} попытки`:''}</span><time>{new Date(e.timestamp).toLocaleString('ru-RU')}</time></div>)}</section></>;
+type Details={title:string;subtitle?:string;keys?:string[];day?:StatisticsDay};
+const number=(value:number)=>value.toLocaleString('ru-RU');
+const dateLabel=(day:string)=>new Date(day+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+function GrowthChart({days,onPick}:{days:StatisticsDay[];onPick:(day:StatisticsDay)=>void}){
+ const first=days[0]?.mastered??0,last=days.at(-1)?.mastered??0,min=Math.max(0,first-1),max=Math.max(min+2,last+1);
+ const points=days.flatMap((day,i)=>i===days.length-1||i%Math.max(1,Math.ceil(days.length/60))===0?[{day,x:18+i/Math.max(1,days.length-1)*324,y:116-(day.mastered-min)/(max-min)*92}]:[]);
+ const path=points.map((p,i)=>`${i?'L':'M'}${p.x},${p.y}`).join(' ');
+ return <><div className="statistics-chart-readout">{number(first)} → {number(last)}</div>
+ <svg className="statistics-chart" viewBox="0 0 360 152" role="group" aria-label="График освоенных свойств">
+ <defs><linearGradient id="statistics-growth-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#9680b8" stopOpacity=".2"/><stop offset="1" stopColor="#9680b8" stopOpacity="0"/></linearGradient></defs>
+ {[36,76,116].map(y=><line key={y} x1="18" x2="342" y1={y} y2={y} className="statistics-chart-grid"/>)}
+ <path d={`${path} L342,122 L18,122 Z`} fill="url(#statistics-growth-fill)"/><path d={path} className="statistics-chart-line"/>
+ {points.map(p=><g key={p.day.day}><circle cx={p.x} cy={p.y} r="2" className="statistics-chart-dot"/><circle cx={p.x} cy={p.y} r="9" fill="transparent" role="button" tabIndex={0} aria-label={`${dateLabel(p.day.day)}: ${p.day.mastered} освоено, +${p.day.gained}`} onClick={()=>onPick(p.day)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onPick(p.day);}}}/></g>)}
+ <text x="18" y="146">{dateLabel(days[0].day)}</text><text x="342" y="146" textAnchor="end">{dateLabel(days.at(-1)!.day)}</text>
+ </svg></>;
+}
+export function ProgressDashboard({snapshot:s}:{snapshot:Snapshot;targetIndex:ReturnType<typeof createDeckTargetIndex>;onStudy:()=>void;onReload:()=>Promise<void>}){
+ const [input,setInput]=useState<StatisticsInput>(),[error,setError]=useState(''),[deck,setDeck]=useState(''),[range,setRange]=useState<7|30|0>(30),[details,setDetailsState]=useState<Details>();
+ const opener=useRef<HTMLElement|null>(null);
+ const setDetails=(value:Details|undefined)=>{if(value&&!details)opener.current=document.activeElement as HTMLElement;setDetailsState(value);};
+ useEffect(()=>{let cancelled=false;setError('');setInput(undefined);getStatisticsInput(db,s).then(value=>{if(!cancelled)setInput(value);}).catch(e=>{if(!cancelled)setError(e instanceof Error?e.message:'Не удалось загрузить статистику');});return()=>{cancelled=true;};},[s]);
+ useEffect(()=>{if(!input)return;const timer=setTimeout(()=>setInput(old=>old?{...old,now:new Date()}:old),Math.max(100,new Date(dayBoundary(input.now).endsAt).getTime()-Date.now()+100));return()=>clearTimeout(timer);},[input]);
+ const decks=useMemo(()=>(s.bundle.decks??[]).filter(d=>!d.archived),[s.bundle]);
+ useEffect(()=>{if(deck&&!decks.some(d=>d.id===deck))setDeck('');},[decks,deck]);
+ useEffect(()=>{if(!details)return;const close=(e:KeyboardEvent)=>{if(e.key==='Escape')setDetailsState(undefined);};document.addEventListener('keydown',close);const old=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.removeEventListener('keydown',close);document.body.style.overflow=old;if(opener.current?.isConnected)opener.current.focus();};},[details]);
+ const stats=useMemo(()=>input?buildStatistics(input,deck||undefined):undefined,[input,deck]);
+ const deckStats=useMemo(()=>input?decks.map(d=>({deck:d,stats:buildStatistics(input,d.id),cover:deckCover(s.bundle,d)})).sort((a,b)=>b.stats.mastered-a.stats.mastered||a.deck.name.localeCompare(b.deck.name,'ru')):[],[input,decks,s.bundle]);
+ if(error)return <section className="statistics-empty" role="alert"><p>Не удалось загрузить статистику.</p><button className="button outline" onClick={()=>{setError('');getStatisticsInput(db,s).then(setInput).catch(e=>setError(String(e)));}}>Повторить</button></section>;
+ if(!stats)return <div className="statistics-loading" role="status" aria-label="Загрузка статистики"><div/><div/><div/></div>;
+ const days=range?stats.days.slice(-range):stats.days,activity=stats.days.slice(-30),today=stats.today;
+ const gained=days.reduce((n,d)=>n+d.gained,0),maxTasks=Math.max(1,...activity.map(d=>d.tasks)),offset=(new Date(activity[0].day+'T12:00:00').getDay()+6)%7;
+ const previous=stats.days.slice(-8,-1).map(d=>d.gained).sort((a,b)=>a-b),usual=previous.length===7&&stats.historyStart&&stats.historyStart<=stats.days.at(-8)!.day?previous[3]:undefined;
+ const accuracy=today.checked>=5?Math.round(today.correct/today.checked*100)+'%':today.checked?`${today.correct} / ${today.checked}`:'—';
+ const openDay=(day:StatisticsDay)=>setDetails({title:dateLabel(day.day),day,keys:day.gainedKeys});
+ return <section className="statistics-screen" aria-label="Статистика знаний">
+ <div className="statistics-filter"><select aria-label="Колода для статистики" value={deck} onChange={e=>{setDeck(e.target.value);setDetails(undefined);}}><option value="">Все колоды</option>{decks.map(d=><option key={d.id} value={d.id}>{deckTileTitle(d.name)}</option>)}</select></div>
+ <section className="statistics-hero"><div className="statistics-eyebrow">Освоено свойств</div><div className="statistics-hero-value"><button aria-label="Посмотреть освоенные свойства" onClick={()=>setDetails({title:'Освоено свойств',keys:stats.completedKeys})}>{number(stats.mastered)}</button><button className="statistics-gain" onClick={()=>setDetails({title:'Освоено сегодня',subtitle:usual===undefined?undefined:`Обычно за день: +${usual}`,keys:today.gainedKeys})}>+{today.gained} сегодня</button></div>
+ <div className="statistics-progress" aria-label={`${stats.mastered} освоено, ${stats.learning} в обучении`}><span style={{width:Math.min(100,stats.mastered/Math.max(1,stats.total)*100)+'%'}}/><span style={{width:Math.min(100,stats.learning/Math.max(1,stats.total)*100)+'%'}}/></div>
+ <div className="statistics-hero-caption"><span>{number(stats.mastered)} освоено</span><span>{number(stats.learning)} в обучении</span></div></section>
+ <section className="statistics-block"><div className="statistics-section-title"><h2>Рост знаний</h2><span className="statistics-period-gain">+{number(gained)} {range===7?'за неделю':range===30?'за месяц':'за всё время'}</span></div><div className="statistics-range" role="group" aria-label="Период графика">{([[7,'7 дней'],[30,'30 дней'],[0,'Всё']] as const).map(([value,label])=><button key={value} aria-pressed={range===value} onClick={()=>setRange(value)}>{label}</button>)}</div><GrowthChart days={days} onPick={openDay}/></section>
+ <section className="statistics-block"><h2>Сегодня</h2><div className="statistics-today"><button onClick={()=>openDay(today)}><strong>{number(today.reviewed)}</strong><span>Повторено<br/>свойств</span></button><button onClick={()=>openDay(today)}><strong>{number(today.repaired)}</strong><span>Исправлено<br/>ошибок</span></button><button onClick={()=>setDetails({title:'Плановые повторения',subtitle:'Первый самостоятельный ответ на свойство за день',day:today})}><strong>{accuracy}</strong><span>Без ошибок</span></button></div></section>
+ <section className="statistics-block"><div className="statistics-section-title"><h2>Активность</h2><span>{activity.filter(d=>d.tasks>0).length} / 30 дней</span></div><div className="statistics-calendar" aria-label="Активность за 30 дней">{['П','В','С','Ч','П','С','В'].map((d,i)=><span className="statistics-weekday" key={'label'+i}>{d}</span>)}{Array.from({length:offset},(_,i)=><span key={'blank'+i}/>)}{activity.map(day=><button key={day.day} className={`statistics-calendar-day intensity-${day.tasks?Math.max(1,Math.ceil(day.tasks/maxTasks*4)):0}`} aria-label={`${dateLabel(day.day)}: ${day.tasks} заданий`} onClick={()=>openDay(day)}>{new Date(day.day+'T12:00:00').getDate()}</button>)}</div></section>
+ <section className="statistics-block"><h2>Колоды</h2><div className="statistics-decks">{deckStats.filter(d=>!deck||d.deck.id===deck).map(({deck:d,stats:p,cover})=><button className="statistics-deck" key={d.id} onClick={()=>{setDeck(d.id);setDetails({title:deckTileTitle(d.name),subtitle:`${p.mastered} освоено · ${p.learning} в обучении${p.known?` · ${p.known} уже знакомо`:''}`,keys:p.completedKeys});}}><span className={`statistics-deck-image cover-${cover.fit}`}>{cover.media?<KnowledgeImage src={cover.media.url}/>:<span>{deckTileTitle(d.name).slice(0,1)}</span>}</span><span className="statistics-deck-info"><strong>{deckTileTitle(d.name)}</strong><small>{number(p.mastered)} / {number(p.total)} свойств</small><span className="statistics-deck-track"><span style={{width:(p.total?Math.floor(p.mastered/p.total*100):0)+'%'}}/></span></span><b>{p.total?Math.floor(p.mastered/p.total*100):0}%</b></button>)}</div>{!decks.length&&<p className="statistics-muted">Колоды ещё не добавлены.</p>}</section>
+ {details&&<div className="statistics-detail-overlay" onClick={()=>setDetails(undefined)}><section className="statistics-detail" role="dialog" aria-modal="true" aria-label={details.title} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Tab'){const items=e.currentTarget.querySelectorAll<HTMLElement>('button,[tabindex="0"]'),first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}}}><div className="statistics-detail-heading"><h2>{details.title}</h2><button autoFocus aria-label="Закрыть подробности" onClick={()=>setDetails(undefined)}>×</button></div>{details.subtitle&&<p className="statistics-muted">{details.subtitle}</p>}{details.day&&<dl className="statistics-day-details"><div><dt>Освоено</dt><dd>+{details.day.gained}</dd></div><div><dt>Повторено свойств</dt><dd>{details.day.reviewed}</dd></div><div><dt>Первые ответы без ошибок</dt><dd>{details.day.correct} / {details.day.checked}</dd></div><div><dt>Исправлено ошибок</dt><dd>{details.day.repaired}</dd></div><div><dt>Завершено заданий</dt><dd>{details.day.tasks}</dd></div></dl>}{details.keys&&<div className="statistics-property-list">{details.keys.map(key=>{const property=stats.properties.find(p=>p.key===key);return property?<div key={key}>{property.image&&<KnowledgeImage src={property.image}/>}<span><strong>{property.objectName}</strong><small>{property.name}</small></span></div>:null;})}{!details.keys.length&&<p className="statistics-muted">Пока нет освоенных свойств за этот период.</p>}</div>}</section></div>}
+ </section>;
 }

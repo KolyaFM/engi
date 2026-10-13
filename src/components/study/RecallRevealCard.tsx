@@ -1,3 +1,4 @@
+import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useRef,useState,type ReactNode} from 'react';
 import type {InteractionDraft} from '../../db/engi-db';
 import type {Task} from '../../lib/engi/types';
@@ -5,7 +6,7 @@ import type {Task} from '../../lib/engi/types';
 export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,accessible,onPersist,onSubmit}:{task:Task;cue:ReactNode;draft?:InteractionDraft;paused:boolean;busy:boolean;reducedMotion:boolean;accessible:boolean;onPersist:(delta:Partial<InteractionDraft>)=>Promise<void>;onSubmit:(v:boolean)=>void}){
  const elapsedRef=useRef(Math.min(5000,draft?.recallElapsedMs??0)),[elapsed,setElapsed]=useState(elapsedRef.current),[revealed,setRevealed]=useState(!!draft?.revealed),[offset,setOffset]=useState(0),[dragging,setDragging]=useState(false);
  const callbacks=useRef({onPersist,onSubmit});callbacks.current={onPersist,onSubmit};
- const gesture=useRef<{x:number;y:number;time:number;width:number;dx:number;dy:number}|null>(null);
+ const swipe=useHorizontalSwipe({disabled:!revealed||paused||busy,nativeScroll:true,onOffset:setOffset,onDragging:setDragging,onSwipe:side=>{setOffset(0);callbacks.current.onSubmit(side===1)}});
  const lastPersist=useRef(elapsedRef.current);
  const pendingReveal=useRef<Partial<InteractionDraft>|null>(null),requestEarlyReveal=useRef<(()=>void)|null>(null);
  const [revealing,setRevealing]=useState(false);
@@ -34,15 +35,7 @@ export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,acces
  },[task.id,paused,revealed]);
  return <div className={`feed-question recall-swipe ${dragging?'is-dragging':''} ${offset>0?'remembering':offset<0?'missing-memory':''}`} style={reducedMotion?undefined:{transform:`translateX(${offset}px) rotate(${offset/35}deg)`}}
   onKeyDown={e=>{if(revealed&&!paused&&!busy&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();callbacks.current.onSubmit(e.key==='ArrowRight')}}}
-  onPointerDown={e=>{
-   if(!revealed||paused||busy||!e.isPrimary||(e.target as HTMLElement).closest('button,input,textarea')||e.clientX<24||e.clientX>window.innerWidth-24)return;
-   gesture.current={x:e.clientX,y:e.clientY,time:Date.now(),width:e.currentTarget.getBoundingClientRect().width,dx:0,dy:0};e.currentTarget.setPointerCapture(e.pointerId);
-  }}
-  onPointerMove={e=>{const g=gesture.current;if(!g)return;g.dx=e.clientX-g.x;g.dy=e.clientY-g.y;if(Math.abs(g.dx)>8&&Math.abs(g.dx)>Math.abs(g.dy)*1.2){setDragging(true);setOffset(Math.max(-g.width*.8,Math.min(g.width*.8,g.dx)))}}}
-  onPointerUp={()=>{const g=gesture.current;gesture.current=null;setDragging(false);setOffset(0);if(!g||!revealed||paused||busy)return;
-   const distance=Math.abs(g.dx),horizontal=distance>Math.abs(g.dy)*1.2,velocity=distance/Math.max(20,Date.now()-g.time);
-   if(horizontal&&(distance>=g.width*.27||(distance>=g.width*.15&&velocity>=.6)))callbacks.current.onSubmit(g.dx>0);
-  }} onPointerCancel={()=>{gesture.current=null;setOffset(0);setDragging(false)}}>
+  {...swipe}>
   {cue}<div className="feed-actions"><h2>{task.recipe.prompt??task.recipe.label??'Вспомните ответ'}</h2>
    {!revealed?<div className="recall-thinking"><div className="recall-time-track" role="progressbar" aria-label="Время вспомнить" aria-valuemin={0} aria-valuemax={5} aria-valuenow={Math.ceil((5000-elapsed)/1000)}><span style={{width:`${(5000-elapsed)/50}%`}}/></div><span>{Math.ceil((5000-elapsed)/1000)}</span><button className="button outline" style={{gridColumn:'1 / -1',justifySelf:'center',fontSize:13,padding:'6px 12px',minHeight:44}} disabled={paused||busy||revealing} onClick={()=>{if(!paused&&!busy&&!revealing)requestEarlyReveal.current?.()}}>Показать сейчас</button><p>Попробуйте вспомнить. Ответ откроется сам.</p></div>:
     <><h3 className="revealed-answer" aria-live="polite">{task.items[0].answer}</h3><div className="recall-hints" aria-hidden="true"><span>← Не вспомнил</span><span>Вспомнил →</span></div>

@@ -106,3 +106,41 @@
 .self-check-tile{padding:0;min-height:160px;border:0;border-radius:20px;background:transparent;perspective:800px;cursor:pointer}.self-check-rotation{display:block;position:relative;width:100%;height:180px;transform-style:preserve-3d;transition:transform 220ms cubic-bezier(.22,1,.36,1)}.self-check-tile.is-flipped .self-check-rotation{transform:rotateY(180deg)}
 .self-check-front,.self-check-back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;background:#fff;border:1px solid #e5dfd7;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 3px 12px #78645008}.self-check-back{transform:rotateY(180deg);background:#efe9df}.self-check-front img{width:100%;height:100%;object-fit:contain}.self-check-grid strong{font-size:17px;line-height:1.35;overflow-wrap:anywhere;color:#292524}.self-check-tile:focus-visible{outline:3px solid #a88b70;outline-offset:3px}.self-check-tile:disabled{opacity:1}
 @media(max-width:360px){.self-check-rotation{height:155px}.self-check-grid{gap:10px}.self-check-grid strong{font-size:15px}}@media(prefers-reduced-motion:reduce){.self-check-rotation{transition:none}}
+
+/* Keep page zoom and horizontal browser panning out of the game surface. */
+.study-feed,.feed-viewport{touch-action:pan-y}
+
+/* Chronology shares the available viewport equally between its 3–5 slots. */
+.feed-viewport.has-chronology{overflow:hidden}
+.has-chronology .feed-current{display:flex;flex-direction:column;height:100%;min-height:0;width:100%;padding-bottom:80px}
+.has-chronology .feed-task-content{flex:1;min-height:0}
+.has-chronology .feed-question{height:100%;min-height:0}
+.has-chronology .feed-game-status{flex-shrink:0;margin:4px 0;font-size:13px}
+.has-chronology .feed-actions{flex:1;height:100%;min-height:0;gap:10px}
+.has-chronology .sort-heading{flex-shrink:0;margin:10px 0 0}
+.has-chronology .chronology-card{flex:1;min-height:0;padding-bottom:0;gap:6px}
+.has-chronology .chronology-list{flex:1;min-height:0;gap:clamp(6px,1dvh,12px);padding-top:8px;padding-bottom:8px}
+.has-chronology .chronology-slot{flex:1 1 0;min-height:0}
+.has-chronology .chronology-list .sort-row{height:100%;min-height:0;padding:6px 10px;overflow:hidden}
+.has-chronology .chronology-list .sort-row.has-image{height:100%;align-self:stretch;padding:6px}
+.has-chronology .chronology-list .sort-row.has-image .sort-content{height:100%;min-height:0}
+.has-chronology .chronology-list .sort-row.has-image img{height:100%;max-height:100%;min-height:0;object-fit:contain}
+.has-chronology .sort-content strong{font-size:clamp(13px,2.3dvh,18px);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.has-chronology .sort-status{flex-shrink:0;min-height:22px;font-size:14px;line-height:22px}
+.has-chronology .sort-position{flex-basis:64px;min-height:0;padding:4px 6px 4px 0;gap:2px}
+.has-chronology .sort-rank{width:30px;height:30px;font-size:15px}
+.has-chronology .sort-year{font-size:12px;height:16px;line-height:16px}
+@media(max-height:500px){
+ .study-feed:has(.has-chronology) .feed-header{height:44px}
+ .has-chronology .feed-current{padding-bottom:66px}
+ .has-chronology .sort-heading{margin:0}
+ .has-chronology .feed-actions .sort-heading h2{font-size:22px;margin-bottom:2px}
+ .has-chronology .sort-heading p{font-size:13px;line-height:1.2}
+ .has-chronology .feed-actions{gap:4px}
+ .has-chronology .sort-position{flex-direction:row;flex-basis:86px;gap:4px}
+ .has-chronology .sort-rank{width:24px;height:24px;font-size:13px}
+ .has-chronology .chronology-list{gap:4px;padding-top:4px;padding-bottom:4px}
+ .has-chronology .chronology-list .sort-row{padding-top:3px;padding-bottom:3px}
+ .has-chronology .chronology-list .sort-row.has-image{padding:3px}
+ .chronology-floating-action .sort-submit{min-height:44px}
+}

@@ -5,7 +5,7 @@ import type {Bundle,Memory,Task,Snapshot} from '../lib/engi/types';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import type {ExposureEntry} from '../lib/engi/study-core/exposure';
 import {exposureAvailableAt} from '../lib/engi/study-core/exposure';
-import {ACQUISITION_CONFIRMATION_MS,acquisitionKey} from '../lib/engi/study-core/acquisition';
+import {ACQUISITION_CONFIRMATION_MS,acquisitionKey,propertyKey} from '../lib/engi/study-core/acquisition';
 import {shouldIntroduce,chooseWorkLane,selectionTie,dueTurnsSinceFirstCheck} from '../lib/engi/session/continuous-feed-policy';
 import {buildGoalCatalog} from './goal-catalog';
 import {ensureDayPlan} from './day-plan-service';
@@ -65,20 +65,21 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  }
  const pool=goalProposalPool(b,enabled,s.tag,'mixed'),ids=[...new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id)))];
  const exposureRows=await db.appMeta.bulkGet(ids.map(id=>'studyCore:exposure:'+id)),exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
- const active=new Map(ledger.units.filter(u=>u.stage!=='completed').map(u=>[u.key,u])),activeIds=new Set(catalog.filter(e=>!e.suspended).map(e=>e.goal.id));
- const at=(id:string)=>{const goal=catalog.find(e=>e.goal.id===id)?.goal,unit=goal&&active.get(acquisitionKey(goal)),exposure=exposures.get(id);return Math.max(unit?new Date(unit.availableAt).getTime():new Date(memories.get(id)?.card.due??8640000000000000).getTime(),exposure?(unit?(unit.stage==='confirmation'?new Date(exposure.lastVisibleAt).getTime()+ACQUISITION_CONFIRMATION_MS:0):exposureAvailableAt(exposure)):0);};
+ const active=new Map(ledger.units.filter(u=>u.stage!=='completed').map(u=>[propertyKey(u.goal),u])),activeIds=new Set(catalog.filter(e=>!e.suspended).map(e=>e.goal.id));
+ const byGoal=new Map(catalog.map(e=>[e.goal.id,e.goal])),byProperty=new Map<string,typeof catalog>();for(const e of catalog){const key=propertyKey(e.goal);const list=byProperty.get(key)??[];list.push(e);byProperty.set(key,list);}
+ const at=(id:string)=>{const goal=byGoal.get(id);if(!goal)return Infinity;const siblings=byProperty.get(propertyKey(goal))??[],unit=active.get(propertyKey(goal)),exposure=exposures.get(id),own=memories.get(id);const related=siblings.flatMap(e=>{const m=memories.get(e.goal.id);return m?[m]:[];});const due=unit?new Date(unit.availableAt).getTime():own?new Date(own.card.due).getTime():related.length?Math.min(...related.map(m=>new Date(m.card.due).getTime())):Infinity;const recentReview=unit?0:Math.max(0,...related.map(m=>m.card.last_review?new Date(m.card.last_review).getTime()+ACQUISITION_CONFIRMATION_MS:0));return Math.max(due,recentReview,exposure?(unit?(unit.stage==='confirmation'?new Date(exposure.lastVisibleAt).getTime()+ACQUISITION_CONFIRMATION_MS:0):exposureAvailableAt(exposure)):0);};
  const compatible=(p:typeof pool.proposals[number])=>!s.format||s.format==='mixed'||p.recipe.format===s.format;
- const eligible=s.mode==='practice'?[]:pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>{const u=active.get(acquisitionKey(g));return activeIds.has(g.id)&&(u?u.goal.id===g.id:memories.has(g.id))&&at(g.id)<=now;}));
- const repairOptions={format:s.format,excludedKeys:new Set([...active.values()].filter(u=>!activeIds.has(u.goal.id)||at(u.goal.id)>now).map(u=>u.key))};
+ const eligible=s.mode==='practice'?[]:pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>{const u=active.get(propertyKey(g));return activeIds.has(g.id)&&(u?u.goal.skill===g.skill:memories.has(g.id)||catalog.some(e=>propertyKey(e.goal)===propertyKey(g)&&memories.has(e.goal.id)))&&at(g.id)<=now;}));
+ const repairOptions={format:s.format,excludedKeys:new Set(catalog.filter(e=>{const u=active.get(propertyKey(e.goal));return u&&(!activeIds.has(e.goal.id)||at(e.goal.id)>now);}).map(e=>acquisitionKey(e.goal)))};
  const repair=await selectRepairWork(db,b,enabled,s,memories,eligible.length>0,new Set(eligible.flatMap(p=>p.goals.map(acquisitionKey))),repairOptions);
  if(repair){repair.learningLifecycle=1;return {task:repair,intro:undefined};}
  const history=s.cooldown??[],recent=history.slice(-5).flatMap(t=>t.studyContract?.primaryGoals.map(g=>g.id)??[]);
  const owners=(items:Task['items'])=>items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId);
  const lastObjects=new Set(owners(history.at(-1)?.items??[]));
  const objectRank=(p:typeof pool.proposals[number])=>Number(owners(p.items).some(id=>lastObjects.has(id)))*100+owners(p.items).reduce((sum,id)=>sum+history.slice(-5).reduce((n,t,index)=>n+Number(owners(t.items).includes(id))*(index+1),0),0)/p.items.length;
- const scopedIds=new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id))),firstChecks=ledger.units.filter(u=>u.stage==='first-check'&&scopedIds.has(u.goal.id)&&activeIds.has(u.goal.id));
+ const scopedKeys=new Set(pool.proposals.flatMap(p=>p.goals.filter(g=>activeIds.has(g.id)).map(propertyKey))),firstChecks=ledger.units.filter(u=>u.stage==='first-check'&&scopedKeys.has(propertyKey(u.goal)));
  const introIndex=history.map(t=>t.reason).lastIndexOf('intro'),sinceIntro=history.slice(introIndex+1).reduce((n,t)=>n+Math.max(1,t.studyContract?.primaryGoals.length??t.items.length),0);
- const due=eligible.filter(p=>p.goals.some(g=>active.get(acquisitionKey(g))?.stage!=='first-check')),first=eligible.filter(p=>p.goals.every(g=>active.get(acquisitionKey(g))?.stage==='first-check'));
+ const due=eligible.filter(p=>p.goals.some(g=>active.get(propertyKey(g))?.stage!=='first-check')),first=eligible.filter(p=>p.goals.every(g=>active.get(propertyKey(g))?.stage==='first-check'));
  const admission=shouldIntroduce({firstChecks:firstChecks.length,firstCheckObjects:new Set(firstChecks.map(u=>u.entityId)).size,actionsSinceIntro:sinceIntro,hasReady:eligible.length>0,onlyLastObject:eligible.length>0&&eligible.every(p=>owners(p.items).some(id=>lastObjects.has(id)))});
  const candidateIntroduction=introduce(),nextIntroduction=candidateIntroduction?.intro?.newProperty||admission?candidateIntroduction:undefined;
  if(nextIntroduction?.intro?.newProperty)return nextIntroduction;
@@ -86,37 +87,38 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const dueStreak=dueTurnsSinceFirstCheck(history.map(t=>t.reason));
  const lane=chooseWorkLane(due.length>0,first.length>0,dueStreak),selected=lane==='due'?due:first;
  const affinity=await readGroupContext(db,b,history),sinceSelfCheck=history.slice(history.map(t=>t.recipe.format).lastIndexOf('self_check')+1).length;
- if((!s.format||s.format==='mixed')&&sinceSelfCheck>=9){const targets=selected.filter(p=>!active.get(acquisitionKey(p.goals[0]))?.selfCheckedAt).sort((a,c)=>objectRank(a)-objectRank(c));const task=buildSelfCheck(b,targets,affinity);if(task)return {task,intro:undefined};}
+ if((!s.format||s.format==='mixed')&&sinceSelfCheck>=9){const targets=selected.filter(p=>!active.get(propertyKey(p.goals[0]))?.selfCheckedAt).sort((a,c)=>objectRank(a)-objectRank(c));const task=buildSelfCheck(b,targets,affinity);if(task)return {task,intro:undefined};}
  // An optional timed rehearsal is a presentation of existing first-check work,
  // never another memory obligation or an objective graduation.
  const sinceRecall=history.slice(history.map(t=>t.recipe.format).lastIndexOf('recall_reveal')+1).length;
- if((!s.format||s.format==='mixed')&&lane==='first'&&sinceRecall>=5){const readyKeys=new Set(first.filter(p=>!owners(p.items).some(id=>lastObjects.has(id))).flatMap(p=>p.goals.map(acquisitionKey))),recalls=pool.proposals.filter(p=>p.recipe.format==='recall_reveal'&&p.goals.length===1&&readyKeys.has(acquisitionKey(p.goals[0]))&&!active.get(acquisitionKey(p.goals[0]))?.rehearsedAt);recalls.sort((a,c)=>objectRank(a)-objectRank(c));for(const proposal of recalls){const task=materializeGoalProposal(b,enabled,proposal,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.learningRecall=true;task.intent='learn';task.reason='rehearsal';return {task,intro:undefined};}}}
- const protectedGoals=new Set([...active.values()].map(u=>u.goal.id));
- const completedKeys=new Set([...ledger.units.filter(u=>u.stage==='completed').map(u=>u.key),...catalog.filter(e=>memories.has(e.goal.id)&&!active.has(acquisitionKey(e.goal))).map(e=>acquisitionKey(e.goal))]);
- const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(acquisitionKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
+ if((!s.format||s.format==='mixed')&&lane==='first'&&sinceRecall>=5){const readyKeys=new Set(first.filter(p=>!owners(p.items).some(id=>lastObjects.has(id))).flatMap(p=>p.goals.map(acquisitionKey))),recalls=pool.proposals.filter(p=>p.recipe.format==='recall_reveal'&&p.goals.length===1&&readyKeys.has(acquisitionKey(p.goals[0]))&&!active.get(propertyKey(p.goals[0]))?.rehearsedAt);recalls.sort((a,c)=>objectRank(a)-objectRank(c));for(const proposal of recalls){const task=materializeGoalProposal(b,enabled,proposal,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.learningRecall=true;task.intent='learn';task.reason='rehearsal';return {task,intro:undefined};}}}
+ const protectedGoals=new Set(catalog.filter(e=>active.has(propertyKey(e.goal))).map(e=>e.goal.id));
+ const completedKeys=new Set([...ledger.units.filter(u=>u.stage==='completed').map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)&&!active.has(propertyKey(e.goal))).map(e=>propertyKey(e.goal))]);
+ const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(propertyKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
  const diagnostic=()=>chronologyPractice(b,enabled,knownFacts,protectedGoals,s.tag??'all',s.format??'mixed',history,s.id+(s.completedCount??0));
  const lastDiagnostic=history.map(t=>!!t.recipe.diagnostic).lastIndexOf(true),diagnosticActions=history.slice(lastDiagnostic+1).reduce((n,t)=>n+Math.max(1,t.items.length),0);
  const recentContext=history.map(t=>!!t.contextual||!!t.recipe.diagnostic).lastIndexOf(true),contextActions=history.slice(recentContext+1).reduce((n,t)=>n+Math.max(1,t.items.length),0);
  if(s.mode!=='practice'&&(s.format==='mixed'&&contextActions>=6||['sort','timeline'].includes(s.format??''))){
   const targets=first.filter(p=>p.recipe.format==='choice'||p.recipe.format==='categorize').sort((a,c)=>objectRank(a)-objectRank(c));
-  const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&!active.has(acquisitionKey(g))&&memories.has(g.id)&&new Date(memories.get(g.id)!.card.due).getTime()>now)).filter(p=>p.recipe.format==='choice');
+  const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&!active.has(propertyKey(g))&&memories.has(g.id)&&new Date(memories.get(g.id)!.card.due).getTime()>now)).filter(p=>p.recipe.format==='choice');
   if(lane==='first'||!due.length){const task=buildLearningChronology(b,targets,supports,history,s.completedCount??0);if(task)return {task,intro:undefined};}
  }
  if((s.format==='mixed'&&contextActions>=8&&!eligible.length||['timeline','sort','missing'].includes(s.format??''))){const task=diagnostic();if(task)return {task,intro:undefined};}
  const groups=(!s.format||['mixed','match','categorize'].includes(s.format))?groupProposals(b,selected,new Set(memories.keys()),12,{spareAnswer:true,conveyor:true,context:affinity}).filter(compatible):[];
  const proposals=[...selected,...groups],earliest=selected.length?Math.min(...selected.flatMap(p=>p.goals.map(g=>at(g.id)))):now;
- const formatRank=(p:typeof pool.proposals[number])=>history.slice(-5).filter(t=>t.recipe.format===p.recipe.format).length*3+Number(p.recipe.format===history.at(-1)?.recipe.format)*8+(p.group?(history.at(-1)?.items.length??0)>1?8:-2:0);
+ const directionRank=(p:typeof pool.proposals[number])=>p.goals.reduce((sum,g)=>{const last=history.slice().reverse().flatMap(t=>t.studyContract?.primaryGoals??[]).find(other=>propertyKey(other)===propertyKey(g));return sum+Number(!!last&&last.direction===g.direction)*4;},0);
+ const formatRank=(p:typeof pool.proposals[number])=>directionRank(p)+history.slice(-5).filter(t=>t.recipe.format===p.recipe.format).length*3+Number(p.recipe.format===history.at(-1)?.recipe.format)*8+(p.group?(history.at(-1)?.items.length??0)>1?8:-2:0);
  proposals.sort((a,c)=>{
   const urgency=(p:typeof a)=>lane==='due'?Math.floor(Math.max(0,Math.min(...p.goals.map(g=>at(g.id)))-earliest)/60000):0;
   const repeatsLast=(p:typeof a)=>Number(owners(p.items).some(id=>lastObjects.has(id)));
   return repeatsLast(a)-repeatsLast(c)||urgency(a)-urgency(c)||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id)+a.recipe.format)-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)+c.recipe.format);
  });
- for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(acquisitionKey(g)))?'confirmation':'due';return {task,intro:undefined};}}
+ for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(propertyKey(g)))?'confirmation':'due';return {task,intro:undefined};}}
  const remainingRepair=await selectRepairWork(db,b,enabled,s,memories,false,new Set(),repairOptions);if(remainingRepair){remainingRepair.learningLifecycle=1;return {task:remainingRepair,intro:undefined};}
  if(nextIntroduction)return nextIntroduction;
  const diagnosticTask=diagnostic();if(diagnosticTask&&(contextActions>=8||['timeline','sort','missing'].includes(s.format??'')))return {task:diagnosticTask,intro:undefined};
- const knownKeys=new Set([...ledger.units.map(u=>u.key),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>acquisitionKey(e.goal))]);
- const games=pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(acquisitionKey(g))));
+ const knownKeys=new Set([...ledger.units.map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>propertyKey(e.goal))]);
+ const games=pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(propertyKey(g))));
  games.sort((a,c)=>objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||Number(a.goals.some(g=>recent.includes(g.id)))-Number(c.goals.some(g=>recent.includes(g.id)))||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));
  
  let fallback:Task|undefined;

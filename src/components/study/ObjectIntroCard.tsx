@@ -3,9 +3,9 @@ import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import type {SessionRow} from '../../db/engi-db';
 import type {Bundle,Familiarity,Fact} from '../../lib/engi/types';
-import {questionPrompt} from '../../lib/engi/questions/question-templates';
+
 import {canonicalTargets} from '../../lib/engi/questions/recipe-factory';
-import {properties,textValue} from '../../lib/engi/knowledge/properties';
+import {properties,textValue,trusted} from '../../lib/engi/knowledge/properties';
 import {KnowledgeImage} from '../knowledge/KnowledgeImage';
 import './learning22.css';
 
@@ -48,7 +48,8 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
  const sheet=useRef<HTMLDivElement>(null),[heroReady,setHeroReady]=useState(false),entered=useRef(false),entryAnimation=useRef<Animation|undefined>(undefined);
  useLayoutEffect(()=>{if(!heroReady||entered.current||!sheet.current)return;entered.current=true;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;entryAnimation.current=sheet.current.animate([{transform:`translateY(${window.innerHeight*.9}px)`},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,1,.36,1)'});},[heroReady]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
- const items=useMemo(()=>{const ids=new Set(intro.unitIds);const rank=(item:{factId?:string})=>!item.factId?0:bundle.facts.find(f=>f.id===item.factId)?.valueKind==='image'?1:2;return canonicalTargets(bundle).filter(i=>ids.has(i.targetId)).sort((a,b)=>rank(a)-rank(b))},[bundle,intro.unitIds.join('|')]);
+ const allItems=useMemo(()=>{const ids=new Set(intro.unitIds);const rank=(item:{factId?:string})=>!item.factId?0:bundle.facts.find(f=>f.id===item.factId)?.valueKind==='image'?1:2;return canonicalTargets(bundle).filter(i=>ids.has(i.targetId)).sort((a,b)=>rank(a)-rank(b))},[bundle,intro.unitIds.join('|')]);
+ const items=useMemo(()=>[...new Map(allItems.slice().sort((a,b)=>Number(b.targetId.endsWith(':reverse'))-Number(a.targetId.endsWith(':reverse'))).map(i=>[i.factId??i.targetId,i])).values()],[allItems]);
  const propertyById=useMemo(()=>new Map(properties(bundle).map(p=>[p.id,p])),[bundle]);
  const mediaList=useMemo(()=>bundle.media.filter(m=>m.entityId===intro.entityId&&!m.archived&&m.learningExemplar!==false&&['primary','portrait','photo','image','artwork','painting'].includes(m.role)),[bundle,intro.entityId]);
  const image=mediaList.find(m=>m.primary||m.role==='primary')??mediaList[0];
@@ -56,13 +57,13 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
  const disabled=busy||saving;
  const displayError=error||saveError;
  const [swipeOffset,setSwipeOffset]=useState(0),[swiping,setSwiping]=useState(false);
- const swipe=useHorizontalSwipe({disabled:disabled||exiting.current,onOffset:setSwipeOffset,onDragging:setSwiping,onSwipe:side=>{setSwipeOffset((side===1?1:-1)*window.innerWidth*1.3);void finish(Object.fromEntries(items.map(item=>[item.targetId,side===1?'green':'red'])),true);}});
+ const swipe=useHorizontalSwipe({disabled:disabled||exiting.current,onOffset:setSwipeOffset,onDragging:setSwiping,onSwipe:side=>{setSwipeOffset((side===1?1:-1)*window.innerWidth*1.3);void finish(Object.fromEntries(allItems.map(item=>[item.targetId,side===1?'green':'red'])),true);}});
 
  const rotation=Math.max(-10,Math.min(10,swipeOffset/20));
  const stampOpacity=Math.min(1,Math.max(0,(Math.abs(swipeOffset)-15)/60));
 
  const learnableFactIds=new Set(items.map(i=>i.factId).filter((id):id is string=>Boolean(id)));
- const contextFacts=bundle.facts.filter(f=>f.entityId===intro.entityId&&!f.archived&&!learnableFactIds.has(f.id));
+ const contextFacts=bundle.facts.filter(f=>f.entityId===intro.entityId&&trusted(f)&&!learnableFactIds.has(f.id)&&(f.learnable===false||propertyById.get(f.key)?.learnable===false));
  const entityTags=bundle.entityTags.filter(t=>t.entityId===intro.entityId&&!t.archived);
  const tagById=new Map(bundle.tags.map(t=>[t.id,t]));
  const tags=entityTags.map(t=>tagById.get(t.tagId)?.name).filter((name):name is string=>Boolean(name));
@@ -70,7 +71,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
 
  async function choose(unitId:string,color:Familiarity){
   if(disabled||exiting.current)return;
-  latestSelections.current={...latestSelections.current,[unitId]:color};setSelections(latestSelections.current);setSaveError('');
+  const item=allItems.find(i=>i.targetId===unitId),ids=allItems.filter(i=>i.targetId===unitId||!!item?.factId&&i.factId===item.factId).map(i=>i.targetId);latestSelections.current={...latestSelections.current,...Object.fromEntries(ids.map(id=>[id,color]))};setSelections(latestSelections.current);setSaveError('');
   // Draft writes are ordered, but do not block or dim the card's controls.
   const write=writes.current.catch(()=>{}).then(()=>onChoose(unitId,color));writes.current=write;
   try{await write}catch{if(!exiting.current)setSaveError('Не удалось сохранить выбор. Попробуйте ещё раз.')}
@@ -125,10 +126,10 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
      <div className="learning22-properties">
       {items.map(item=>{
        const fact=bundle.facts.find(f=>f.id===item.factId);
-       const reverse=item.targetId.endsWith(':reverse');
+
        const isIdentity=!fact||item.targetId.includes(':visual_identity');
        const identityInfo=isIdentity?getIdentityInfo(entity?.type):undefined;
-       const label=isIdentity?identityInfo!.label:reverse?questionPrompt(fact?propertyById.get(fact.key):undefined,item.name,'choice','reverse'):fact?propertyById.get(fact.key)?.name??fact.key:'Портрет';
+       const label=isIdentity?identityInfo!.label:fact?propertyById.get(fact.key)?.name??fact.key:'Портрет';
        const selected=selections[item.targetId]??intro.selections[item.targetId]??'red';
        const known=selected==='green'||selected==='suspended';
        const val=isIdentity?identityInfo!.text:formatIntroValue(fact,item.answer,bundle);

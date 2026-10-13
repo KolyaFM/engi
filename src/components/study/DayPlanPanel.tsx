@@ -1,3 +1,4 @@
+import '../../ui/work-badge.css';
 import {useEffect,useRef,useState} from 'react';
 import {dayPlanSummary,dayBoundary,type GoalDayPlan} from '../../lib/engi/study-core/day-plan';
 import './day-plan.css';

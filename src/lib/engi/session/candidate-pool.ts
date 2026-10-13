@@ -24,7 +24,7 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  const diagnosticFormat=['timeline','sort','missing'].includes(s.format??'');
  if(!diagnosticFormat)for(const i of candidates){const m=mem.get(i.targetId)!,task=composeUnit(b,m,s.tag,s.format,history);if(task){task.practice=s.mode==='practice'&&!unitDue(m,s.id,completed);task.reason=task.practice?'practice':m.status==='triaged'||m.status==='learning'?'bootstrap':'due';return {task}}}
  const entityOf=(i:typeof units[number])=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId;
- const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId));
+ const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId)&&(!i.factId||!mem.has(i.targetId.replace(/:(forward|reverse)$/,i.targetId.endsWith(':reverse')?':forward':':reverse'))));
  const budget=Math.max(0,(newCardsPerDay??(due.length>=20?1:3))+newState.extraBudget-newState.introducedEntityIds.length);
  const ownerKnown=(i:typeof units[number])=>seenEntities.has(entityOf(i));
  const first=newUnits.find(ownerKnown)??(budget>0?newUnits.find(i=>!sameEntity(entityOf(i))):undefined);

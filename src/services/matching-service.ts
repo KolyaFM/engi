@@ -5,6 +5,8 @@ import {taskContentRevisions} from '../lib/engi/study-core/compiler';
 import {buildGoalCatalog} from './goal-catalog';
 import {ensureDayPlan} from './day-plan-service';
 import {commitReview} from './review-commit';
+import {deckStudyScope} from './deck-study-scope';
+import {readDeckPropertySettings} from './deck-property-settings';
 
 export type MatchPairInput={sessionId:string;taskId:string;entityId:string;answerId:string;requestId:string};
 /** Called inside the trainer's transaction: memory, pair receipt and screen state are atomic. */
@@ -17,7 +19,8 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  if(!task.studyContract&&!task.studyContractIssue)await prepareStudyTask(d,bundle,task,now);
  const enabled=await d.learningState.bulkGet(task.items.map(i=>i.targetId));
  const current=task.studyContract?taskContentRevisions(bundle,task,task.studyContract):{};
- if(!task.studyContract||enabled.some(r=>!r||r.payload.status==='suspended')||Object.entries(task.studyContract.contentRevisions).some(([id,revision])=>current[id]!==revision)){
+ const scope=deckStudyScope(bundle,session.deckIds,await readDeckPropertySettings(d));
+ if(scope.studyScope&&task.items.some(i=>!scope.studyScope!.targetIds.includes(i.targetId))||!task.studyContract||enabled.some(r=>!r||r.payload.status==='suspended')||Object.entries(task.studyContract.contentRevisions).some(([id,revision])=>current[id]!==revision)){
   const result=await commitInvalidStudyTask(d,session,task);await core.skip(task.id);
   return {correct:false,complete:true,interaction:result.interaction,feedback:result.feedback,milestone:undefined};
  }

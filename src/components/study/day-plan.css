@@ -23,3 +23,5 @@
 .day-plan-inline button:focus-visible{outline:3px solid #a88b70;outline-offset:3px}
 .day-plan-mistakes-help{border-color:#e5dfd7;background:#fff;color:#292524;box-shadow:0 8px 24px #78645014}.day-plan-mistakes-help small{color:#78716c}.day-plan-mistakes-help button{background:#efe9df;color:#57534e}
 @media(max-width:360px){.day-plan-inline{gap:6px}.day-plan-inline>.day-plan-number,.day-plan-inline>.day-plan-mistakes{padding:8px;min-width:40px}}
+.day-plan-inline>.day-plan-number,.day-plan-inline>.day-plan-mistakes{flex-direction:row;gap:5px;padding:8px;min-width:44px}.day-plan-inline strong{font-size:18px}
+.day-plan-inline>.reinforce{background:var(--work-learning-bg);color:var(--work-learning-ink)}.day-plan-inline>.repeat{background:var(--work-repeat-bg);color:var(--work-repeat-ink)}.day-plan-inline>.day-plan-mistakes{background:var(--work-mistakes-bg);color:var(--work-mistakes-ink)}
