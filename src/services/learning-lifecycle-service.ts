@@ -4,7 +4,7 @@ import type {GoalCatalogEntry} from '../lib/engi/knowledge/goal-progress';
 import type {GoalMemory} from '../lib/engi/study-core/memory';
 import type {GoalDayPlan} from '../lib/engi/study-core/day-plan';
 import {dayBoundary} from '../lib/engi/study-core/day-plan';
-import {acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,ACQUISITION_CONFIRMATION_MS,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
+import {acquisitionKey,admitAcquisition,emptyLifecycle,learningLifecycleSchema,ACQUISITION_CONFIRMATION_MS,propertyKey,type LearningLifecycle} from '../lib/engi/study-core/acquisition';
 import {INTRO_DISCLOSURE_COOLDOWN_MS} from '../lib/engi/study-core/exposure';
 import {readStudyPreferences} from './study-preferences-service';
 export const LIFECYCLE_KEY='studyCore:learningLifecycle';
@@ -60,7 +60,7 @@ export async function lifecycleProjection(db:EngiDB,catalog:GoalCatalogEntry[],m
  const {newCardsPerDay}=await readStudyPreferences(db),today=ledger.cards.filter(c=>c.source==='daily'&&dayBoundary(new Date(c.introducedAt)).day===dayBoundary(now).day),left=Math.max(0,newCardsPerDay-today.length),newCount=Math.min(left,fresh.size);
  const dates=[...learning.map(u=>new Date(u.availableAt).getTime()),...memories.filter(m=>activeGoalIds.has(m.goalId)).map(m=>new Date(m.card.due).getTime())].filter(t=>t>now.getTime());
  return {...plan,lifecycle:true,dailyTarget:Math.min(newCardsPerDay,today.length+fresh.size),newBudget:newCardsPerDay,newTarget:today.length+newCount,newGoalIds:today.map(c=>c.entityId),learningGoalIds:learning.map(u=>u.goal.id),admissionGoalIds:[],
-  workload:{new:newCount,learning:learning.length,repeat:repeats.size,mistakes:plan.mistakes?.length??0},available:{new:newCount,reinforce:learning.filter(u=>new Date(u.availableAt)<=now).length,repeat:repeats.size},
+  workload:{new:newCount,learning:learning.length,repeat:repeats.size,mistakes:new Set(plan.mistakes?.map(m=>propertyKey(m.goal))).size},available:{new:newCount,reinforce:learning.filter(u=>new Date(u.availableAt)<=now).length,repeat:repeats.size},
   repeat:[...repeats.values()].map(m=>({goalId:m.goalId,dueAt:new Date(m.card.due).toISOString(),status:'pending' as const,reason:'review' as const})),reinforce:learning.map(u=>({goalId:u.goal.id,dueAt:u.availableAt,status:'pending' as const,reason:'learning' as const})),
   nextAvailabilityAt:dates.length?new Date(Math.min(...dates)).toISOString():undefined};
 }

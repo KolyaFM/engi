@@ -44,13 +44,14 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   // rather than resolving every object's images and facts for each proposal.
   const globalRecipe=b.studyScope&&r.tag===b.studyScope.id?context?.recipes.find(g=>g.tag===undefined&&g.subjectType===r.subjectType&&g.answerKey===r.answerKey&&g.cue===r.cue&&g.direction===r.direction&&g.format===r.format&&g.answerPresentation===r.answerPresentation&&JSON.stringify(g.mediaRoles)===JSON.stringify(r.mediaRoles)):undefined;
   const answerPool=b.studyScope&&r.tag===b.studyScope.id?(globalRecipe?poolFor(globalRecipe):eligible(b,{...r,tag:undefined})):pool;
-  const wrong=distractors(b,item,answerPool,m,history),twin=r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
+  const imagePool=r.answerPresentation==='image'?answerPool.filter((i,n,all)=>i.answerImage&&(i.answerId===item.answerId||i.answerImage!==item.answerImage)&&all.findIndex(x=>x.answerImage===i.answerImage)===n):answerPool;
+  const wrong=distractors(b,item,imagePool,m,history),twin=r.answerPresentation!=='image'&&r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
-  if(r.answerPresentation==='image')for(const o of options){const candidate=pool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
-  const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.name,r.format,r.direction);
+  if(r.answerPresentation==='image')for(const o of options){const candidate=answerPool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
+  const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.valueCue?.text??item.name,r.format,r.direction);
   if(r.answerKey==='created_by'&&r.cue==='image'&&!p?.promptTemplates?.forward)recipe.prompt='Кто автор этой работы?';
   if(p?.valueKind==='image')recipe.prompt=r.answerPresentation==='image'?`Выберите ${p.name.toLowerCase()} для: ${item.name}`:(p.promptTemplates?.forward&&!p.promptTemplates.forward.includes('{subject}')?p.promptTemplates.forward:`Какому объекту принадлежит ${p.name.toLowerCase()}?`);
-  if(r.answerKey==='identity')recipe.prompt='Кто или что на изображении?';
+  if(r.answerKey==='identity')recipe.prompt=r.answerPresentation==='image'?'Выберите подходящее изображение.':'Кто или что на изображении?';
   const t:Task={id:crypto.randomUUID(),recipe,items:[item],options,reason:objective?'calibration':'due',pretest:m.attempts===0,discrimination:twin,difficultyStage:stage};
   if(preflight(t))return t;
  }
@@ -59,7 +60,7 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
 export function composeFeed(b:Bundle,memories:Memory[],tag='all',format='mixed',mode='daily',recent:Task[]=[],count=12):Task[]{
  const main=mode!=='practice',out:Task[]=[];
  if(['timeline','sort','missing'].includes(format)){
-  for(const r of recipes(b).filter(r=>r.format===format&&(tag==='all'?r.tag===undefined:r.tag===tag))){const pool=eligible(b,r),seen=new Set<number>(),items=shuffle(pool).filter(i=>{if(i.year===undefined||seen.has(i.year))return false;seen.add(i.year);return true}).slice(0,4);if(format==='timeline'?items.length<1:items.length<3)continue;
+  for(const r of recipes(b).filter(r=>r.format===format&&(tag==='all'?r.tag===undefined:r.tag===tag))){const pool=eligible(b,r),seen=new Set<number>(),items=shuffle(pool).filter(i=>{if(i.year===undefined||seen.has(i.year))return false;seen.add(i.year);return true}).slice(0,format==='sort'?5:4);if(format==='timeline'?items.length<1:items.length<3)continue;
    const t:Task={id:crypto.randomUUID(),recipe:{...r,prompt:questionPrompt(properties(b).find(p=>p.id===r.answerKey),items[0].name,r.format,r.direction)},items:format==='timeline'?[items[0]]:items,options:shuffle(items.map(i=>({id:i.entityId,name:i.name}))),reason:'challenge'};
    if(format==='timeline')t.timeline=timelineContext(pool);if(format==='missing')t.sequence=[...items].sort((a,c)=>a.year!-c.year!).map((i,n)=>n===1?null:{name:i.name,entityId:i.entityId});if(preflight(t))out.push(t);if(out.length>=count)break;
   }return out;

@@ -1,0 +1,4 @@
+:root{--work-learning-bg:#e4ecfa;--work-learning-ink:#275caf;--work-repeat-bg:#e5f0e1;--work-repeat-ink:#2e744f;--work-mistakes-bg:#fae5e1;--work-mistakes-ink:#b44943}
+.work-badge{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:34px;padding:7px;border-radius:12px;font-variant-numeric:tabular-nums;line-height:1.1}
+.work-badge strong{font-size:16px;font-weight:700}.work-badge small{font-size:10px;white-space:nowrap}
+.work-badge.learning{background:var(--work-learning-bg);color:var(--work-learning-ink)}.work-badge.repeat{background:var(--work-repeat-bg);color:var(--work-repeat-ink)}.work-badge.mistakes{background:var(--work-mistakes-bg);color:var(--work-mistakes-ink)}

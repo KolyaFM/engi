@@ -38,7 +38,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const revisions = await currentRevisions(contract);
         if (Object.entries(contract.contentRevisions).some(([id, rev]) => revisions[id] !== rev)) throw Error('Task content is stale');
         const memories = await db.appMeta.bulkGet(contract.primaryGoals.map(g => key('memory', g.id)));
-        const acquisition=options.lifecycle?await acquisitionBlocks(db,contract.primaryGoals.map(g=>g.id),now):undefined;
+        const acquisition=options.lifecycle?await acquisitionBlocks(db,contract.primaryGoals.map(g=>g.id),now,undefined,contract.primaryGoals):undefined;
         const notDue = memories.filter(r => r && !acquisition?.active.has(r.value.goalId) && new Date(r.value.card.due) > now).map(r => r!.value.goalId as string);
         const exposureRows = await db.appMeta.bulkGet(contract.primaryGoals.map(g => key('exposure', g.id)));
         const exposed = [...blockedByExposure(exposureRows.filter(r => !!r&&!acquisition?.active.has(r.value.goalId)).map(r => r!.value as ExposureEntry), now)];
@@ -121,7 +121,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const rows = await db.appMeta.bulkGet(ids.map(id => key('memory', id)));
         const previous = rows.filter(r => !!r).map(r => r!.value as GoalMemory);
         // Another open screen may have reviewed the same goal in the meantime.
-        const awaitActive=options.lifecycle?(await acquisitionBlocks(db,ids,now)).active:new Map();
+        const awaitActive=options.lifecycle?(await acquisitionBlocks(db,ids,now,undefined,contract.primaryGoals)).active:new Map();
         const notDue = new Set(previous.filter(m => new Date(m.card.due) > now).map(m => m.goalId));
         if (attempt.results) attempt = { ...attempt, results: attempt.results.map(r => ({ ...r, credit: r.credit && (!notDue.has(r.goalId)||!!options.lifecycle&&awaitActive.has(r.goalId)) })) };
         const lifecycle=options.lifecycle?await applyAcquisitionEvidence(db,attempt,contract,previous):undefined;if(lifecycle)attempt=lifecycle.attempt;
@@ -153,7 +153,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const revisions=await currentRevisions(contract);
         if(Object.entries(contract.contentRevisions).some(([id,rev])=>revisions[id]!==rev))throw Error('Task content is stale');
         const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
-        const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now):undefined;
+        const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now,undefined,contract.primaryGoals):undefined;
           let firstResult:NonNullable<Attempt['results']>[number]|undefined=binding.support||previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
             credit:!contract.contextual&&!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
         if(pair.correct)matched[responseKey]=answer;

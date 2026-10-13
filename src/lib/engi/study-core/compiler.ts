@@ -3,6 +3,8 @@ import { factValue, trusted, properties } from '../knowledge/properties';
 import { defineGoal, type LearningGoal } from './goals';
 import { validateContract, type Claim, type TaskContract } from './contracts';
 import { discreteAnswer } from '../questions/timeline';
+import {valueCue,valueOwners,refreshValueOwners} from '../questions/value-cue';
+import {allowedMedia} from '../questions/exemplar-selector';
 const version = (values: unknown[]) => JSON.stringify(values);
 export function entityRevision(b: Bundle, id: string) {
   const e = b.entities.find(e => e.id === id && !e.archived && !e.mergedInto);
@@ -43,11 +45,18 @@ export function claimForFact(b: Bundle, f: Fact): Claim {
 /** Compiles the information actually rendered by the current StudyFeed, not every field in Item. */
 export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if (!task.items.length) throw Error('Empty task');
+  if(task.recipe.answerPresentation==='image'&&(task.options.some(o=>!o.image)||new Set(task.options.map(o=>o.image)).size!==task.options.length||task.recipe.answerKey==='identity'&&task.options.length!==4))throw Error('Image choices are incomplete or ambiguous');
+  if(task.recipe.direction==='reverse')refreshValueOwners(b);
   const fmt=task.recipe.format, first=task.items[0], skill=fmt==='recall_reveal'?'recall':'recognition';
   const revisions: Record<string,string>={}, addClaim=(claim:Claim)=>{revisions[claim.key]=claim.revision;return claim;};
   for(const item of task.items){
     revisions[`entity:${item.entityId}`]=entityRevision(b,item.entityId);
     if(item.factId){const f=factFor(b,item);revisions[`fact:${f.id}`]=factRevision(b,f);
+      if(task.recipe.direction==='reverse'){
+        const cue=valueCue(b,f);if(!cue||cue.key!==item.valueCue?.key||cue.text!==item.valueCue.text||item.entityId!==f.entityId||item.answerId!==f.entityId)throw Error('Reverse cue disagrees with graph');
+        const owners=valueOwners(b,cue.key);if(task.recipe.format==='recall_reveal'&&owners.size!==1||task.options.some(o=>o.id!==item.answerId&&owners.has(o.id)))throw Error('Reverse answer is ambiguous');
+        revisions[`value:${cue.key}`]=version([...owners].sort());
+      }
       // The graph may change even while the cached task still contains the old answer.
       const expected=task.recipe.direction==='reverse'?f.entityId:f.valueEntityId;
       if(f.valueKind==='image'){const m=b.media.find(m=>m.id===f.valueMediaId&&!m.archived);if(item.answerId!==f.entityId||task.recipe.cue==='image'&&item.image!==m?.url||task.recipe.answerPresentation==='image'&&item.answerImage!==m?.url)throw Error('Image answer disagrees with graph');}
@@ -56,7 +65,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(item.answerEntityId)revisions[`entity:${item.answerEntityId}`]=entityRevision(b,item.answerEntityId);
     if(item.mediaId){const m=b.media.find(m=>m.id===item.mediaId&&!m.archived);if(!m||m.url!==item.image||m.entityId!==item.entityId)throw Error('Media is unavailable');revisions[`media:${m.id}`]=version([m.entityId,m.url,m.role,m.learningExemplar]);}
   }
-  if(task.recipe.answerPresentation==='image')for(const option of task.options){const media=b.media.find(m=>m.id===option.mediaId&&!m.archived);if(!media||media.url!==option.image||!b.facts.some(f=>trusted(f)&&f.entityId===option.id&&f.key===task.recipe.answerKey&&f.valueMediaId===media.id))throw Error('Image option is unavailable');revisions[`media:${media.id}`]=version([media.entityId,media.url,media.role,media.learningExemplar]);}
+  if(task.recipe.answerPresentation==='image')for(const option of task.options){const media=b.media.find(m=>m.id===option.mediaId&&!m.archived),owned=task.recipe.answerKey==='identity'?allowedMedia(b,option.id,task.recipe).some(m=>m.id===media?.id):b.facts.some(f=>trusted(f)&&f.entityId===option.id&&f.key===task.recipe.answerKey&&f.valueMediaId===media?.id);if(!media||media.url!==option.image||media.entityId!==option.id||!owned)throw Error('Image option is unavailable');revisions[`media:${media.id}`]=version([media.entityId,media.url,media.role,media.learningExemplar]);}
   const p=properties(b).find(p=>p.id===task.recipe.answerKey);
   if(p)revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]);
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
@@ -95,7 +104,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
  else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
    for(const item of task.items)if(task.recipe.cue==='name'||!item.image)shownClaims.push(addClaim(claimForName(b,item.entityId)));
  }
- else if(task.recipe.cue==='name'||!first.image)shownClaims.push(addClaim(claimForName(b,first.entityId)));
+ else if(task.recipe.direction!=='reverse'&&(task.recipe.cue==='name'||!first.image)){const claim=claimForName(b,first.entityId);if(task.recipe.answerKey==='identity'&&task.recipe.answerPresentation==='image')claim.revealsGoalIds=[];shownClaims.push(addClaim(claim));}
   // Custom prompts sometimes interpolate the subject even with an image cue.
   if(task.recipe.cue==='image'&&task.recipe.answerKey!=='identity'&&task.recipe.prompt?.includes(first.name))shownClaims.push(addClaim(claimForName(b,first.entityId)));
   const feedbackClaims:Claim[]=[];
@@ -112,7 +121,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }
   if(fmt==='multi_choice')feedbackClaims.push({key:`set:${first.entityId}:${task.recipe.answerKey}`,revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   // The detail panel renders the source object's name before submission.
-  const hintClaims=[addClaim({...claimForName(b,first.entityId),key:`details:${first.entityId}`})];
+  const hintClaims=[addClaim({...claimForName(b,first.entityId),key:`details:${first.entityId}`,...(task.recipe.direction==='reverse'?{revealsGoalIds:goals.map(g=>g.id)}:{})})];
   hintClaims.push({key:'source',revision:version(Object.values(revisions).sort()),revealsGoalIds:goals.map(g=>g.id)});
   if(fmt==='recall_reveal')hintClaims.push({key:'early-answer',revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
@@ -132,10 +141,11 @@ export function contractAnswer(task:Task,answer:unknown):unknown{
   return answer;
 }
 
-export function compileIntroContract(b:Bundle,intro:{entityId:string;unitIds:string[];newProperty:boolean},sessionId:string):TaskContract{
+export function compileIntroContract(b:Bundle,intro:{introId?:string;entityId:string;unitIds:string[];newProperty:boolean},sessionId:string):TaskContract{
   const shownClaims:Claim[]=[claimForName(b,intro.entityId)];
   const rows=b.facts.filter(f=>f.entityId===intro.entityId&&trusted(f));
-  const visible=rows.filter(f=>!intro.newProperty||intro.unitIds.some(id=>id.startsWith(`ku:fact:${f.id}:`)));
+  const definitions=new Map(properties(b).map(p=>[p.id,p]));
+  const visible=rows.filter(f=>intro.unitIds.some(id=>id.startsWith(`ku:fact:${f.id}:`))||!intro.newProperty&&(f.learnable===false||definitions.get(f.key)?.learnable===false));
   for(const f of visible){
     const claim=claimForFact(b,f);
     // Intro currently collapses even precise same-year dates to a year label.
@@ -150,7 +160,7 @@ export function compileIntroContract(b:Bundle,intro:{entityId:string;unitIds:str
     }
   }
   const contentRevisions=Object.fromEntries(shownClaims.map(c=>[c.key,c.revision]));
-  return {id:`intro:${sessionId}:${intro.entityId}:${JSON.stringify([...intro.unitIds].sort())}`,primaryGoals:[],supportGoalIds:[],
+  return {id:`intro:${sessionId}:${intro.entityId}:${intro.introId??JSON.stringify([...intro.unitIds].sort())}`,primaryGoals:[],supportGoalIds:[],
     actionFamily:'select',visibleEntities:[intro.entityId],shownClaims,hintClaims:[],feedbackClaims:[],contentRevisions,
     response:{kind:'practice-choice',options:['next','leave'],expected:'next'},practice:true};
 }

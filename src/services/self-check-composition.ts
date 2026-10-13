@@ -5,7 +5,7 @@ import {groupContext} from './group-affinity';
 export function buildSelfCheck(b:Bundle,ready:GoalProposal[],affinity=groupContext(b)):Task|undefined{
  // Both directions test the same image property. Present its own image as the
  // front even when the ordinary choice generator picked image answer buttons.
- ready=ready.map(p=>p.recipe.answerPresentation==='image'&&b.properties?.some(d=>d.id===p.recipe.answerKey&&d.valueKind==='image')?{...p,recipe:{...p.recipe,cue:'image',answerPresentation:undefined},items:p.items.map(i=>({...i,image:i.answerImage,mediaId:i.answerMediaId}))}:p);
+ ready=ready.filter(p=>p.recipe.direction!=='reverse').map(p=>p.recipe.answerPresentation==='image'&&b.properties?.some(d=>d.id===p.recipe.answerKey&&d.valueKind==='image')?{...p,recipe:{...p.recipe,cue:'image',answerPresentation:undefined},items:p.items.map(i=>({...i,image:i.answerImage,mediaId:i.answerMediaId}))}:p);
  const answerItems=ready.map(p=>p.items[0]);
  for(const anchor of ready){if(anchor.recipe.format!=='choice'||anchor.recipe.answerPresentation==='image')continue;const signature=affinity.signature(anchor.items[0],anchor.recipe);if(!signature)continue;const members=ready.filter(p=>p.recipe.format==='choice'&&!p.recipe.answerPresentation&&p.recipe.answerKey===anchor.recipe.answerKey&&p.recipe.cue===anchor.recipe.cue&&p.recipe.direction===anchor.recipe.direction&&affinity.signature(p.items[0],p.recipe)===signature),seen=new Set<string>(),items:Task['items']=[];
   members.sort((a,c)=>Number(c===anchor)-Number(a===anchor));

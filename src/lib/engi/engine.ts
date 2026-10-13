@@ -11,6 +11,8 @@ export function hydrate(m:Memory):Card{return {...m.card,due:new Date(m.card.due
 export function retention(m:Memory){return m.firstSuccessAt?scheduler.get_retrievability(hydrate(m),new Date(),false):0}
 export function preflight(t:Task){
  const a=t.items;if(!a.length)return false;
+ if(t.recipe.answerPresentation==='image'&&(t.options.some(o=>!o.image)||new Set(t.options.map(o=>o.image)).size!==t.options.length||t.recipe.answerKey==='identity'&&t.options.length!==4))return false;
+ if(t.recipe.format==='sort'&&(a.length<3||a.length>5))return false;
  if(t.recipe.format==='multi_choice'&&(!t.answerSet?.length||t.answerSet.some(id=>!t.options.some(o=>o.id===id))||!t.options.some(o=>!t.answerSet!.includes(o.id))))return false;
  if(t.recipe.format==='match'&&!t.recipe.feed&&(a.length<3||new Set(a.map(i=>i.answerId)).size!==a.length))return false;
  if(['sort','timeline','missing'].includes(t.recipe.format)&&!(t.recipe.feed&&t.recipe.format==='timeline'&&a.length===1)&&(a.length<3||new Set(a.map(i=>i.year)).size!==a.length))return false;

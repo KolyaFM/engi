@@ -13,6 +13,7 @@ const cache:{key:string;pool:Pool}[]=[];
 function freeze(value:any):any{if(value&&typeof value==='object'){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;}
 export function goalProposalPool(b:Bundle,enabled:Memory[],tag='all',format='mixed'):Pool{
  const end=feedSpan('proposals');try{
+
  const key=JSON.stringify([b,enabled,tag,format]),entry=cache.find(e=>e.key===key);
  if(entry){cache.splice(cache.indexOf(entry),1);cache.push(entry);return entry.pool;}
  // Validate with the established generator once per content/configuration value.
@@ -24,6 +25,7 @@ export function goalProposalPool(b:Bundle,enabled:Memory[],tag='all',format='mix
 }
 export function materializeGoalProposal(b:Bundle,enabled:Memory[],proposal:GoalProposal,context:CompositionContext,tag:string,history:Task[],practice=false,memories:ReadonlyMap<string,GoalMemory>=new Map()):Task|undefined{
  const end=feedSpan('materialize');try{
+
  let task:Task|undefined;
  if(proposal.items.some(i=>!enabled.some(m=>m.id===i.targetId&&!m.legacyOf&&m.status!=='suspended')))return;
  if(proposal.group){task={presentation:proposal.presentation,id:crypto.randomUUID(),memoryModel:'goals',recipe:{...proposal.recipe},items:proposal.items.map(i=>({...i})),options:(proposal.options??[]).map(o=>({...o})),reason:'due',practice};}

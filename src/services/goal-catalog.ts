@@ -9,12 +9,12 @@ import {feedSpan} from './feed-performance';
 // Goal FSRS lives in appMeta; legacy rows here configure generation, not scheduling.
 let cached:{key:string;entries:GoalCatalogEntry[]}|undefined;
 // Bump the version whenever goal derivation changes, even if the pack format does not.
-const PERSISTED_CATALOG_KEY='studyCore:goalCatalogCache',PERSISTED_CATALOG_VERSION=1;
+const PERSISTED_CATALOG_KEY='studyCore:goalCatalogCache',PERSISTED_CATALOG_VERSION=2;
 // The goal catalog is global. A temporary selected-deck scope changes question
 // selection, not which knowledge goals exist in the package.
 function catalogBundle(b:Bundle):Bundle{return b.studyScope?{...b,studyScope:undefined}:b;}
 function structuralKey(b:Bundle,memories:Memory[]){return JSON.stringify([catalogBundle(b),memories.filter(m=>m.legacyOf).map(m=>[m.id,m.legacyOf]).sort()]);}
-function withSuspensions(entries:GoalCatalogEntry[],memories:Memory[]){const suspended=new Set(memories.filter(m=>m.status==='suspended').map(m=>m.id));return structuredClone(entries).map(e=>({...e,suspended:e.targetIds.some(id=>suspended.has(id))}));}
+function withSuspensions(entries:GoalCatalogEntry[],memories:Memory[]){const configured=new Set(memories.map(m=>m.id)),suspended=new Set(memories.filter(m=>m.status==='suspended').map(m=>m.id));return structuredClone(entries).map(e=>({...e,suspended:e.targetIds.some(id=>suspended.has(id)||!configured.has(id)&&id.endsWith(':reverse')&&suspended.has(id.replace(/:reverse$/,':forward')))}));}
 export function buildGoalCatalog(b:Bundle,memories:Memory[]){
  const end=feedSpan('catalog');
  try{
