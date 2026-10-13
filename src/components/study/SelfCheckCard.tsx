@@ -1,3 +1,4 @@
+import {DescriptionButton} from './EntityDescription';
 import {useEffect,useState} from 'react';
 import type {Task} from '../../lib/engi/types';
 import {KnowledgeImage} from '../knowledge/KnowledgeImage';
@@ -12,5 +13,5 @@ export function SelfCheckCard({task,initialFlipped,busy,onPersist,onReveal,onNex
  const [flipped,setFlipped]=useState(initialFlipped??[]),[loaded,setLoaded]=useState<string[]>([]),[error,setError]=useState('');const images=task.recipe.cue==='image'?task.items.filter(i=>i.image):[];
  useEffect(()=>{onMediaReady(images.every(i=>loaded.includes(i.entityId)))},[loaded,task.id]);
  function flip(id:string){const next=flipped.includes(id)?flipped.filter(x=>x!==id):[...flipped,id];setFlipped(next);void onPersist(next).catch(()=>setError('Не удалось сохранить положение карточек.'));}
- return <section className="self-check-card"><h2>{task.recipe.prompt??'Попробуйте вспомнить ответы'}</h2><p className="matching-help">Вспомните ответ и переверните карточку, чтобы проверить себя.</p><div className="self-check-grid">{task.items.map(item=><Tile key={item.entityId} task={task} item={item} flipped={flipped.includes(item.entityId)} busy={busy} onFlip={()=>flip(item.entityId)} onReady={()=>setLoaded(old=>old.includes(item.entityId)?old:[...old,item.entityId])} onFail={onMediaFail} onReveal={onReveal} onRevealError={()=>setError('Не удалось сохранить показ ответа.')}/>)}</div>{error&&<p role="alert">{error}</p>}<button type="button" className="button primary" disabled={busy} onClick={onNext}>Продолжить</button></section>;
+ return <section className="self-check-card"><h2>{task.recipe.prompt??'Попробуйте вспомнить ответы'}</h2><p className="matching-help">Вспомните ответ и переверните карточку, чтобы проверить себя.</p><div className="self-check-grid">{task.items.map(item=><div className="described-object" key={item.entityId}><Tile task={task} item={item} flipped={flipped.includes(item.entityId)} busy={busy} onFlip={()=>flip(item.entityId)} onReady={()=>setLoaded(old=>old.includes(item.entityId)?old:[...old,item.entityId])} onFail={onMediaFail} onReveal={onReveal} onRevealError={()=>setError('Не удалось сохранить показ ответа.')}/><DescriptionButton {...item}/></div>)}</div>{error&&<p role="alert">{error}</p>}<button type="button" className="button primary" disabled={busy} onClick={onNext}>Продолжить</button></section>;
 }

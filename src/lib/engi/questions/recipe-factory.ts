@@ -21,7 +21,7 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  }if(r.format==='multi_choice')return [];const f=values[0];if(f.learnable===false)return [];if(['sort','missing'].includes(r.format)&&f.valueKind==='date'&&['circa','range'].includes(f.datePrecision??''))return [];if(deck?.learning.excludedFactIds?.includes(f.id))return [];const obj=ix.entityById.get(f.valueEntityId??'');if(f.valueKind==='entity'&&!obj)return [];
  if(r.direction==='reverse'){
   const cue=valueCue(b,f);if(!cue||r.format!=='choice'&&valueOwners(b,cue.key).size!==1)return [];
-  return [{entityId:e.id,name:e.name,valueCue:cue,targetId:knowledgeUnitId(b,e.id,f.id,'reverse'),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,factId:f.id,sourceUrl:f.source.url??''}];
+  return [{entityId:e.id,name:e.name,valueCue:cue,targetId:knowledgeUnitId(b,e.id,f.id,'reverse'),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
  }
  if(f.valueKind==='image'){const value=b.media.find(m=>m.id===f.valueMediaId&&!m.archived&&m.entityId===e.id);if(!value)return [];return [{entityId:e.id,name:e.name,image:r.cue==='image'?value.url:undefined,mediaId:r.cue==='image'?value.id:undefined,targetId:knowledgeUnitId(b,e.id,f.id),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,answerImage:value.url,answerMediaId:value.id,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];}
  const year=f.valueKind==='date'?Number(f.dateStart?.slice(0,4)):f.valueKind==='number'?f.valueNumber:undefined;

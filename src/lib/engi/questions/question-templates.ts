@@ -2,18 +2,18 @@ import type {Format,PropertyDefinition} from '../types';
 
 type Templates=NonNullable<PropertyDefinition['promptTemplates']>;
 export const QUESTION_TEMPLATES:Readonly<Record<string,Templates>>={
- birth_date:{forward:'Когда родился {subject}?',timeline:'Когда родился {subject}?',sort:'Расположите людей по дате рождения: от ранней к поздней.'},
- presidency_start:{forward:'Когда {subject} стал президентом?',reverse:'Какой президент вступил в должность в этом году?',timeline:'Когда {subject} стал президентом?',sort:'Расположите президентов по началу президентства: от раннего к позднему.'},
- presidency_end:{forward:'Когда закончилось президентство {subject}?',reverse:'Чьё президентство закончилось в этом году?',timeline:'Когда закончилось президентство {subject}?',sort:'Расположите президентов по окончанию президентства: от раннего к позднему.'},
- party:{forward:'К какой партии принадлежал {subject}?'},
- created_by:{forward:'Кто автор «{subject}»?'},
- birth_place:{forward:'Где родился {subject}?'},
- creation_date:{forward:'Когда была создана работа «{subject}»?',timeline:'Когда была создана работа «{subject}»?',sort:'Расположите работы по дате создания: от ранней к поздней.'},
- capital:{forward:'Какой город является столицей {subject}?'},
- invented_by:{forward:'Кто изобрёл «{subject}»?'},
- event_start:{forward:'Когда началось событие «{subject}»?',timeline:'Когда началось событие «{subject}»?',sort:'Расположите события по дате начала: от ранней к поздней.'},
- movement:{forward:'К какому направлению относится «{subject}»?'},
- definition:{forward:'Что означает «{subject}»?'},
+ birth_date:{forward:'Когда родился этот человек?',timeline:'Когда родился этот человек?',sort:'Расположите людей по дате рождения: от ранней к поздней.'},
+ presidency_start:{forward:'Когда началось президентство?',reverse:'Какой президент вступил в должность в этом году?',timeline:'Когда началось президентство?',sort:'Расположите президентов по началу президентства: от раннего к позднему.'},
+ presidency_end:{forward:'Когда закончилось президентство?',reverse:'Чьё президентство закончилось в этом году?',timeline:'Когда закончилось президентство?',sort:'Расположите президентов по окончанию президентства: от раннего к позднему.'},
+ party:{forward:'К какой партии принадлежал этот человек?'},
+ created_by:{forward:'Кто автор этой работы?'},
+ birth_place:{forward:'Где родился этот человек?'},
+ creation_date:{forward:'Когда была создана эта работа?',timeline:'Когда была создана эта работа?',sort:'Расположите работы по дате создания: от ранней к поздней.'},
+ capital:{forward:'Какой город является столицей?'},
+ invented_by:{forward:'Кто это изобрёл?'},
+ event_start:{forward:'Когда началось это событие?',timeline:'Когда началось это событие?',sort:'Расположите события по дате начала: от ранней к поздней.'},
+ movement:{forward:'К какому направлению относится эта работа?'},
+ definition:{forward:'Что это означает?'},
 };
 
 const present=(template:string|undefined)=>template?.trim()||undefined;
@@ -34,6 +34,6 @@ export function questionPrompt(property:PropertyDefinition|undefined,subject:str
  else if(format==='sort')template=present(custom?.sort)??present(builtin?.sort)??`Расположите объекты по полю «${label}»: от раннего к позднему.`;
  else if(format==='timeline')template=present(custom?.timeline)??present(custom?.forward)??present(builtin?.timeline)??present(builtin?.forward);
  else template=present(custom?.forward)??present(builtin?.forward);
- if(!template)template=direction==='reverse'?`Какому объекту соответствует значение поля «${label}»?`:`Укажите «${label}» для «{subject}».`;
+ if(!template)template=direction==='reverse'?`Какому объекту соответствует значение поля «${label}»?`:`Укажите «${label}».`;
  return template.replace(/\{subject\}/g,()=>subject);
 }

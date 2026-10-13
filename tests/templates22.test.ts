@@ -27,13 +27,13 @@ test('templates must be bounded plain strings with recognized placeholders',()=>
 
 test('built-in and overridden prompts identify the actual property and subject',async()=>{
  const {questionPrompt}=await import('../src/lib/engi/questions/question-templates');
- assert.equal(questionPrompt(property(),'Джон Кеннеди','choice'),'Когда родился Джон Кеннеди?');
- assert.equal(questionPrompt(property('presidency_start'),'Джон Кеннеди','timeline'),'Когда Джон Кеннеди стал президентом?');
- assert.equal(questionPrompt(property('presidency_end'),'Джон Кеннеди','choice'),'Когда закончилось президентство Джон Кеннеди?');
+ assert.equal(questionPrompt(property(),'Джон Кеннеди','choice'),'Когда родился этот человек?');
+ assert.equal(questionPrompt(property('presidency_start'),'Джон Кеннеди','timeline'),'Когда началось президентство?');
+ assert.equal(questionPrompt(property('presidency_end'),'Джон Кеннеди','choice'),'Когда закончилось президентство?');
  assert.equal(questionPrompt({...property(),promptTemplates:{forward:'В каком году родился {subject}?'}},'Джон Кеннеди','timeline'),'В каком году родился Джон Кеннеди?');
  assert.equal(questionPrompt(custom,'Психо','choice'),'Кто снял фильм «Психо»?');
  assert.equal(questionPrompt({...custom,promptTemplates:{forward:'{subject}, снова {subject}'}},'$&','recall_reveal'),'$&, снова $&');
- assert.match(questionPrompt(property('custom.date','Дата премьеры'),'Психо','choice'),/Дата премьеры.*Психо/);
+ assert.equal(questionPrompt(property('custom.date','Дата премьеры'),'Психо','choice'),'Укажите «Дата премьеры».');
  assert.notEqual(questionPrompt(undefined,'Объект','timeline'),'Когда это произошло?');
 });
 

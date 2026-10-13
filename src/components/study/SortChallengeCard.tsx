@@ -1,3 +1,4 @@
+import {DescriptionButton} from './EntityDescription';
 import {useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import type {Task} from '../../lib/engi/types';
@@ -40,7 +41,7 @@ export function SortChallengeCard({task,initialOrder,initialCheckedOrder,initial
       onPointerDown={e=>{if(busy||dragging||!e.isPrimary||e.button!==0)return;if(complete||correct){if(image)setZoom(id);return;}const source=e.currentTarget,box=source.getBoundingClientRect();drag.current={id,from:n,to:n,startY:e.clientY,y:e.clientY,active:false,box,image:source.querySelector('img')?.src,original:[...order],gap:parseFloat(getComputedStyle(list.current!).gap)||12,listTop:list.current!.getBoundingClientRect().top,heights:[...list.current!.querySelectorAll('[data-slot]')].map(row=>row.getBoundingClientRect().height),centers:[...list.current!.querySelectorAll('[data-slot]')].map(row=>{const r=row.getBoundingClientRect();return r.top+r.height/2;})};e.currentTarget.closest('.chronology-card')!.setPointerCapture(e.pointerId);}}>
       <div className="sort-content">{image?<KnowledgeImage src={image} alt={item.name} onReady={()=>{loaded.current.add(id);if(images.every(i=>loaded.current.has(i.entityId)))onMediaReady?.(true);}} onFail={onMediaFail}/>:<strong>{item.name}</strong>}</div>
      </div>
-     <div className={`sort-position ${correct?'is-correct':wrong?'is-wrong':''}`}><div><span className="sort-mark" aria-hidden="true">{correct?'✓':wrong?'×':''}</span><span className="sort-rank">{order.length-n}</span></div><span className="sort-year">{complete?item.year:''}</span></div>
+     <div className={`sort-position ${correct?'is-correct':wrong?'is-wrong':''}`}><div><span className="sort-mark" aria-hidden="true">{correct?'✓':wrong?'×':''}</span><span className="sort-rank">{order.length-n}</span></div><span className="sort-year">{complete?item.year:''}</span><DescriptionButton {...item}/></div>
     </div>;
    })}
   </div>

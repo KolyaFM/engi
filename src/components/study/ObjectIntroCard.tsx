@@ -1,3 +1,4 @@
+import {DescriptionButton} from './EntityDescription';
 import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
@@ -118,8 +119,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
       {entityType&&<span className="learning22-badge">{entityType}</span>}
       {tags.map((tag,idx)=><span key={'t-'+idx} className="learning22-badge">{tag}</span>)}
      </div>
-     <h1 id="object-intro-heading">{entity?.name??'Знакомство с объектом'}</h1>
-     {entity?.summary&&<p className="learning22-summary">{entity.summary}</p>}
+     <div className="entity-title-row"><h1 id="object-intro-heading">{entity?.name??'Знакомство с объектом'}</h1>{entity&&<DescriptionButton {...entity}/>}</div>
     </div>
 
     <div className="learning22-section">
