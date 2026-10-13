@@ -1,0 +1,5 @@
+.installed-pack-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.installed-pack-row>div{min-width:0;flex:1}.installed-pack-row h3{overflow-wrap:anywhere;margin:0 0 6px}
+.installed-pack-row>.button{flex:0 0 auto;color:#a54545;min-width:88px}
+.installed-packs-panel .section-heading{flex-wrap:wrap;gap:12px}
+.installed-packs-panel>p[role=alert]{color:#a54545;margin-top:12px}

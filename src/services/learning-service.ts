@@ -1,3 +1,4 @@
+import {withContentWriteLock} from './content-write-lock';
 import {db,type EngiDB} from '../db/engi-db';
 import {getBundle,learningRow,contentTables} from '../db/repositories';
 import {canonicalTargets} from '../lib/engi/questions/recipe-factory';
@@ -34,7 +35,8 @@ export async function resetLearningProgress(d:EngiDB=db){
   await d.appMeta.where('key').startsWith('studyCore:').delete();
  });
 }
-export async function clearAllData(d:EngiDB=db){
+export async function clearAllData(d:EngiDB=db){return withContentWriteLock(d,()=>clearDataUnlocked(d));}
+async function clearDataUnlocked(d:EngiDB){
  const tables=[...contentTables(d),d.learningState,d.reviewEvents,d.activeSessions,d.targetMappings,d.appMeta];
  await d.transaction('rw',tables,async()=>{
   for(const table of tables){

@@ -1,6 +1,5 @@
 import {createContext,useCallback,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
-import './entity-description.css';
 
 type Description={name:string;summary?:string};
 const Context=createContext({isOpen:false,open:(_value:Description,_opener:HTMLElement)=>{},close:()=>{}});

@@ -20,6 +20,7 @@ import {TimelineCard} from './TimelineCard';
 import {SortChallengeCard} from './SortChallengeCard';
 import {playSuccess,useReducedMotion,useStudyPreferences} from './useStudyPreferences';
 import './study-feed.css';
+import './entity-description.css';
 import {ObjectIntroCard} from './ObjectIntroCard';
 import {StopStudyCard} from './StopStudyCard';
 import {getBundle} from '../../db/repositories';

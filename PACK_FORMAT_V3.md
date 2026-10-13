@@ -1,5 +1,7 @@
 # Пакет знаний .engi, schemaVersion 3
 
+Полная инструкция для передачи ИИ: [ENGI_PACK_AUTHORING_GUIDE.md](ENGI_PACK_AUTHORING_GUIDE.md). Ниже — краткий справочник формата.
+
 `.engi` — ZIP с `bundle.json` и файлами `media/`. Новый `manifest.json` содержит `format: "engi-pack"`, `schemaVersion: 3`, `name`, `createdAt`, `files` (путь, размер, SHA-256, MIME). Builder заполняет manifest автоматически. `packId`, `packVersion` и внутренние ID в новом пакете не нужны.
 
 ## Правила

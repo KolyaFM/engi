@@ -1,3 +1,4 @@
+import {withContentWriteLock} from './content-write-lock';
 import {reconcileKnowledgeUnits} from '../db/learning-migration';
 import {z} from 'zod';
 import {db,type EngiDB} from '../db/engi-db';
@@ -18,7 +19,8 @@ export async function exportBackup(d:EngiDB=db){
  await reconcileKnowledgeUnits(d);const data=await d.transaction('r',[...contentTables(d),d.learningState,d.reviewEvents,d.appMeta,d.targetMappings],async()=>({format:'engi-backup' as const,schemaVersion:3,appDbVersion:APP_DB_VERSION,exportedAt:new Date().toISOString(),learningState:await d.learningState.toArray(),reviewEvents:await d.reviewEvents.orderBy('timestamp').toArray(),installedPacks:await d.installedPacks.toArray(),settings:Object.fromEntries((await d.appMeta.toArray()).map(r=>[r.key,r.value])),targetMappings:await d.targetMappings.toArray(),confusions:Object.fromEntries((await d.learningState.toArray()).map(r=>[r.id,r.payload.confusions])),userKnowledge:await getBundle(d)}));
  const userMedia:{hash:string;mime:string;data:string}[]=[];for(const m of data.userKnowledge.media){const hash=hashFromUrl(m.url);if(!hash||userMedia.some(x=>x.hash===hash))continue;const blob=await mediaStore.getBlob(hash);userMedia.push({hash,mime:blob.type,data:encode(new Uint8Array(await blob.arrayBuffer()))})}return {...data,userMedia};
 }
-export async function restoreBackup(input:unknown,d:EngiDB=db){
+export async function restoreBackup(input:unknown,d:EngiDB=db){return withContentWriteLock(d,()=>restoreBackupUnlocked(input,d));}
+async function restoreBackupUnlocked(input:unknown,d:EngiDB){
  const lifecycle=(input as {settings?:Record<string,unknown>}|null)?.settings?.['studyCore:learningLifecycle'];if(lifecycle!==undefined)learningLifecycleSchema.parse(lifecycle);
  const backup=backupSchema.parse(input);if(new Set(backup.learningState.map(r=>r.id)).size!==backup.learningState.length||new Set(backup.reviewEvents.map(e=>e.id)).size!==backup.reviewEvents.length)throw Error('Повтор ID в копии');for(const r of backup.learningState)if(r.id!==r.payload.id)throw Error('ID состояния не совпадает');
  const current=await getBundle(d),knowledge=backup.schemaVersion>=2&&backup.userKnowledge?validateImport(backup.userKnowledge,current,true):undefined;

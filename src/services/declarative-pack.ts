@@ -1,3 +1,4 @@
+import {withContentWriteLock} from './content-write-lock';
 import {ZipReader,BlobReader,BlobWriter,TextWriter,configure,type Entry} from '@zip.js/zip.js';
 import {db,type EngiDB,type PackRow} from '../db/engi-db';
 import {getBundle,putBundle,contentTables} from '../db/repositories';
@@ -25,7 +26,8 @@ export async function prepareDeclarativePack(file:Blob,d:EngiDB=db,onProgress:(s
  }finally{await reader.close()}
 }
 export const planDeclarativeImport=(p:PreparedImport,decisions:ImportDecisions=p.decisions)=>buildImportPlan(p.pkg,p.current,decisions,p.seed,p.mediaUrls);
-export async function commitDeclarativeImport(p:PreparedImport,decisions:ImportDecisions=p.decisions,d:EngiDB=db,onProgress:(s:string)=>void=()=>{},signal?:AbortSignal){
+export async function commitDeclarativeImport(p:PreparedImport,decisions:ImportDecisions=p.decisions,d:EngiDB=db,onProgress:(s:string)=>void=()=>{},signal?:AbortSignal){return withContentWriteLock(d,()=>commitDeclarativeImportUnlocked(p,decisions,d,onProgress,signal));}
+async function commitDeclarativeImportUnlocked(p:PreparedImport,decisions:ImportDecisions,d:EngiDB,onProgress:(s:string)=>void,signal?:AbortSignal){
  checkAbort(signal);const plan=planDeclarativeImport(p,decisions);if(plan.issues.length)throw Error('Сначала разрешите все неоднозначности');const missing=[];for(const f of p.files)if(!await mediaStore.has(f.sha256))missing.push(f);
  const estimate=await globalThis.navigator?.storage?.estimate?.(),needed=missing.reduce((n,f)=>n+f.bytes,0);if(estimate?.quota&&estimate.quota-(estimate.usage??0)<needed*1.15+1024*1024)throw Error('Недостаточно места');
  const added=new Set<string>();try{
@@ -33,7 +35,7 @@ export async function commitDeclarativeImport(p:PreparedImport,decisions:ImportD
   await d.transaction('rw',[...contentTables(d),d.activeSessions,d.learningState],async()=>{
    const current=await getBundle(d);if(JSON.stringify(current)!==JSON.stringify(p.current))throw Error('База изменилась после подготовки импорта. Откройте пакет ещё раз.');
    await putBundle(d,plan.bundle); // All identity decisions and graph writes are one transaction.
-   const row:PackRow={...{format:'engi-pack',schemaVersion:2},packId:p.packId,packVersion:1,name:p.pkg.name,createdAt:p.createdAt,files:p.files,entityIds:plan.entityIds,factIds:plan.factIds,mediaIds:plan.bundle.media.filter(m=>p.files.some(f=>m.url==='engi-media://'+f.sha256)).map(m=>m.id),tagIds:plan.bundle.tags.filter(t=>!p.current.tags.some(x=>x.id===t.id)).map(t=>t.id),entityTags:plan.bundle.entityTags.filter(t=>!p.current.entityTags.some(x=>x.entityId===t.entityId&&x.tagId===t.tagId)),deckIds:plan.deckId?[plan.deckId]:[],installedAt:new Date().toISOString()};await d.installedPacks.put(row);await d.activeSessions.where('status').equals('active').modify({status:'completed'});
+   const row:PackRow={...{format:'engi-pack',schemaVersion:2},packId:p.packId,packVersion:1,name:p.pkg.name,createdAt:p.createdAt,files:p.files,entityIds:plan.entityIds,factIds:plan.factIds,mediaIds:plan.mediaIds,tagIds:[...new Set(plan.entityTags.map(l=>l.tagId))],entityTags:plan.entityTags,propertyIds:plan.propertyIds,entityTypeIds:plan.entityTypeIds,deckMembers:plan.deckId?plan.memberEntityIds.map(entityId=>({deckId:plan.deckId!,entityId})):[],deckIds:plan.deckId?[plan.deckId]:[],installedAt:new Date().toISOString()};await d.installedPacks.put(row);await d.activeSessions.where('status').equals('active').modify({status:'completed'});
   });return {...plan.stats,entities:plan.stats.newEntities,facts:plan.stats.newFacts,name:p.pkg.name};
  }catch(error){for(const hash of added){const referenced=await d.media.where('hash').equals(hash).count();const packs=await d.installedPacks.toArray();if(!referenced&&!packs.some(x=>x.files.some(f=>f.sha256===hash)))await mediaStore.remove(hash)}throw error}
 }

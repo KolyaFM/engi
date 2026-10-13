@@ -1,3 +1,4 @@
+import {withContentWriteLock} from './content-write-lock';
 import {db,type EngiDB} from '../db/engi-db';
 import {contentTables,getBundle,putBundle} from '../db/repositories';
 import {validateImport,propertySchema,typeSchema} from '../lib/engi/validate';
@@ -26,7 +27,8 @@ export async function archiveEntity(id:string,d:EngiDB=db){const b=await getBund
 export const saveProperty=(p:PropertyDefinition,d:EngiDB=db)=>saveKnowledge({properties:[propertySchema.parse(p)]},d);
 export const saveEntityType=(t:EntityTypeDefinition,d:EngiDB=db)=>saveKnowledge({entityTypes:[typeSchema.parse(t)]},d);
 export const saveTag=(t:Tag,d:EngiDB=db)=>saveKnowledge({tags:[t]},d);
-export async function uploadImage(entityId:string,file:Blob,role='primary',d:EngiDB=db){if(file.size>MAX_MEDIA_BYTES)throw Error('Изображение больше 16 МБ');const mime=file.type;if(!['image/webp','image/jpeg','image/png'].includes(mime))throw Error('Выберите PNG, JPEG или WebP');await checkImage(file,mime);const hash=await sha256(file);await mediaStore.put(hash,file);const row:Media={id:newId(),entityId,role,url:'engi-media://'+hash,license:'Личное изображение',origin:'user',primary:role!=='property',learningExemplar:role!=='property'};const old=role==='property'?[]:(await d.media.where('entityId').equals(entityId).toArray()).map(m=>({...m,primary:false}));await saveKnowledge({media:[...old,row]},d);return row}
+export async function uploadImage(entityId:string,file:Blob,role='primary',d:EngiDB=db){return withContentWriteLock(d,()=>uploadImageUnlocked(entityId,file,role,d));}
+async function uploadImageUnlocked(entityId:string,file:Blob,role:string,d:EngiDB){if(file.size>MAX_MEDIA_BYTES)throw Error('Изображение больше 16 МБ');const mime=file.type;if(!['image/webp','image/jpeg','image/png'].includes(mime))throw Error('Выберите PNG, JPEG или WebP');await checkImage(file,mime);const hash=await sha256(file);await mediaStore.put(hash,file);const row:Media={id:newId(),entityId,role,url:'engi-media://'+hash,license:'Личное изображение',origin:'user',primary:role!=='property',learningExemplar:role!=='property'};const old=role==='property'?[]:(await d.media.where('entityId').equals(entityId).toArray()).map(m=>({...m,primary:false}));await saveKnowledge({media:[...old,row]},d);return row}
 export function conflicts(b:Bundle){const groups=new Map<string,Fact[]>();for(const f of b.facts.filter(trusted)){const key=JSON.stringify([f.entityId,f.key]);groups.set(key,[...groups.get(key)??[],f])}return [...groups.values()].filter(g=>b.properties?.find(p=>p.id===g[0].key)?.cardinality!=='many'&&new Set(g.map(factValue)).size>1).flat()}
 
 export async function resolvePackConflict(table:ConflictTable,id:string,choice:'mine'|'pack',d:EngiDB=db){
