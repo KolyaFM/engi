@@ -43,12 +43,12 @@ test('group sort and missing instructions refer to the sequence rather than one 
  assert.equal(questionPrompt(custom,'Психо','sort'),'Расположите фильмы по дате выхода.');
 });
 
-test('reverse requires explicit enablement and a dedicated existing prompt',async()=>{
+test('reverse uses a generic prompt by default and respects explicit opt out',async()=>{
  const {questionPrompt,reversePromptAvailable}=await import('../src/lib/engi/questions/question-templates');
- assert.equal(reversePromptAvailable(custom),false);
+ assert.equal(reversePromptAvailable(custom),true);
  assert.equal(reversePromptAvailable({...custom,learning:{reverse:true}}),true);
  assert.equal(reversePromptAvailable({...custom,inverse:{enabled:true}}),true);
- assert.equal(reversePromptAvailable({...property(),learning:{reverse:true}}),false);
+ assert.equal(reversePromptAvailable({...property(),learning:{reverse:true}}),true);
  assert.equal(reversePromptAvailable({...custom,learning:{reverse:false},inverse:{enabled:true}}),false);
  assert.equal(questionPrompt({...custom,learning:{reverse:true}},'Альфред Хичкок','choice','reverse'),'Какой фильм снял Альфред Хичкок?');
 });

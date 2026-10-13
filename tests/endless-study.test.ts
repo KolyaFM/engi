@@ -9,7 +9,7 @@ import {createTrainerService} from '../src/services/trainer-service';
 import {associationGoal} from '../src/lib/engi/study-core/compiler';
 import type {Bundle} from '../src/lib/engi/types';
 function fixture():Bundle{
- const b:Bundle={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'s',name:'Объект'},{id:'a',name:'Автор'}],properties:[{id:'author',name:'Автор',valueKind:'entity',cardinality:'one',learnable:true,subjectTypes:['s'],targetTypes:['a']}]};
+ const b:Bundle={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'s',name:'Объект'},{id:'a',name:'Автор'}],properties:[{id:'author',name:'Автор',valueKind:'entity',cardinality:'one',learnable:true,learning:{reverse:false},subjectTypes:['s'],targetTypes:['a']}]};
  for(let n=0;n<8;n++){b.entities.push({id:'s'+n,name:'Объект '+n,type:'s',aliases:[],externalIds:{}},{id:'a'+n,name:'Автор '+n,type:'a',aliases:[],externalIds:{}});b.facts.push({id:'f'+n,entityId:'s'+n,key:'author',valueKind:'entity',valueEntityId:'a'+n,verification:'user_confirmed',source:{kind:'manual',name:'Тест'}});}return b;
 }
 async function run(action:(d:EngiDB,svc:ReturnType<typeof createTrainerService>,b:Bundle)=>Promise<void>){const d=new EngiDB('endless-'+crypto.randomUUID()),b=fixture();try{await putBundle(d,b);await prepareDue(d);await action(d,createTrainerService(d),b);}finally{d.close();await d.delete();}}

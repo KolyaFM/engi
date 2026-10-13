@@ -170,11 +170,11 @@ test('deck integration: parent-child hierarchy populates childTagIds in deck cat
 test('deck integration: per-deck and untagged metrics isolation', () => {
   const b = fullFixture();
   const presTargets = canonicalTargets(b, 'deck-presidents');
-  assert.equal(presTargets.length, 4);
+  assert.equal(presTargets.length, 6);
   assert(presTargets.every(t => t.entityId === 'p2' || t.entityId === 'p3'));
 
   const artTargets = canonicalTargets(b, 'deck-art');
-  assert.equal(artTargets.length, 2);
+  assert.equal(artTargets.length, 3);
   assert.equal(artTargets[0].entityId === 'p1', true);
 
   const untagged = getDeckEntities(b, UNTAGGED_TAG_ID);
@@ -183,9 +183,9 @@ test('deck integration: per-deck and untagged metrics isolation', () => {
 
   const s: Snapshot = {bundle: b, memories: [], events: []};
   const untaggedStats = progressForEntities(s, new Set(['u1']));
-  assert.equal(untaggedStats.available, 1);
+  assert.equal(untaggedStats.available, 2);
   assert.equal(untaggedStats.covered, 0);
-  assert.equal(untaggedStats.new, 1);
+  assert.equal(untaggedStats.new, 2);
 });
 
 test('deck integration: multi-deck entity assignment maintains single memory state in database', async () => {
@@ -223,7 +223,7 @@ test('deck integration: multi-deck entity assignment maintains single memory sta
     const decks = getDeckList(s);
     const artDeck = decks.find(dk => dk.id === 'deck-art')!;
     assert.equal(artDeck.stats.covered, 0);
-    assert.equal(artDeck.stats.new, 1);
+    assert.equal(artDeck.stats.new, 2);
   } finally {
     d.close();
     await d.delete();

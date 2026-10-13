@@ -16,15 +16,15 @@ import {buildGoalCatalog} from '../src/services/goal-catalog';
 import {feedPerformance} from '../src/services/feed-performance';
 const fixture=():Bundle=>({entities:Array.from({length:6},(_,n)=>({id:'e'+n,type:'person',name:'Person '+n,aliases:[],externalIds:{}})),facts:Array.from({length:6},(_,n)=>['birth','death'].map((key,k)=>({id:key+n,entityId:'e'+n,key,valueKind:'date' as const,dateStart:(1800+n+k*70)+'-01-01',dateEnd:(1800+n+k*70)+'-12-31',datePrecision:'year' as const,verification:'user_confirmed' as const,source:{name:'Test'}}))).flat(),properties:['birth','death'].map(key=>({id:key,name:key,valueKind:'date',cardinality:'one',learnable:true,subjectTypes:['person']})),decks:[{id:'a',name:'Birth',learning:{propertyIds:['birth'],imageRecognition:false}},{id:'b',name:'Death',learning:{propertyIds:['death'],imageRecognition:false}},{id:'c',name:'Other',learning:{propertyIds:['birth'],imageRecognition:false}}],deckMembers:Array.from({length:6},(_,n)=>n<4?['a','b'].map(deckId=>({deckId,entityId:'e'+n})):[{deckId:'c',entityId:'e'+n}]).flat(),media:[],tags:[],entityTags:[],missing:[],unresolved:[]});
 test('selected scope unions permitted properties, deduplicates overlaps and never becomes stored content',()=>{
- const b=fixture(),scope=deckStudyScope(b,['a','b','a']);assert.equal(canonicalTargets(scope,SELECTED_DECKS).length,8);assert(canonicalTargets(deckStudyScope(b,['a']),SELECTED_DECKS).every(i=>i.factId?.startsWith('birth')));assert.equal(canonicalTargets(deckStudyScope(b,[]),SELECTED_DECKS).length,0);assert(!b.studyScope);assert.equal(scope.decks!.length,3);
+ const b=fixture(),scope=deckStudyScope(b,['a','b','a']);assert.equal(canonicalTargets(scope,SELECTED_DECKS).length,16);assert(canonicalTargets(deckStudyScope(b,['a']),SELECTED_DECKS).every(i=>i.factId?.startsWith('birth')));assert.equal(canonicalTargets(deckStudyScope(b,[]),SELECTED_DECKS).length,0);assert(!b.studyScope);assert.equal(scope.decks!.length,3);
 });
 test('deck target index preserves per-deck and selected-union property counts',async()=>{
  const d=new EngiDB('deck-overview-index-'+crypto.randomUUID());try{await putBundle(d,fixture());const snapshot=await createTrainerService(d).getGoalSnapshot(true),ledger=await readLifecycle(d),index=createDeckTargetIndex(snapshot.bundle);
   for(const ids of [[],['a'],['b'],['c'],['a','b'],['a','c'],['a','a','b']]){
    assert.deepEqual(deckOverview(snapshot,ledger,ids,Date.now(),index),deckOverview(snapshot,ledger,ids));
   }
-  assert.equal(index.targetsFor(['a','b']).size,8);
-  assert.equal(index.targetsFor(['a','c']).size,6);
+  assert.equal(index.targetsFor(['a','b']).size,16);
+  assert.equal(index.targetsFor(['a','c']).size,12);
  }finally{d.close();await d.delete();}
 });
 test('global statistics reads the prepared goal catalog without rebuilding questions',async()=>{

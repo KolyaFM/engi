@@ -40,7 +40,7 @@ test('one independent failure counts as checked but never makes its object learn
 }));
 test('suspension hides both skills from active progress without deleting their historical memory',()=>run(async(d,svc)=>{
  const feed=await svc.startGoalFeed('all','choice'),t=feed.tasks[0];await svc.answer({sessionId:feed.id,taskId:t.id,answer:t.items[0].answerId});
- const before=await svc.getGoalSnapshot(),total=progress(before).total,ids=before.goalCatalog!.filter(e=>e.targetIds.includes(t.items[0].targetId)).map(e=>e.goal.id);
+ const before=await svc.getGoalSnapshot(),total=progress(before).total,ids=before.goalCatalog!.filter(e=>e.goal.knowledge.key===t.studyContract!.primaryGoals[0].knowledge.key).map(e=>e.goal.id);
  await setUnitSuspended(t.items[0].targetId,true,d);let after=await svc.getGoalSnapshot();assert.equal(progress(after).total,total-ids.length);assert.equal(progress(after).covered,0);
  assert(await d.appMeta.get('studyCore:memory:'+t.studyContract!.primaryGoals[0].id));
  await setUnitSuspended(t.items[0].targetId,false,d);after=await svc.getGoalSnapshot();assert.equal(progress(after).total,total);assert.equal(progress(after).covered,1);

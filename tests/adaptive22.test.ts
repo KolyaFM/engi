@@ -62,7 +62,7 @@ test('progress counts active known units separately from unseen, suspended and a
  const b=fixture(),units=canonicalTargets(b),now=new Date(),review=mature(units[0].targetId);review.card.due=new Date(now.getTime()-1000);
  const triaged=triagedMemory(units[1],'green','',0),suspended={...mature(units[2].targetId),status:'suspended' as const},legacy={...review,id:'old-cue',legacyOf:review.id},orphan=mature('removed-target');
  const snapshot:Snapshot={bundle:b,memories:[review,triaged,suspended,legacy,orphan],events:['direct','diagnostic','repair','practice','direct'].map((level,i)=>({id:'e'+i,timestamp:now.toISOString(),recipe:'test',level,payload:{score:1,metadata:{stabilityTransitions:[{targetId:review.id,before:10,after:35}]}}}))};
- const p=progress(snapshot);assert.equal(p.available,4);assert.equal(p.total,2);assert.equal(p.new,1);assert.equal(p.suspended,1);assert.equal(p.covered,1);assert.equal(p.due,1);assert.equal(p.quarter,1);assert.deepEqual(todayLearning(snapshot,now),{retrievals:2,stability30Gains:1});
+ const p=progress(snapshot);assert.equal(p.available,8);assert.equal(p.total,2);assert.equal(p.new,5);assert.equal(p.suspended,1);assert.equal(p.covered,1);assert.equal(p.due,1);assert.equal(p.quarter,1);assert.deepEqual(todayLearning(snapshot,now),{retrievals:2,stability30Gains:1});
 });
 
 test('each completed familiarity bootstrap hands its next review to the unmodified FSRS scheduler',()=>{

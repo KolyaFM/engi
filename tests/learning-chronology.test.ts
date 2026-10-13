@@ -6,7 +6,7 @@ import {compileTaskContract,associationGoal} from '../src/lib/engi/study-core/co
 import {createStudyCoreService} from '../src/services/study-core-service';
 import {admitAcquisition,emptyLifecycle} from '../src/lib/engi/study-core/acquisition';
 import {buildLearningChronology} from '../src/services/learning-chronology';
-import {assess} from '../src/lib/engi/engine';
+import {assess,preflight} from '../src/lib/engi/engine';
 import {gradeResponse} from '../src/lib/engi/study-core/contracts';
 import {moveOrder,orderPositions} from '../src/lib/engi/questions/order-feedback';
 import {learningLifecycleSchema} from '../src/lib/engi/study-core/acquisition';
@@ -51,4 +51,13 @@ test('image chronology uses pictures without pretending to display names or reve
  const ready=proposals.map(p=>({...p,items:p.items.map(i=>({...i,image:'https://example.org/'+i.entityId+'.png'}))}));
  const t=buildLearningChronology(b,ready,[],[],0)!,c=compileTaskContract(b,t);
  assert.equal(t.recipe.cue,'image');assert.equal(c.shownClaims.length,0);assert(c.feedbackClaims.every(c=>c.when==='order-complete'));
+});
+
+
+test('chronology rejects fewer than three and more than five elements',()=>{
+ const base=buildLearningChronology(b,proposals,[],[],0)!;
+ for(const count of [2,3,4,5,6]){
+  const items=Array.from({length:count},(_,n)=>({...base.items[0],entityId:'size'+n,year:1600+n*10}));
+  assert.equal(preflight({...base,items,options:items.map(i=>({id:i.entityId,name:i.entityId}))}),count>=3&&count<=5);
+ }
 });

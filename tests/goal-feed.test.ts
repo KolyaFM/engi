@@ -14,7 +14,7 @@ import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
 import {interactionFamily} from '../src/lib/engi/session/interaction-family';
 import {buildGoalCatalog,buildGoalCatalogUncached} from '../src/services/goal-catalog';
 function fixture(many=false):Bundle{
- const b:Bundle={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'subject',name:'Объект'},{id:'answer',name:'Ответ'}],properties:[{id:'rel',name:'Автор',valueKind:'entity',cardinality:many?'many':'one',learnable:true,subjectTypes:['subject'],targetTypes:['answer']}]};
+ const b:Bundle={entities:[],facts:[],media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'subject',name:'Объект'},{id:'answer',name:'Ответ'}],properties:[{id:'rel',name:'Автор',valueKind:'entity',cardinality:many?'many':'one',learnable:true,learning:{reverse:false},subjectTypes:['subject'],targetTypes:['answer']}]};
  for(let n=0;n<8;n++){b.entities.push({id:'s'+n,type:'subject',name:'Объект '+n,aliases:[],externalIds:{}},{id:'a'+n,type:'answer',name:'Автор '+n,aliases:[],externalIds:{}});b.facts.push({id:'f'+n,entityId:'s'+n,key:'rel',valueKind:'entity',valueEntityId:'a'+n,completeSet:true,verification:'user_confirmed',source:{kind:'manual',name:'Личное знание'}});}
  if(many)b.facts.push({...b.facts[0],id:'extra',valueEntityId:'a1'});return b;
 }

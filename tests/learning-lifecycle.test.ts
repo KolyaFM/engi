@@ -18,7 +18,7 @@ import {ACQUISITION_CONFIRMATION_MS} from '../src/lib/engi/study-core/acquisitio
 const fixture=(count=6):Bundle=>({entities:Array.from({length:count},(_,n)=>[{id:'s'+n,name:'Объект '+n,type:'s',aliases:[],externalIds:{}},{id:'a'+n,name:'Автор '+n,type:'a',aliases:[],externalIds:{}}]).flat(),facts:Array.from({length:count},(_,n)=>['author','country'].map(key=>({id:key+n,entityId:'s'+n,key,valueKind:'entity' as const,valueEntityId:'a'+n,verification:'user_confirmed' as const,source:{kind:'manual' as const,name:'Test'}}))).flat(),media:[],tags:[],entityTags:[],missing:[],unresolved:[],entityTypes:[{id:'s',name:'Объект'},{id:'a',name:'Ответ'}],properties:['author','country'].map(id=>({id,name:id,valueKind:'entity' as const,cardinality:'one' as const,learnable:true,subjectTypes:['s'],targetTypes:['a']}))});
 test('known intro properties are excluded permanently without synthetic memory; unknown properties alone enter learning',async()=>{
  const d=new EngiDB('intro-known-'+crypto.randomUUID());try{const b=fixture();await putBundle(d,b);const svc=createTrainerService(d),s=await svc.startGoalFeed('all','choice','daily',{endless:true}),intro=s.intro!;
- const [known,unknown]=intro.unitIds;await svc.completeIntro(s.id,{entityId:intro.entityId,selections:{[known]:'green',[unknown]:'red'}});
+ const known=intro.unitIds[0],unknown=intro.unitIds.find(id=>id.split(':')[2]!==known.split(':')[2])!;await svc.completeIntro(s.id,{entityId:intro.entityId,selections:{[known]:'green',[unknown]:'red'}});
  assert.equal((await d.learningState.get(known))!.payload.status,'suspended');
  const ledger=(await d.appMeta.get(LIFECYCLE_KEY))!.value;assert.equal(ledger.units.filter((u:any)=>u.entityId===intro.entityId).length,1);
  assert.equal((await svc.getDayPlan('all','choice')).workload!.learning,1);assert.equal((await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).length,0);
@@ -26,7 +26,7 @@ test('known intro properties are excluded permanently without synthetic memory; 
  const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(b,enabled);assert(catalog.filter(e=>e.targetIds.includes(known)).every(e=>e.suspended));
  await setUnitSuspended(known,false,d);assert.equal((await d.learningState.get(known))!.payload.status,'triaged');
  assert.equal((await svc.getDayPlan('all','choice')).workload!.learning,2,'manual return must restore acquisition');
- await setUnitSuspended(unknown,true,d);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});const restored=await svc.startGoalFeed('all','choice','daily',{endless:true});assert(restored.tasks[0].items.some(i=>i.targetId===known),'restored property must actually be trainable');
+ await setUnitSuspended(unknown,true,d);await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});const restored=await svc.startGoalFeed('all','choice','daily',{endless:true});assert(restored.tasks[0].items.some(i=>i.factId===known.split(':')[2]),'restored property must actually be trainable');
  }finally{d.close();await d.delete();}
 });
 test('knowing every property produces no future review or practice target after restart',async()=>{
@@ -83,7 +83,7 @@ test('correct service answers drain acquisition and create one real FSRS review 
    const outcome=await svc.answer({sessionId:session.id,taskId:task.id,answer:task.recipe.format==='recall_reveal'?true:task.items[0].answerId});
    const ledger=(await d.appMeta.get('studyCore:learningLifecycle'))!.value;
    if(ledger.units.filter((u:any)=>u.entityId===firstEntity).every((u:any)=>u.stage==='completed')){
-    for(const unit of ledger.units.filter((u:any)=>u.entityId===firstEntity)){const memory=(await d.appMeta.get('studyCore:memory:'+unit.goal.id))!.value;assert.equal(memory.card.state,2);assert.equal(memory.card.reps,1);}
+    for(const unit of ledger.units.filter((u:any)=>u.entityId===firstEntity)){const memory=(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray()).find(r=>r.value.goal?.knowledge.key===unit.goal.knowledge.key)!.value;assert.equal(memory.card.state,2);assert.equal(memory.card.reps,1);}
     const before=structuredClone(ledger);await svc.answer({sessionId:session.id,taskId:task.id,answer:task.items[0].answerId});assert.deepEqual((await d.appMeta.get('studyCore:learningLifecycle'))!.value,before);
     assert(outcome);return;
    }
@@ -202,7 +202,7 @@ test('a pending confirmation error cannot trigger an ineligible repair loop ahea
  try{await run(async(d,svc)=>{
   let s=await svc.startGoalFeed('all','choice','daily',{endless:true});while(s.intro)s=await svc.completeIntro(s.id);const q=s.tasks[0];
   const wrong=q.options.find(o=>o.id!==q.items[0].answerId)!;await svc.answer({sessionId:s.id,taskId:q.id,answer:wrong.id});await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});
-  const row=(await d.appMeta.get(LIFECYCLE_KEY))!,g=q.studyContract!.primaryGoals[0],u=row.value.units.find((u:any)=>u.goal.id===g.id);u.successes=1;u.stage='confirmation';u.lastAttemptAt=new Date().toISOString();u.availableAt=new Date(at+300000).toISOString();for(const other of row.value.units)if(other!==u){other.stage='completed';other.successes=2;other.completedAt=new Date().toISOString();}await d.appMeta.put(row);
+  const row=(await d.appMeta.get(LIFECYCLE_KEY))!,g=q.studyContract!.primaryGoals[0],u=row.value.units.find((u:any)=>u.goal.knowledge.key===g.knowledge.key&&u.goal.skill===g.skill);u.successes=1;u.stage='confirmation';u.lastAttemptAt=new Date().toISOString();u.availableAt=new Date(at+300000).toISOString();for(const other of row.value.units)if(other!==u){other.stage='completed';other.successes=2;other.completedAt=new Date().toISOString();}await d.appMeta.put(row);
   s=await svc.advanceFeed(s.id,false,q.id);assert.notEqual(s.tasks[0]?.intent,'repair');assert(s.intro||s.tasks[0]);
  });}finally{mock.timers.reset();}
 });
@@ -214,7 +214,7 @@ test('thirty virtual days retain independent deadlines, correct counts and playa
    mock.timers.setTime(at+day*86400000+n*30000);if(s.intro){s=await svc.completeIntro(s.id);continue;}
    const q=s.tasks[0];assert(q,`empty on ${day}:${n}`);assert.equal(q.readyAt,undefined);formats.add(q.recipe.format);
    const before=(await d.appMeta.get(LIFECYCLE_KEY))!.value,memories=await d.appMeta.where('key').startsWith('studyCore:memory:').toArray();
-   if(q.intent==='learn')for(const g of q.studyContract!.primaryGoals){const u=before.units.find((u:any)=>u.goal.id===g.id);if(u?.stage==='confirmation')assert(new Date(u.availableAt).getTime()<=Date.now());}
+   if(q.intent==='learn')for(const g of q.studyContract!.primaryGoals){const u=before.units.find((u:any)=>u.goal.knowledge.key===g.knowledge.key&&u.goal.skill===g.skill);if(u?.stage==='confirmation')assert(new Date(u.availableAt).getTime()<=Date.now());}
    if(q.recipe.format==='recall_reveal')await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});
    if(q.items.length>1&&['match','categorize'].includes(q.recipe.format)){for(const i of q.items)await svc.answerMatchPair({sessionId:s.id,taskId:q.id,entityId:i.entityId,answerId:i.answerId,requestId:crypto.randomUUID()});}
    else{const wrong=q.recipe.format==='choice'&&n%11===7;await svc.answer({sessionId:s.id,taskId:q.id,answer:q.recipe.format==='recall_reveal'?true:wrong?q.options.find(o=>o.id!==q.items[0].answerId)!.id:q.items[0].answerId});if(wrong)await svc.answer({sessionId:s.id,taskId:q.id,answer:q.items[0].answerId});}
