@@ -95,11 +95,11 @@ test('an intro heartbeat queued after Done stays with the old object after a pro
 },fixture(),false));
 
 test('reference facts can be shown in Intro and completing it creates no false success',async()=>{
- const b=fixture();b.facts.push({id:'reference',entityId:'s0',key:'note',valueKind:'text',valueText:'Контекст',learnable:false,verification:'verified',source:{name:'test'}});
+ const b=fixture();for(const entityId of new Set(b.facts.map(f=>f.entityId)))b.facts.push({id:entityId==='s0'?'reference':'reference:'+entityId,entityId,key:'note',valueKind:'text',valueText:'Контекст',learnable:false,verification:'verified',source:{name:'test'}});
  const c=compileIntroContract(b,{entityId:'s0',unitIds:['ku:fact:f0:forward'],newProperty:false},'intro');
  assert.deepEqual(c.shownClaims.find(c=>c.key==='fact:reference')!.revealsGoalIds,[]);
  await run(async(d,svc)=>{
-  const s=await svc.startFeed();assert.equal(s.intro!.entityId,'s0');
+  const s=await svc.startFeed();assert(b.facts.some(f=>f.entityId===s.intro!.entityId&&f.key==='note'));
   await svc.observeIntroVisibility(s.id,'intro-episode','start');
   await svc.completeIntro(s.id);await svc.observeIntroVisibility(s.id,'intro-episode','end');
   assert((await d.learningState.count())>0);assert.equal(await d.reviewEvents.count(),0);

@@ -109,6 +109,9 @@
 
 /* Keep page zoom and horizontal browser panning out of the game surface. */
 .study-feed,.feed-viewport{touch-action:pan-y}
+/* Revealed recall owns direction locking and vertical scrolling, like object intro.
+   Native pan-y can cancel an already-started swipe when the finger curves. */
+.recall-swipe.is-swipe-ready{touch-action:none}
 
 /* Chronology shares the available viewport equally between its 3–5 slots. */
 .feed-viewport.has-chronology{overflow:hidden}

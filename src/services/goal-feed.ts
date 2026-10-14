@@ -27,10 +27,11 @@ export async function pickGoalFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Session
  const exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
  const {available,waitingUntil,newLeft,newSlots}=admitStudyCandidates(pool.proposals,p=>p.goals,plan,memory,exposures,now,s.mode==='practice');
  available.push(...groupProposals(b,available,known,s.mode==='practice'?3:newSlots,{context:await readGroupContext(db,b,s.cooldown)}));
- const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0,new Set(available.flatMap(p=>p.goals.map(knowledgeMistakeKey))));
+ const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0);
  if(repair)return {task:repair,intro:undefined,waitingUntil:undefined};
  const owners=new Map(b.facts.map(f=>[f.id,f.entityId]));
  const selectorKey=s.mode==='practice'?'studyCore:practiceSelector':'studyCore:goalSelector',prior=(await db.appMeta.get(selectorKey))?.value;
+ if(prior?.version===1&&s.cooldown?.length)prior.recent=s.cooldown.slice(-3).map(t=>({objectIds:[...new Set(t.items.map(i=>i.factId?owners.get(i.factId)??i.entityId:i.entityId))],format:interactionFamily(t)}));
  while(available.length){
   const descriptors:SelectionCandidate[]=available.map(p=>{
    const due=p.goals.filter(g=>memory.has(g.id)),objectIds=[...new Set(p.items.map(i=>i.factId?owners.get(i.factId)??i.entityId:i.entityId))];
@@ -72,7 +73,7 @@ export async function pickGoalFeedEager(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  if(s.mode==='practice')tasks.forEach(t=>{t.practice=true;});
  const {available,waitingUntil,newSlots}=admitStudyCandidates(tasks,t=>t.studyContract?.primaryGoals??[],plan,memory,exposures,now,s.mode==='practice');
  available.push(...groupCandidates(b,available,known,s.mode==='practice'?3:newSlots,await readGroupContext(db,b,s.cooldown)));
- const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0,new Set(available.flatMap(t=>t.studyContract?.primaryGoals.map(knowledgeMistakeKey)??[])));
+ const repair=await selectRepairWork(db,b,enabled,s,memory,available.length>0);
  if(repair)return {task:repair,intro:undefined,waitingUntil:undefined};
  if(available.length){
   const owners=new Map(b.facts.map(f=>[f.id,f.entityId]));
@@ -85,6 +86,7 @@ export async function pickGoalFeedEager(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
     mistake:goals.some(g=>mistakes.has(knowledgeMistakeKey(g))),reinforcement:due.some(g=>Number(memory.get(g.id)!.card.state)!==2)};
   });
   const selectorKey=s.mode==='practice'?'studyCore:practiceSelector':'studyCore:goalSelector',prior=(await db.appMeta.get(selectorKey))?.value;
+  if(prior?.version===1&&s.cooldown?.length)prior.recent=s.cooldown.slice(-3).map(t=>({objectIds:[...new Set(t.items.map(i=>i.factId?owners.get(i.factId)??i.entityId:i.entityId))],format:interactionFamily(t)}));
   const picked=selectGoalCandidate(descriptors,prior,plan.day,{newSlotsLeft:newLeft});await db.appMeta.put({key:selectorKey,value:picked.state});
   const task=available[picked.index];task.reason=task.practice?'practice':descriptors[picked.index].kind==='due'?'due':'new';
   task.intent=task.practice?'practice':'learn';

@@ -1,0 +1,86 @@
+/* Keep touch layouts intact; desktop gets its own bounded workspace. */
+@media (min-width: 600px) and (max-width: 899px) {
+ body .deck-app .deck-cover-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+
+@media (min-width: 900px) {
+ body .deck-app .workspace {
+  width:calc(100% - 64px); max-width:1060px; padding:16px 0 40px;
+ }
+ body .deck-app .header {
+  width:calc(100% - 64px); max-width:1060px; height:72px; min-height:72px; padding:12px 0;
+ }
+ body .deck-app .header h1 { font-size:26px; }
+ body .deck-app .deck-cover-grid {
+  grid-template-columns:repeat(3,minmax(0,250px)); gap:20px; justify-content:center;
+ }
+ body .deck-app .deck-select .deck-cover-title { font-size:20px; }
+ body .deck-app .feed-home { padding-bottom:112px; }
+ body .deck-app .decks-start-bar {
+  width:max-content; max-width:calc(100% - 64px); bottom:20px;
+  grid-template-columns:auto 280px; gap:20px; padding:14px 18px;
+  border:1px solid var(--border,#e5dfd7); border-radius:24px;
+  box-shadow:0 8px 32px #49352212;
+ }
+ body .deck-app .decks-start-bar .decks-start { min-height:48px; }
+ body .deck-app .decks-start-bar .work-badge { min-width:64px; padding:8px 12px; }
+ body .deck-app .decks-start-bar .work-badge small { font-size:11px; }
+ body .deck-app .workspace>section.panel { max-width:680px; margin:20px auto; }
+
+ body .deck-property-overlay { align-items:center; padding:32px; }
+ body .deck-property-sheet { border-radius:28px; max-height:calc(100dvh - 64px); padding:24px; animation:desktop-dialog-in 180ms cubic-bezier(.22,1,.36,1); }
+ body .deck-property-sheet .sheet-handle { display:none; }
+ body .deck-property-sheet .property-option { min-height:56px; }
+ body .overlay { align-items:center; padding:32px; }
+ body .overlay .editor-panel { width:min(640px,100%); max-height:calc(100dvh - 64px); border-radius:28px; }
+
+ body .statistics-screen {
+  max-width:100%; padding:0 0 40px; display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr); gap:24px;
+  grid-template-areas:'filter filter' 'hero today' 'growth activity' 'decks decks'; align-items:start;
+ }
+ body .statistics-screen .statistics-filter { grid-area:filter; margin:0; }
+ body .statistics-screen .statistics-hero { grid-area:hero; padding:24px; }
+ body .statistics-screen>.statistics-block { margin:0; min-width:0; }
+ body .statistics-growth { grid-area:growth; }
+ body .statistics-today-block { grid-area:today; }
+ body .statistics-activity { grid-area:activity; }
+ body .statistics-decks-block { grid-area:decks; }
+ body .statistics-screen .statistics-chart { max-height:250px; }
+ body .statistics-screen .statistics-hero-value>button:first-child { font-size:56px; }
+ body .statistics-screen .statistics-decks { grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:32px; }
+ body .statistics-detail-overlay { align-items:center; padding:32px; }
+
+ body .study-feed .feed-header { width:640px; max-width:100%; margin:0 auto; padding:12px 20px; }
+ body .study-feed .feed-current { max-width:640px; padding:12px 24px 24px; }
+ body .study-feed .feed-cue { height:clamp(160px,28dvh,260px); }
+ body .study-feed .feed-cue h1 { font-size:32px; }
+ body .study-feed .feed-actions h2 { font-size:22px; }
+ body .study-feed .feed-option { min-height:52px; }
+ body .study-feed .matching-heading h2 { font-size:28px; }
+ body .study-feed .matching-pairs { --matching-row:clamp(88px,calc((100dvh - 280px)/var(--matching-count) - 12px),140px); }
+ body .study-feed .conveyor-object { min-height:220px; max-width:480px; margin:auto; }
+ body .study-feed .conveyor-object img { max-height:260px; }
+ body .study-feed .self-check-rotation { height:160px; }
+ body .study-feed .has-chronology .feed-current { padding-top:12px; padding-bottom:84px; }
+ body .study-feed .has-chronology .chronology-card { max-height:620px; }
+ body .chronology-floating-action { width:min(592px,calc(100vw - 48px)); bottom:max(12px,calc(100dvh - 860px)); }
+
+ body .learning22-screen .learning22-content { max-width:560px; padding:0 24px 24px; }
+ body .learning22-screen .learning22-scroll { flex:0 1 auto; max-height:calc(100dvh - 90px); padding-top:48px; }
+ body .learning22-screen .learning22-close { left:max(24px,calc((100vw - 640px)/2 + 20px)); }
+ body .learning22-screen .learning22-content.no-hero { padding-top:32px; }
+ body .learning22-screen .learning22-content h1 { font-size:28px; }
+ body .learning22-screen .learning22-hero-wrap { margin:16px 0; }
+ body .learning22-screen .learning22-portrait { max-height:240px; }
+ body .learning22-screen .learning22-footer { max-width:560px; padding:12px 24px 20px; }
+}
+
+@media (min-width: 1200px) {
+ body .deck-app .deck-cover-grid { grid-template-columns:repeat(4,minmax(0,250px)); }
+}
+
+@keyframes desktop-dialog-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
+ body .deck-property-sheet { animation:none; }
+}

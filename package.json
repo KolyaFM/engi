@@ -11,13 +11,17 @@
     "preview": "vite preview",
     "test": "node --import tsx scripts/check-learning.mjs && node --import tsx --test tests/*.test.ts",
     "pack:build": "node --import tsx scripts/build-engi-pack.mjs",
+    "analyze:packs": "node --import tsx scripts/analyze-real-packs.ts",
     "test:browser": "node tests/browser.mjs",
     "test:browser:goals": "node tests/goal-ui-browser.mjs",
     "test:browser:matching": "node tests/matching-browser.mjs",
+    "test:browser:desktop": "node tests/desktop-layout-browser.mjs",
+    "test:browser:chronology:landscape": "node tests/chronology-landscape-browser.mjs",
     "test:production": "node tests/production.mjs",
     "test:recall": "node tests/recall22-browser.mjs",
     "test:browser:recall": "node tests/recall-feed-browser.mjs",
-    "test:browser:v3": "node tests/browser-v3.mjs"
+    "test:browser:v3": "node tests/browser-v3.mjs",
+    "test:smoke:mobile": "node scripts/run-mobile-smoke.mjs"
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.8.0",

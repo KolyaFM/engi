@@ -40,6 +40,15 @@ test('first wrong answer updates the plan once; correction and repeated submissi
  await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});assert.deepEqual(await svc.getDayPlan(),p);
  await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});assert.deepEqual(await svc.getDayPlan(),p);
 }));
+
+test('a replacement session carries completed object history rather than the unseen next question',()=>run(async(_d,svc)=>{
+ const first=await svc.startGoalFeed('all','choice'),answered=first.tasks[0];
+ await svc.answer({sessionId:first.id,taskId:answered.id,answer:answered.items[0].answerId});
+ const previous=await svc.advanceFeed(first.id,false,answered.id),unseen=previous.tasks[0];assert(unseen);
+ const next=await svc.startGoalFeed('all','choice');
+ assert.equal(next.cooldown?.at(-1)?.id,answered.id);
+ assert(!next.cooldown?.some(t=>t.id===unseen.id));
+}));
 test('early recall reveal and optional practice consume no daily slot',()=>run(async(_d,svc)=>{
  const s=await svc.startGoalFeed('all','recall_reveal'),t=s.tasks[0];
  await svc.saveInteraction(s.id,t.id,{recallElapsedMs:1000,revealed:true,earlyReveal:true});await svc.answer({sessionId:s.id,taskId:t.id,answer:true});
@@ -72,7 +81,14 @@ test('a mature review failure closes Repeat, then a delayed independent success 
  await svc.answer({sessionId:s.id,taskId:t.id,answer:t.items[0].answerId});assert.deepEqual(await svc.getDayPlan(),first);
  // Make only the stored deadline ready; pure FSRS tests cover the real ten-minute interval.
  const m=(await d.appMeta.get(key))!.value;assert.equal(m.card.state,State.Relearning);m.card.due=new Date(Date.now()-1000);await d.appMeta.put({key,value:m});
- const next=await svc.startGoalFeed('all','choice'),q=next.tasks[0];assert.equal(q.studyContract!.primaryGoals[0].id,goal.id);
+ let next=await svc.startGoalFeed('all','choice'),q=next.tasks[0];
+ // Correction may yield to an unrelated object, including across sessions.
+ // It must then return with ordinary review rights rather than an early repair.
+ for(let n=0;n<3&&q.studyContract!.primaryGoals[0].id!==goal.id;n++){
+  await svc.answer({sessionId:next.id,taskId:q.id,answer:q.items[0].answerId});
+  next=await svc.advanceFeed(next.id,false,q.id);q=next.tasks[0];assert(q);
+ }
+ assert.equal(q.studyContract!.primaryGoals[0].id,goal.id);
  await svc.answer({sessionId:next.id,taskId:q.id,answer:q.items[0].answerId});
  assert.equal((await d.appMeta.get(key))!.value.card.state,State.Review);assert.equal(dayPlanSummary((await svc.getDayPlan())!).reinforce.left,0);
 }));

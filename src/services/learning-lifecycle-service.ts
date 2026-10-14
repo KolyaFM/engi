@@ -1,3 +1,4 @@
+import {readGoalStateRows} from './goal-state-rows';
 import {propertyWorkload} from '../lib/engi/knowledge/property-workload';
 import type {EngiDB} from '../db/engi-db';
 import type {GoalCatalogEntry} from '../lib/engi/knowledge/goal-progress';
@@ -32,9 +33,9 @@ export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=n
  const preferences=(await db.appMeta.get('studyPreferences'))?.value;
  if(preferences?.newCardsPerDay===undefined)await db.appMeta.put({key:'studyPreferences',value:{...await readStudyPreferences(db),newCardsPerDay:10}});
  ledger=emptyLifecycle();
- const rows=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id)),memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
+ const rows=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'memory'),memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
  const legacyTargets=new Set((await db.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.id));
- const exposures=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:exposure:'+e.goal.id));
+ const exposures=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'exposure');
  const disclosedKeys=new Set(catalog.filter((e,i)=>!!exposures[i]||memories.has(e.goal.id)||e.targetIds.some(id=>legacyTargets.has(id))).map(e=>acquisitionKey(e.goal)));
  const introduced=new Set<string>((await db.appMeta.get('introducedEntities'))?.value??[]);
  for(const entry of catalog)if(memories.has(entry.goal.id))for(const id of entry.entityIds)introduced.add(id);
@@ -65,7 +66,7 @@ export async function lifecycleProjection(db:EngiDB,catalog:GoalCatalogEntry[],m
   nextAvailabilityAt:dates.length?new Date(Math.min(...dates)).toISOString():undefined};
 }
 export async function acceptLifecycleIntro(db:EngiDB,catalog:GoalCatalogEntry[],entityId:string,targetIds:string[],shownGoalIds:string[],now=new Date(),skill:'recognition'|'recall'='recognition'){
- const ledger=await ensureLifecycle(db,catalog,now),known=(await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id))).filter(r=>!!r).map(r=>r!.value as GoalMemory);
+ const ledger=await ensureLifecycle(db,catalog,now),known=(await readGoalStateRows(db,catalog.map(e=>e.goal.id),'memory')).filter(r=>!!r).map(r=>r!.value as GoalMemory);
  const shown=new Set(shownGoalIds),targets=new Set(targetIds),entries=catalog.filter(e=>!e.suspended&&e.entityIds.includes(entityId)&&e.targetIds.some(id=>targets.has(id))&&shown.has(e.goal.id));
  const {newCardsPerDay}=await readStudyPreferences(db),dailyCount=ledger.cards.filter(c=>c.source==='daily'&&dayBoundary(new Date(c.introducedAt)).day===dayBoundary(now).day).length;
  const next=admitAcquisition(ledger,entityId,entries.map(e=>e.goal),now,dailyCount<newCardsPerDay?'daily':'extra',skill);

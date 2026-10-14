@@ -1,3 +1,4 @@
+import {readGoalStateRows} from './goal-state-rows';
 import {directionConfiguration} from '../lib/engi/learning/direction-configuration';
 import {readDeckPropertySettings} from './deck-property-settings';
 import {deckStudyScope,SELECTED_DECKS} from './deck-study-scope';
@@ -26,7 +27,8 @@ import {markRepairUnavailable,MISTAKE_EPISODES_KEY,type MistakeEpisode} from './
 import {studyAvailability} from './study-availability-service';
 import {readStudyPreferences} from './study-preferences-service';
 import {pickEndlessFeed} from './endless-study-service';
-import {traceStudySelection,startStudyTrace,stopStudyTrace,studyTraceReport} from './study-selection-trace';
+import {traceStudySelection,startStudyTrace,stopStudyTrace,studyTraceReport,studyTraceEnabled} from './study-selection-trace';
+import type {SelectionDecision} from './selection-decision';
 import {pickLifecycleFeed} from './lifecycle-feed-service';
 import {groupContext} from './group-affinity';
 import {acceptLifecycleIntro,lifecycleProjection,LIFECYCLE_KEY} from './learning-lifecycle-service';
@@ -37,7 +39,8 @@ async function selectNext(d:EngiDB,s:SessionRow){
  const settings=await readDeckPropertySettings(d);
  const b=await measureFeed('bundle.read',async()=>deckStudyScope(await getBundle(d),s.deckIds,settings)),stored=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),memories=directionConfiguration(b,stored,!!s.learningLifecycle),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
  if(memories.length>stored.length)await d.learningState.bulkPut(memories.slice(stored.length).map(learningRow));
- const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s);return s;
+ let decision:SelectionDecision|undefined;const audit=studyTraceEnabled(d)?(value:SelectionDecision)=>{decision=value;}:undefined;
+ const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced,Date.now(),audit):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s,Date.now(),decision);return s;
 }
 const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSessions,d.reviewEvents,d.appMeta];
 async function retirePresentation(d:EngiDB,s:SessionRow){
@@ -49,10 +52,10 @@ export function createTrainerService(d:EngiDB){return {
  getGoalSnapshot:(lifecycle=false)=>getGoalSnapshot(d,lifecycle),
  async getDayPlan(tag='all',format?:string,deckIds?:string[]){return d.transaction('rw',sessionTables(d),async()=>{
   const bundle=deckStudyScope(await getBundle(d),deckIds,await readDeckPropertySettings(d));if(deckIds!==undefined)tag=SELECTED_DECKS;const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);
-  const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
+  const rows=await readGoalStateRows(d,catalog.map(e=>e.goal.id),'memory');
   const plan=await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value));
   if(format&&!await d.appMeta.get(LIFECYCLE_KEY)){const availability=await studyAvailability(d,bundle,enabled,plan,rows.filter(r=>!!r).map(r=>r!.value),tag,format);plan.available=availability.counts;plan.nextAvailabilityAt=availability.nextAt;}
-  const exposed=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:exposure:'+e.goal.id)),introduced=exposed.filter(r=>!!r).map(r=>r!.value.goalId),memory=rows.filter(r=>!!r).map(r=>r!.value);
+  const exposed=await readGoalStateRows(d,catalog.map(e=>e.goal.id),'exposure'),introduced=exposed.filter(r=>!!r).map(r=>r!.value.goalId),memory=rows.filter(r=>!!r).map(r=>r!.value);
   const counterIds=new Set(catalog.filter(e=>!e.suspended&&(!format||format==='mixed'||e.goal.skill===(format==='recall_reveal'?'recall':'recognition'))).map(e=>e.goal.id));
   if(tag==='all')return lifecycleProjection(d,catalog,memory,{...plan,workload:studyWorkload(plan,memory,introduced,counterIds)});
   const targets=new Set(canonicalTargets(bundle,tag).map(i=>i.targetId)),scoped=catalog.filter(e=>e.targetIds.every(id=>targets.has(id))),goals=scoped.filter(e=>!e.suspended).map(e=>e.goal),ids=new Set(goals.map(g=>g.id)),keys=new Set(scoped.map(e=>knowledgeMistakeKey(e.goal))),known=new Set(rows.filter(r=>!!r).map(r=>r!.value.goalId));
@@ -75,7 +78,11 @@ export function createTrainerService(d:EngiDB){return {
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
   if(options.deckIds!==undefined){const active=(await d.decks.toArray()).filter(deck=>!deck.archived);if(!options.deckIds.length||options.deckIds.some(id=>!active.some(deck=>deck.id===id)))throw Error('Выберите доступные колоды');tag=SELECTED_DECKS;}
   await reconcileKnowledgeUnits(d);const now=new Date().toISOString(),s:SessionRow={deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
-  return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);}await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
+  return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){
+   // Carry completed presentations, not the next preselected/unseen question.
+   if(s.memoryModel==='goals'&&previous.memoryModel==='goals')s.cooldown=[...previous.cooldown??[]].slice(-3);
+   const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);
+  }await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },
  async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
   const s=await d.activeSessions.get(id);if(!s?.feed||s.status!=='active')throw Error('Лента не найдена');const task=s.tasks[s.currentPosition];if(expectedTaskId&&task?.id!==expectedTaskId)return s;
@@ -107,7 +114,7 @@ export function createTrainerService(d:EngiDB){return {
   return d.transaction('rw',sessionTables(d),async()=>{
    const settings=await readDeckPropertySettings(d);if(s.deckIds&&s.propertySettingsRevision!==settings.revision){await retirePresentation(d,s);return selectNext(d,s);}
    if(options.endless&&!s.endless){s.endless=true;await d.activeSessions.put(s);}if(options.endless&&options.lifecycle!==false&&!s.learningLifecycle){s.learningLifecycle=1;await d.activeSessions.put(s);}
-   if(s.endless){const bundle=await getBundle(d),catalog=buildGoalCatalog(bundle,(await d.learningState.toArray()).map(r=>r.payload));const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),new Date(),s);}
+   if(s.endless){const bundle=await getBundle(d),catalog=buildGoalCatalog(bundle,(await d.learningState.toArray()).map(r=>r.payload));const rows=await readGoalStateRows(d,catalog.map(e=>e.goal.id),'memory');await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),new Date(),s);}
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
@@ -169,7 +176,7 @@ export function createTrainerService(d:EngiDB){return {
   const answeredAt=new Date();
   if(task.memoryModel==='goals'&&!await d.appMeta.get(reviewReceiptKey(task.id))){
    const catalog=buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload));
-   const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),answeredAt,session);
+   const rows=await readGoalStateRows(d,catalog.map(e=>e.goal.id),'memory');await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),answeredAt,session);
   }
   const hasReceipt=!!await d.appMeta.get(reviewReceiptKey(task.id));
   if(task.memoryModel==='goals'&&!hasReceipt&&!task.studyContract&&!task.studyContractIssue)await prepareStudyTask(d,await getBundle(d),task,answeredAt);

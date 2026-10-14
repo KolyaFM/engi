@@ -1,0 +1,43 @@
+/* Logical order stays newest-first; row-reverse presents earliest on the left. */
+body .study-feed .has-chronology .feed-current:has(.chronology-horizontal) {
+ max-width:1120px; padding-left:16px; padding-right:16px;
+}
+body .study-feed:has(.chronology-horizontal) .feed-header { width:min(1120px,100%); }
+body .study-feed .has-chronology .chronology-horizontal {
+ max-height:520px; width:100%;
+}
+body .chronology-horizontal .chronology-list {
+ flex-direction:row-reverse; gap:12px; padding:24px 4px 8px;
+}
+body .chronology-horizontal .chronology-list:before {
+ left:8px; right:8px; top:8px; bottom:auto; height:2px; width:auto;
+}
+body .chronology-horizontal .chronology-list:after {
+ top:3px; right:0; left:auto; bottom:auto;
+ border:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:10px solid #b7ad9d;
+}
+body .chronology-horizontal .chronology-slot {
+ flex:1 1 0; min-width:0; min-height:0; flex-direction:column;
+}
+body .chronology-horizontal .chronology-slot:last-child:before {
+ left:0; top:-20px; bottom:auto;
+}
+body .chronology-horizontal .chronology-slot.is-drop-target:after {
+ left:auto; right:-8px; top:0; bottom:0; width:3px; height:auto;
+}
+body .chronology-horizontal .chronology-list .sort-row {
+ flex:1; width:100%; height:auto; min-height:0; padding:12px;
+}
+body .chronology-horizontal .chronology-list .sort-row.has-image { align-self:stretch; padding:6px; }
+body .chronology-horizontal .sort-content { justify-content:center; text-align:center; }
+body .chronology-horizontal .sort-position {
+ flex:0 0 48px; flex-direction:row; justify-content:center; padding:4px 8px; gap:8px;
+}
+body .chronology-horizontal .sort-mark:empty,body .chronology-horizontal .sort-year:empty { display:none; }
+@media (orientation:landscape) and (max-height:500px) {
+ body .study-feed:has(.chronology-horizontal) .feed-header { height:48px; }
+ body .study-feed .has-chronology .feed-current:has(.chronology-horizontal) { padding-top:0; padding-bottom:60px; }
+ body .chronology-horizontal .chronology-list { gap:8px; padding-top:20px; }
+ body .chronology-horizontal .sort-position { flex-basis:32px; padding:2px 4px; gap:4px; }
+ body .chronology-horizontal .sort-content strong { font-size:14px; }
+}

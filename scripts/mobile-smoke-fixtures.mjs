@@ -1,0 +1,17 @@
+import {mkdir,writeFile} from 'node:fs/promises';
+import {deflateSync} from 'node:zlib';
+// Explicitly synthetic, deterministic, self-contained fixtures; no downloads or personal data.
+function crc(bytes){let c=0xffffffff;for(const b of bytes){c^=b;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return (c^0xffffffff)>>>0;}
+function chunk(type,data){const name=Buffer.from(type),len=Buffer.alloc(4),sum=Buffer.alloc(4);len.writeUInt32BE(data.length);sum.writeUInt32BE(crc(Buffer.concat([name,data])));return Buffer.concat([len,name,data,sum]);}
+function png(n){const w=64,h=80,header=Buffer.alloc(13);header.writeUInt32BE(w);header.writeUInt32BE(h,4);header[8]=8;header[9]=6;const pixels=Buffer.alloc(h*(1+w*4));for(let y=0;y<h;y++)for(let x=0;x<w;x++){const at=y*(1+w*4)+1+x*4,on=(x+(n+1)*y)%23<10;pixels[at]=on?40+n*23:235;pixels[at+1]=on?70+n*17:240;pixels[at+2]=on?180-n*13:245;pixels[at+3]=255;}return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(pixels)),chunk('IEND',Buffer.alloc(0))]);}
+const source={kind:'manual',name:'Синтетические данные автоматического теста'},fact=(property,value)=>({property,value,source,verification:'user_confirmed'}),ref=name=>({name,type:'Тестовый объект'});
+export async function createMobileSmokeFixtures(){
+ const count=Number(process.env.ENGI_SMOKE_ENTITIES??8);if(!Number.isInteger(count)||count<8||count>200)throw Error('ENGI_SMOKE_ENTITIES must be an integer from 8 to 200');
+ const properties=[{name:'Тестовый год',valueType:'date',subjectTypes:['Тестовый объект'],promptTemplates:{forward:'В каком году появился этот объект?',reverse:'Какой объект появился в этом году?',sort:'Расставьте объекты по времени.'},learning:{timeline:'off',missing:'off'}},{name:'Тестовая группа',valueType:'entity',subjectTypes:['Тестовый объект'],targetTypes:['Тестовая категория'],promptTemplates:{forward:'К какой группе относится этот объект?',reverse:'Какой объект относится к этой группе?'}},{name:'Тестовая сторона',valueType:'entity',subjectTypes:['Тестовый объект'],targetTypes:['Тестовая категория'],promptTemplates:{forward:'К какой стороне относится этот объект?'},learning:{reverse:false}}];
+ const entities=Array.from({length:count},(_,n)=>({...ref('Объект '+(n+1)),description:'Синтетический объект для проверки импорта, обучения и восстановления занятия.',tags:['Тестовая коллекция'],facts:[fact('Тестовый год',1800+n*10),fact('Тестовая группа',{name:'Группа '+(n%3+1),type:'Тестовая категория'}),fact('Тестовая сторона',{name:n%2?'Правая':'Левая',type:'Тестовая категория'})],images:[{file:`media/object-${n}.png`,role:'primary',primary:true,recognition:true,license:'CC0 — generated test image',sourceUrl:'https://example.org/engi-generated-test-fixture'}]}));
+ for(const [key,count,name]of [['a',entities.length,'Тестовая колода'],['b',4,'Общая подборка']]){
+  const dir=`artifacts/mobile-smoke-fixtures/${key}`;await mkdir(dir+'/media',{recursive:true});for(let n=0;n<count;n++)await writeFile(`${dir}/media/object-${n}.png`,png(n));
+  await writeFile(dir+'/manifest.json',JSON.stringify({format:'engi-pack',schemaVersion:3,name,createdAt:'2026-10-14T09:00:00.000Z'}));
+  await writeFile(dir+'/bundle.json',JSON.stringify({schemaVersion:3,name,properties,entities:entities.slice(0,count),deck:{name,members:entities.slice(0,count).map(e=>ref(e.name)),learning:{properties:properties.map(p=>p.name),imageRecognition:true}}},null,2));
+ }
+}

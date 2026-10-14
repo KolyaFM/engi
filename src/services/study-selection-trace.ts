@@ -9,10 +9,12 @@ import {newAdmission,type GoalDayPlan} from '../lib/engi/study-core/day-plan';
 import {knowledgeMistakeKey} from '../lib/engi/study-core/mistakes';
 import {exposureAvailableAt,type ExposureEntry} from '../lib/engi/study-core/exposure';
 import {buildGoalCatalog} from './goal-catalog';
-import {goalProposalPool} from './goal-proposals';
+import {peekGoalProposalPool} from './goal-proposals';
 import {readGroupContext} from './group-affinity';
 import {admitStudyCandidates} from '../lib/engi/session/study-availability';
 import Dexie from 'dexie';
+import type {SelectionDecision} from './selection-decision';
+import {readGoalStateRows} from './goal-state-rows';
 
 type CandidateTrace={direction:'forward'|'reverse';goalId:string;knowledge:string;state:string;dueAt?:string;exposureUntil?:string;blocks:string[]};
 export type StudyTraceEvent={at:string;kind:'selection'|'answer';sessionId?:string;taskId?:string;intent?:string;format?:string;reason?:string;objects?:string[];goals?:string[];[key:string]:unknown};
@@ -21,38 +23,40 @@ const buffers=new WeakMap<EngiDB,Buffer>();
 /** Explicitly enabled, bounded and local. No persistence, content text, answer values or network. */
 export function startStudyTrace(db:EngiDB,limit=300){buffers.set(db,{limit:Math.min(1000,Math.max(1,Math.floor(limit)||300)),events:[]});}
 export function stopStudyTrace(db:EngiDB){buffers.delete(db);}
+export function studyTraceEnabled(db:EngiDB){return buffers.has(db);}
 export function studyTraceReport(db:EngiDB){return structuredClone(buffers.get(db)?.events??[]);}
 function append(db:EngiDB,event:StudyTraceEvent){const buffer=buffers.get(db);if(!buffer)return;const commit=()=>{if(buffers.get(db)!==buffer)return;buffer.events.push(event);if(buffer.events.length>buffer.limit)buffer.events.splice(0,buffer.events.length-buffer.limit);};if(Dexie.currentTransaction)Dexie.currentTransaction.on('complete',commit);else commit();}
-export async function traceStudySelection(db:EngiDB,b:Bundle,enabled:Memory[],session:SessionRow,now=Date.now()){
+export async function traceStudySelection(db:EngiDB,b:Bundle,enabled:Memory[],session:SessionRow,now=Date.now(),decision?:SelectionDecision){
  if(!buffers.has(db))return;
  const plan=(await db.appMeta.get(session.learningLifecycle?'studyCore:lifecycleDayPlan':'studyCore:dayPlan'))?.value as GoalDayPlan|undefined;if(!plan)return;
- const catalog=buildGoalCatalog(b,enabled),rows=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
+ const catalog=buildGoalCatalog(b,enabled),rows=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'memory');
  const memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
- const exposureRows=await db.appMeta.bulkGet(catalog.map(e=>'studyCore:exposure:'+e.goal.id));
+ const exposureRows=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'exposure');
  const exposures=new Map(exposureRows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as ExposureEntry]));
- const pool=goalProposalPool(b,enabled,session.tag,session.format),proposed=new Set(pool.proposals.flatMap(p=>p.goals.map(g=>g.id)));
+ const pool=peekGoalProposalPool(b,enabled,session.tag,session.learningLifecycle?'mixed':session.format),proposals=pool?.proposals??[],proposed=new Set(proposals.flatMap(p=>p.goals.map(g=>g.id)));
  const pending=new Set([...plan.repeat,...plan.reinforce].filter(r=>r.status==='pending').map(r=>r.goalId));
  const lifecycle=session.learningLifecycle?await readLifecycle(db):undefined;
  const activeUnits=new Map(lifecycle?.units.filter(u=>u.stage!=='completed').map(u=>[propertyKey(u.goal),u]));
  const byProperty=new Map<string,typeof catalog>();for(const e of catalog){const key=propertyKey(e.goal),entries=byProperty.get(key)??[];entries.push(e);byProperty.set(key,entries);}
  const admission=newAdmission(plan),newLeft=Math.max(0,plan.newTarget-plan.newGoalIds.length),candidates:CandidateTrace[]=[];
  for(const entry of catalog){const g=entry.goal,m=memories.get(g.id),ex=exposures.get(g.id),blocks:string[]=[];
-  if(entry.suspended)blocks.push('suspended');if(!proposed.has(g.id))blocks.push('outside-proposal-pool');
+  if(entry.suspended)blocks.push('suspended');if(!pool)blocks.push('pool-not-evaluated');else if(!proposed.has(g.id))blocks.push('outside-proposal-pool');
   if(lifecycle){const unit=activeUnits.get(propertyKey(g)),siblings=(byProperty.get(propertyKey(g))??[]).flatMap(e=>{const memory=memories.get(e.goal.id);return memory?[memory]:[];});if(unit){if(unit.goal.skill!==g.skill)blocks.push('other-required-skill');if(new Date(unit.availableAt).getTime()>now)blocks.push('acquisition-gap');}else{if(!m&&!siblings.length)blocks.push('not-admitted');const due=m?new Date(m.card.due).getTime():Math.min(...siblings.map(other=>new Date(other.card.due).getTime()));if(due>now)blocks.push('not-due');if(siblings.some(other=>other.card.last_review&&new Date(other.card.last_review).getTime()+ACQUISITION_CONFIRMATION_MS>now))blocks.push('property-gap');}}
   else if(!m){if(!newLeft)blocks.push('daily-budget');if(admission.held)blocks.push('learning-capacity');}
   else {if(!pending.has(g.id))blocks.push('no-pending-obligation');if(new Date(m.card.due).getTime()>now)blocks.push('not-due');}
   if(ex&&(activeUnits.has(propertyKey(g))?activeUnits.get(propertyKey(g))!.stage==='confirmation'?new Date(ex.lastVisibleAt).getTime()+ACQUISITION_CONFIRMATION_MS:0:exposureAvailableAt(ex))>now)blocks.push('recent-disclosure');
   candidates.push({direction:g.direction,goalId:g.id,knowledge:knowledgeMistakeKey(g),state:activeUnits.get(propertyKey(g))?.stage??(!m?ex?'introduced':'unseen':Number(m.card.state)===1?'learning':Number(m.card.state)===3?'relearning':'review'),dueAt:m?new Date(m.card.due).toISOString():undefined,exposureUntil:ex?new Date(exposureAvailableAt(ex)).toISOString():undefined,blocks});
  }
- const admitted=admitStudyCandidates(pool.proposals,p=>p.goals,plan,memories,exposures,now);
+ const admitted=admitStudyCandidates(proposals,p=>p.goals,plan,memories,exposures,now);
  const task=session.tasks[session.currentPosition],primary=task?.studyContract?.primaryGoals??[];
+ if(decision?.selected){const keys=new Set(primary.map(propertyKey)),index=[...session.cooldown??[]].reverse().findIndex(t=>t.studyContract?.primaryGoals.some(g=>keys.has(propertyKey(g))));decision={...decision,selected:{...decision.selected,propertyDistance:index<0?null:index+1}};}
  const affinity=task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)?await readGroupContext(db,b,session.cooldown):undefined;
  append(db,{at:new Date(now).toISOString(),kind:'selection',sessionId:session.id,taskId:task?.id,intent:task?.intent,format:task?.recipe.format,direction:task?.recipe.direction,reason:task?.reason,
   objects:task?.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId)??(session.intro?[session.intro.entityId]:[]),goals:primary.map(g=>g.id),knowledge:primary.map(knowledgeMistakeKey),intro:!!session.intro,exhausted:!!session.exhausted,
   counters:{newLeft,activeLearning:plan.learningGoalIds?.length??0,activeFirstChecks:lifecycle?[...activeUnits.values()].filter(u=>u.stage==='first-check').length:admission.active,capacity:lifecycle?FIRST_CHECK_BACKLOG_LIMIT:admission.limit,newDone:plan.newGoalIds.length,newTarget:plan.newTarget,mistakes:plan.mistakes?.length??0},
   ordinaryAvailable:lifecycle?candidates.filter(c=>!c.blocks.length).length:admitted.available.length,completed:session.completedCount??0,acquisition:lifecycle?{activeObjects:new Set([...activeUnits.values()].map(u=>u.entityId)).size,firstChecks:[...activeUnits.values()].filter(u=>u.stage==='first-check').length,capacity:FIRST_CHECK_BACKLOG_LIMIT,confirmationGapMs:ACQUISITION_CONFIRMATION_MS,units:[...activeUnits.values()].map(u=>({key:u.key,stage:u.stage,successes:u.successes,availableAt:u.availableAt}))}:undefined,round:structuredClone(session.playRound),lastAutoNewAt:session.lastAutoNewAt,
   grouping:affinity&&task?{signatures:task.items.map(i=>affinity.signature(i,task.recipe)),pairs:task.items.flatMap((item,n)=>task.items.slice(n+1).map(other=>({objects:[item.entityId,other.entityId],affinity:affinity.similarity(item,other,task.items)})))}:undefined,
-  candidateCount:candidates.length,candidates:candidates.slice(0,160),truncated:candidates.length>160});
+  decision,candidateCount:candidates.length,candidates:candidates.slice(0,160),truncated:candidates.length>160});
 }
 export async function traceStudyAnswer(db:EngiDB,contract:TaskContract,attempt:Attempt,before:GoalMemory[]){
  if(!buffers.has(db))return;

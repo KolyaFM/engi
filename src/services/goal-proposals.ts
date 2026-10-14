@@ -10,11 +10,17 @@ export type GoalProposal={presentation?:'conveyor'|'flip-grid';recipe:Recipe;ite
 type Pool={proposals:GoalProposal[];context:CompositionContext};
 // Bounded by two configurations/scopes. No schedule, exposure, day plan or selected task is cached.
 const cache:{key:string;pool:Pool}[]=[];
+// goalCandidates removes bootstrap and forces review status. A never-successful
+// unit has zero retention regardless of due; synthesized reverse rows receive a
+// fresh due/triagedAt on each read, which must not invalidate question structure.
+function proposalConfiguration(enabled:Memory[]){return enabled.map(({triagedAt,bootstrap,card,...memory})=>({...memory,card:memory.firstSuccessAt?card:{...card,due:undefined}}));}
+/** Diagnostics must never generate questions or consume randomness on a cache miss. */
+export function peekGoalProposalPool(b:Bundle,enabled:Memory[],tag='all',format='mixed'):Pool|undefined{return cache.find(e=>e.key===JSON.stringify([b,proposalConfiguration(enabled),tag,format]))?.pool;}
 function freeze(value:any):any{if(value&&typeof value==='object'){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;}
 export function goalProposalPool(b:Bundle,enabled:Memory[],tag='all',format='mixed'):Pool{
  const end=feedSpan('proposals');try{
 
- const key=JSON.stringify([b,enabled,tag,format]),entry=cache.find(e=>e.key===key);
+ const key=JSON.stringify([b,proposalConfiguration(enabled),tag,format]),entry=cache.find(e=>e.key===key);
  if(entry){cache.splice(cache.indexOf(entry),1);cache.push(entry);return entry.pool;}
  // Validate with the established generator once per content/configuration value.
  // Retain neither distractors nor task contracts in the proposal pool.

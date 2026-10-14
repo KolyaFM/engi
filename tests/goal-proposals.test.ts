@@ -13,6 +13,8 @@ import {pickGoalFeed} from '../src/services/goal-feed';
 import {dailyNewState} from '../src/lib/engi/session/candidate-pool';
 import type {Bundle,Memory} from '../src/lib/engi/types';
 import {compositionContext} from '../src/lib/engi/session/composer';
+import {feedPerformance} from '../src/services/feed-performance';
+import {directionConfiguration} from '../src/lib/engi/learning/direction-configuration';
 function fixture(many=false):Bundle{
  const b:Bundle={entities:[],facts:[],media:[],tags:[{id:'subset',name:'Часть'}],entityTags:[],missing:[],unresolved:[],properties:[{id:'rel',name:'Автор',learnable:true,valueKind:'entity',cardinality:many?'many':'one',subjectTypes:['subject'],targetTypes:['answer']}],entityTypes:[{id:'subject',name:'Объект'},{id:'answer',name:'Ответ'}]};
  for(let n=0;n<4;n++)b.entities.push({id:'a'+n,type:'answer',name:'Ответ '+n,aliases:[],externalIds:{}});
@@ -45,6 +47,20 @@ test('cache ignores presentation history but revalidates content, scope and susp
  const all=goalProposalPool(b,enabled);assert.notEqual(goalProposalPool(b,enabled,'subset'),all);
  b.facts[0].valueEntityId='a2';const after=goalProposalPool(b,enabled);assert.notEqual(after,all);
  assert(Object.isFrozen(after.proposals));assert(Object.isFrozen(after.proposals[0].items));
+}));
+test('unreviewed configuration timestamps do not recompile proposals, while real presentation evidence still invalidates',()=>run(async(_d,b,enabled)=>{
+ const pool=goalProposalPool(b,enabled),later=structuredClone(enabled);
+ assert(later.every(m=>!m.firstSuccessAt));
+ for(const m of later){m.triagedAt='2030-01-01T00:00:00.000Z';m.card.due=new Date('2030-01-02');m.bootstrap={successes:0,probeAfterCards:99,sessionId:'another-session'};}
+ feedPerformance.start();try{assert.equal(goalProposalPool(b,later),pool);assert(!feedPerformance.report().some(s=>s.stage==='candidates'),'Temporary dates must not trigger generation');}finally{feedPerformance.stop();}
+ later[0].confusions={'a2':2};const confusion=goalProposalPool(b,later);assert.notEqual(confusion,pool);
+ later[0].recentMediaIds=['m0'];const images=goalProposalPool(b,later);assert.notEqual(images,confusion);
+ later[0].firstSuccessAt='2026-10-14T09:00:00.000Z';const learned=goalProposalPool(b,later);assert.notEqual(learned,images);
+ later[0].card.due=new Date('2031-01-01');assert.notEqual(goalProposalPool(b,later),learned,'Successful memory must retain full scheduling input');
+ const forwardOnly=enabled.filter(m=>!m.id.endsWith(':reverse')),firstConfiguration=directionConfiguration(b,forwardOnly),reverse=firstConfiguration.find(m=>m.id.endsWith(':reverse'));
+ assert(reverse,'Actual direction configuration must synthesize a missing reverse row');const firstPool=goalProposalPool(b,firstConfiguration);
+ await new Promise(resolve=>setTimeout(resolve,5));const nextConfiguration=directionConfiguration(b,forwardOnly),nextReverse=nextConfiguration.find(m=>m.id===reverse.id)!;
+ assert.notEqual(nextReverse.triagedAt,reverse.triagedAt);assert.equal(goalProposalPool(b,nextConfiguration),firstPool,'Re-reading real reverse configuration must reuse the pool');
 }));
 test('materialization makes fresh task IDs, honors the proposed interaction and validates members again',()=>run(async(_d,b,enabled)=>{
  const pool=goalProposalPool(b,enabled),proposal=pool.proposals.find(p=>p.recipe.format==='choice'&&p.items[0].factId)!;

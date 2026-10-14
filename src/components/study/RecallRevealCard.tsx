@@ -6,7 +6,8 @@ import type {Task} from '../../lib/engi/types';
 export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,accessible,onPersist,onSubmit}:{task:Task;cue:ReactNode;draft?:InteractionDraft;paused:boolean;busy:boolean;reducedMotion:boolean;accessible:boolean;onPersist:(delta:Partial<InteractionDraft>)=>Promise<void>;onSubmit:(v:boolean)=>void}){
  const elapsedRef=useRef(Math.min(5000,draft?.recallElapsedMs??0)),[elapsed,setElapsed]=useState(elapsedRef.current),[revealed,setRevealed]=useState(!!draft?.revealed),[offset,setOffset]=useState(0),[dragging,setDragging]=useState(false);
  const callbacks=useRef({onPersist,onSubmit});callbacks.current={onPersist,onSubmit};
- const swipe=useHorizontalSwipe({disabled:!revealed||paused||busy,nativeScroll:true,onOffset:setOffset,onDragging:setDragging,onSwipe:side=>{setOffset(0);callbacks.current.onSubmit(side===1)}});
+ const swipeReady=revealed&&!paused&&!busy;
+ const swipe=useHorizontalSwipe({disabled:!swipeReady,onOffset:setOffset,onDragging:setDragging,onSwipe:side=>{setOffset(0);callbacks.current.onSubmit(side===1)}});
  const lastPersist=useRef(elapsedRef.current);
  const pendingReveal=useRef<Partial<InteractionDraft>|null>(null),requestEarlyReveal=useRef<(()=>void)|null>(null);
  const [revealing,setRevealing]=useState(false);
@@ -33,7 +34,7 @@ export function RecallRevealCard({task,cue,draft,paused,busy,reducedMotion,acces
   document.addEventListener('visibilitychange',visibility);timer=setTimeout(tick,Math.min(100,5000-elapsedRef.current));
   return()=>{disposed=true;clearTimeout(timer);requestEarlyReveal.current=null;accrue();if(!pendingReveal.current)persist(true);document.removeEventListener('visibilitychange',visibility)};
  },[task.id,paused,revealed]);
- return <div className={`feed-question recall-swipe ${dragging?'is-dragging':''} ${offset>0?'remembering':offset<0?'missing-memory':''}`} style={reducedMotion?undefined:{transform:`translateX(${offset}px) rotate(${offset/35}deg)`}}
+ return <div className={`feed-question recall-swipe ${swipeReady?'is-swipe-ready':''} ${dragging?'is-dragging':''} ${offset>0?'remembering':offset<0?'missing-memory':''}`} style={reducedMotion?undefined:{transform:`translateX(${offset}px) rotate(${offset/35}deg)`}}
   onKeyDown={e=>{if(revealed&&!paused&&!busy&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();callbacks.current.onSubmit(e.key==='ArrowRight')}}}
   {...swipe}>
   {cue}<div className="feed-actions"><h2>{task.recipe.prompt??task.recipe.label??'Вспомните ответ'}</h2>

@@ -1,0 +1,8 @@
+/** Diagnostic IDs and counts only; never persisted in a session or sent over the network. */
+export type SelectionDecision={
+ branch:string;lane?:'due'|'first';availableFormats?:Record<string,number>;
+ checks:Record<string,{status:'not-reached'|'disabled'|'cooldown'|'no-compatible-group'|'generated';count?:number}>;
+ alternatives?:{priority:number;format:string;presentation:string;objects:string[];properties:string[];group:boolean;objectPenalty:number;formatPenalty:number}[];
+ rejected?:{priority:number;format:string;group:boolean;reason:'materialization'}[];
+ selected?:{objectDistance:number|null;propertyDistance:number|null;formatDistance:number|null};
+};

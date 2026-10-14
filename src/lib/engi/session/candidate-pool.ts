@@ -27,7 +27,16 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId)&&(!i.factId||!mem.has(i.targetId.replace(/:(forward|reverse)$/,i.targetId.endsWith(':reverse')?':forward':':reverse'))));
  const budget=Math.max(0,(newCardsPerDay??(due.length>=20?1:3))+newState.extraBudget-newState.introducedEntityIds.length);
  const ownerKnown=(i:typeof units[number])=>seenEntities.has(entityOf(i));
- const first=newUnits.find(ownerKnown)??(budget>0?newUnits.find(i=>!sameEntity(entityOf(i))):undefined);
+ // Rotate introductions across available selected decks, using persisted
+ // introduction order. Shared objects count for every deck they belong to.
+ const deckIds=new Set((b.decks??[]).filter(d=>!d.archived&&(!s.deckIds||s.deckIds.includes(d.id))).map(d=>d.id)),membership=new Map<string,string[]>(),lastIntroduced=new Map<string,number>();
+ for(const member of b.deckMembers??[])if(!member.archived&&deckIds.has(member.deckId)){const list=membership.get(member.entityId)??[];list.push(member.deckId);membership.set(member.entityId,list);}
+ introduced.forEach((id,index)=>{for(const deck of membership.get(id)??[])lastIntroduced.set(deck,index);});
+ const deckRank=(id:string)=>Math.min(...(membership.get(id)??[]).map(deck=>lastIntroduced.get(deck)??-1));
+ const newPropertyUnit=newUnits.find(ownerKnown),freshByOwner=new Map<string,typeof units[number]>();let freshRank=Infinity;
+ // Sample objects, not properties: an object with more facts gets no extra tickets.
+ if(!newPropertyUnit&&budget>0)for(const item of newUnits){const id=entityOf(item);if(ownerKnown(item)||sameEntity(id))continue;const rank=deckRank(id);if(rank<freshRank){freshRank=rank;freshByOwner.clear();}if(rank===freshRank&&!freshByOwner.has(id))freshByOwner.set(id,item);}
+ const fresh=[...freshByOwner.values()],first=newPropertyUnit??(fresh.length?fresh[fresh.length===1?0:Math.floor(Math.random()*fresh.length)]:undefined);
  if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}
  if(diagnosticFormat||(s.ordinaryCount??0)>=8&&ordinary.slice(-8).every(t=>!t.recipe.diagnostic)){
   const activeIds=new Set(known.map(i=>i.factId)),db={...b,facts:b.facts.filter(f=>activeIds.has(f.id))};
