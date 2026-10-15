@@ -38,10 +38,10 @@ test('an eligible reverse error gets a repair even while it is also ordinary lea
 });
 
 test('new introductions alternate available decks instead of following import order',()=>{
- const b=fixture(),s=session(),introduced:string[]=[],memories:ReturnType<typeof triagedMemory>[]=[];let firstDeck:string;
+ const b=fixture(),s=session(),introduced:string[]=[],memories:ReturnType<typeof triagedMemory>[]=[];let firstDeck:string|undefined;
  for(let n=0;n<8;n++){
   const next=pickFeed(b,memories,s,dailyNewState(undefined),introduced,10);assert(next.intro);
-  const id=next.intro.entityId,deck=b.deckMembers!.find(m=>m.entityId===id)!.deckId;if(n===0)firstDeck=deck;assert.equal(deck,n%2?(firstDeck==='a'?'b':'a'):firstDeck);
+  const id=next.intro.entityId,deck=b.deckMembers!.find(m=>m.entityId===id)!.deckId;if(n===0)firstDeck=deck;assert(firstDeck);assert.equal(deck,n%2?(firstDeck==='a'?'b':'a'):firstDeck);
   introduced.push(id);
   for(const unit of canonicalTargets(b).filter(i=>next.intro!.unitIds.includes(i.targetId))){const m=triagedMemory(unit,'red',s.id,0);m.status='suspended';memories.push(m);}
  }
