@@ -150,3 +150,9 @@
 
 /* A committed horizontal swipe already owns the outgoing animation. */
 .study-feed.state-exiting .feed-current:has(.recall-swipe.is-leaving){opacity:1;transform:none;transition:none}
+
+/* Recall owns the whole available game surface, including space below the answer. */
+.has-recall .feed-current{height:100%;display:flex;flex-direction:column}
+.has-recall .feed-task-content:not([hidden]){flex:1;display:flex;flex-direction:column}
+.has-recall .recall-swipe{flex:1;min-height:0}
+.recall-swipe .feed-cue img{pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none}

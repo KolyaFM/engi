@@ -7,6 +7,7 @@ import {composeUnit,compositionContext} from '../src/lib/engi/session/composer';
 import {triagedMemory} from '../src/lib/engi/learning/bootstrap';
 import {assess,preflight} from '../src/lib/engi/engine';
 import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
+import {goalProposalPool,materializeGoalProposal} from '../src/services/goal-proposals';
 
 function fixture(kind:'date'|'number'='date',values=[1801,1820,1850,1900],unit?:string){
  const b:Bundle={entities:values.map((_,n)=>({id:'e'+n,type:'person',name:'Президент '+n,aliases:[],externalIds:{}})),facts:values.map((value,n)=>({id:'f'+n,entityId:'e'+n,key:'value',valueKind:kind,...(kind==='date'?{dateStart:String(value).padStart(4,'0')+'-01-01',dateEnd:String(value).padStart(4,'0')+'-12-31',datePrecision:'year' as const}:{valueNumber:value,unit}),verification:'verified',source:{kind:'manual',name:'Тест'}})),properties:[{id:'value',name:'Число',valueKind:kind,cardinality:'one',learnable:true,inverse:{enabled:true},promptTemplates:{forward:'Назовите число',reverse:'Кто соответствует этому числу?'}}],media:[],tags:[],entityTags:[],missing:[],unresolved:[]};
@@ -62,4 +63,17 @@ test('composer mixes real values and precision quizzes, shuffles answers and pre
   }}finally{Math.random=original;}
   assert(precision>140&&precision<260,JSON.stringify({precision,comparison}));assert.equal(ranks.size,4);assert.equal(positions.size,4);
  }
+});
+
+test('materialized cached proposals alternate numeric modes across objects and survive a resumed history',()=>{
+ const {b}=fixture(),context=compositionContext(b),enabled=eligible(b,recipes(b).find(r=>r.answerKey==='value'&&r.format==='choice'&&r.direction==='forward')!).map(i=>triagedMemory(i,'red','s',0));
+ const pool=goalProposalPool(b,enabled,'all','choice'),proposals=pool.proposals.filter(p=>p.recipe.direction==='forward');assert(proposals.length);
+ const history:import('../src/lib/engi/types').Task[]=[];
+ for(let n=0;n<24;n++){
+  const task=materializeGoalProposal(b,enabled,proposals[n%proposals.length],context,'all',structuredClone(history));assert(task);
+  if(n)assert.notEqual(task.numericChoiceMode,history.at(-1)!.numericChoiceMode);
+  if(task.numericChoiceMode==='nearby')assert(task.options.every(o=>Math.abs(Number(o.name)-Number(task.items[0].answer))<=3));
+  history.push(task);
+ }
+ assert.deepEqual(new Set(history.map(t=>t.numericChoiceMode)),new Set(['nearby','related']));
 });

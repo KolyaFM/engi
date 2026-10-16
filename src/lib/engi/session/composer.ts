@@ -46,7 +46,8 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   const globalRecipe=b.studyScope&&r.tag===b.studyScope.id?context?.recipes.find(g=>g.tag===undefined&&g.subjectType===r.subjectType&&g.answerKey===r.answerKey&&g.cue===r.cue&&g.direction===r.direction&&g.format===r.format&&g.answerPresentation===r.answerPresentation&&JSON.stringify(g.mediaRoles)===JSON.stringify(r.mediaRoles)):undefined;
   const answerPool=b.studyScope&&r.tag===b.studyScope.id?(globalRecipe?poolFor(globalRecipe):eligible(b,{...r,tag:undefined})):pool;
   const imagePool=r.answerPresentation==='image'?answerPool.filter((i,n,all)=>i.answerImage&&(i.answerId===item.answerId||i.answerImage!==item.answerImage)&&all.findIndex(x=>x.answerImage===i.answerImage)===n):answerPool;
-  const nearby=nearbyNumericDistractors(b,item,r),precision=!!nearby&&Math.random()<0.5;
+  const nearby=nearbyNumericDistractors(b,item,r),previousNumeric=[...history].reverse().find(t=>t.numericChoiceMode&&!t.retryOf);
+  const precision=!!nearby&&(previousNumeric?previousNumeric.numericChoiceMode==='related':Math.random()<0.5);
   const wrong=precision?nearby!:distractors(b,item,imagePool,m,history),twin=!precision&&r.answerPresentation!=='image'&&r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
   if(r.answerPresentation==='image')for(const o of options){const candidate=answerPool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
@@ -54,7 +55,7 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   if(r.answerKey==='created_by'&&r.cue==='image'&&!p?.promptTemplates?.forward)recipe.prompt='Кто автор этой работы?';
   if(p?.valueKind==='image')recipe.prompt=r.answerPresentation==='image'?`Выберите ${p.name.toLowerCase()} для: ${item.name}`:(p.promptTemplates?.forward&&!p.promptTemplates.forward.includes('{subject}')?p.promptTemplates.forward:`Какому объекту принадлежит ${p.name.toLowerCase()}?`);
   if(r.answerKey==='identity')recipe.prompt=r.answerPresentation==='image'?'Выберите подходящее изображение.':'Кто или что на изображении?';
-  const t:Task={id:crypto.randomUUID(),recipe,items:[item],options,reason:objective?'calibration':'due',pretest:m.attempts===0,discrimination:twin,difficultyStage:stage};
+  const t:Task={...(nearby?{numericChoiceMode:precision?'nearby' as const:'related' as const}:{}),id:crypto.randomUUID(),recipe,items:[item],options,reason:objective?'calibration':'due',pretest:m.attempts===0,discrimination:twin,difficultyStage:stage};
   if(preflight(t))return t;
  }
 }
