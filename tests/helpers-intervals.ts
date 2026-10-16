@@ -1,0 +1,3 @@
+import type {Bundle,Recipe} from '../src/lib/engi/types';
+export function intervals():Bundle{return {entities:[0,1,2,3].map(n=>({id:'e'+n,type:'event',name:'Event '+n,aliases:[],externalIds:{}})),facts:[0,1,2,3].map(n=>({id:'f'+n,entityId:'e'+n,key:'period',valueKind:'date',dateStart:(1900+n*20)+'-01-01',dateEnd:(1905+n*20)+'-12-31',datePrecision:'range',source:{kind:'manual',name:'test'},verification:'verified'})),properties:[{id:'period',name:'Period',valueKind:'date',cardinality:'one',learnable:true}],media:[],tags:[],entityTags:[],missing:[],unresolved:[]};}
+export const intervalRecipe:Recipe={id:'r',format:'choice',direction:'forward',cue:'name',answerKey:'period',memoryKey:'period',diagnostic:false};

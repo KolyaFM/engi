@@ -8,10 +8,10 @@ export type ImportPlan={bundle:Bundle;issues:ImportIssue[];resetFactIds:string[]
 const names=(r:{name:string;aliases?:string[]})=>new Set([r.name,...r.aliases??[]].map(norm));
 const intersects=(a:Set<string>,b:Set<string>)=>[...a].some(x=>b.has(x));
 const uniqueSources=(s:Source[])=>[...new Map(s.map(x=>[JSON.stringify([x.url,x.name,x.locator,x.family]),x])).values()];
-export function dateValue(v:unknown):Pick<Fact,'dateStart'|'dateEnd'|'datePrecision'>{
+export function dateValue(v:unknown):Pick<Fact,'dateStart'|'dateEnd'|'datePrecision'|'dateBoundaryPrecision'>{
  if(v&&typeof v==='object'){
   const o=v as Record<string,unknown>;
-  if('start'in o){const a=dateValue(o.start),b=dateValue(o.end??o.start);return {dateStart:a.dateStart,dateEnd:b.dateEnd,datePrecision:o.approximate?'circa':'range'}}
+  if('start'in o){const a=dateValue(o.start),b=dateValue(o.end??o.start);return {dateStart:a.dateStart,dateEnd:b.dateEnd,datePrecision:o.approximate?'circa':'range',dateBoundaryPrecision:{start:a.datePrecision==='year'?'year':a.datePrecision==='month'?'month':'day',end:b.datePrecision==='year'?'year':b.datePrecision==='month'?'month':'day'}}}
   if('value'in o){const a=dateValue(o.value);return {...a,datePrecision:o.approximate?'circa':a.datePrecision}}
  }
  let s=String(v).trim(),approx=/^(?:circa|c\.|около)\s*/i.test(s);s=s.replace(/^(?:circa|c\.|около)\s*/i,'');

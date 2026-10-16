@@ -1,3 +1,4 @@
+import {formatDateFact} from '../../lib/engi/questions/date-interval';
 import {DescriptionButton} from './EntityDescription';
 import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useHorizontalSwipe} from './useHorizontalSwipe';
@@ -13,13 +14,7 @@ import './learning22.css';
 
 function formatIntroValue(fact:Fact|undefined,fallback:string,bundle:Bundle):string{
  if(!fact)return fallback;
- if(fact.valueKind==='date'){
-  const y1=fact.dateStart?.slice(0,4),y2=fact.dateEnd?.slice(0,4);
-  const circa=fact.datePrecision==='circa'?'Около ':'';
-  if(fact.datePrecision==='year'&&y1)return `${circa}${y1} год`;
-  if(y1&&y2&&y1===y2)return `${circa}${y1} год`;
-  if(y1&&y2)return `${circa}${y1} — ${y2} гг.`;
- }
+ if(fact.valueKind==='date')return formatDateFact(fact);
  return textValue(fact,bundle);
 }
 

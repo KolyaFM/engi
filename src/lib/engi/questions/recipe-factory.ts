@@ -1,3 +1,4 @@
+import {formatDateFact} from './date-interval';
 import {reversePromptAvailable} from './question-templates';
 import {valueCue,valueOwners,refreshValueOwners} from './value-cue';
 import {allowedMedia} from './exemplar-selector';
@@ -26,7 +27,7 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  if(f.valueKind==='image'){const value=b.media.find(m=>m.id===f.valueMediaId&&!m.archived&&m.entityId===e.id);if(!value)return [];return [{entityId:e.id,name:e.name,image:r.cue==='image'?value.url:undefined,mediaId:r.cue==='image'?value.id:undefined,targetId:knowledgeUnitId(b,e.id,f.id),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,answerImage:value.url,answerMediaId:value.id,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];}
  const year=f.valueKind==='date'?Number(f.dateStart?.slice(0,4)):f.valueKind==='number'?f.valueNumber:undefined;
  if(f.valueKind==='date'&&(!year||!Number.isFinite(year)))return [];
- const dateAnswer=f.valueKind==='date'?(f.datePrecision==='day'?f.dateStart!.split('-').reverse().join('.'):f.datePrecision==='month'?f.dateStart!.slice(0,7).split('-').reverse().join('.'):f.datePrecision==='circa'?`Около ${year}`:f.datePrecision==='range'?`${f.dateStart} — ${f.dateEnd}`:String(year)):undefined;
+ const dateAnswer=f.valueKind==='date'?formatDateFact(f):undefined;
  const answer=obj?.name??f.valueText??(f.valueKind==='boolean'?(f.valueBoolean?'Да':'Нет'):dateAnswer??String(f.valueNumber??year??'')+(f.unit?' '+f.unit:''));if(!answer)return [];
  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:knowledgeUnitId(b,e.id,f.id,r.direction,r.cue,f.key),answer,aliases:obj?.aliases??[],answerId:obj?.id??answer,answerEntityId:obj?.id,year,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
 }).filter(i=>!b.studyScope||r.tag!==b.studyScope.id||b.studyScope.targetIds.includes(i.targetId))}
