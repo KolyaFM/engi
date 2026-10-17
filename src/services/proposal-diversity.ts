@@ -3,7 +3,8 @@ import type {GoalProposal} from './goal-proposals';
 import {propertyKey} from '../lib/engi/study-core/acquisition';
 
 /** Count the interaction the player sees, not the underlying recipe's alias. */
-export function presentationFamily(task:Pick<Task,'recipe'|'items'|'presentation'>){
+export function presentationFamily(task:Pick<Task,'recipe'|'items'|'presentation'|'intervalExercise'>){
+ if(task.intervalExercise)return task.intervalExercise.kind==='bands'?'interval-bands':'interval-endpoint';
  if(task.presentation==='conveyor')return 'conveyor';
  if(task.items.length===1&&['choice','match','categorize','missing'].includes(task.recipe.format))return task.recipe.answerPresentation==='image'?'image-choice':'choice';
  return task.presentation??task.recipe.format;

@@ -1,3 +1,4 @@
+import {yearInterval} from '../questions/date-interval';
 import type { Bundle, Fact, Item, Task } from '../types';
 import { factValue, trusted, properties } from '../knowledge/properties';
 import { defineGoal, type LearningGoal } from './goals';
@@ -70,6 +71,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(p)revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]);
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
   const goalFor=(i:Item)=>i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
+  const isSupport=(item:Item)=>task.contextual?.supportTargetIds.includes(item.targetId)||(task.intervalExercise?.kind==='bands'&&task.intervalExercise.scale.bands.some(b=>b.id===item.answerId&&b.support));
   let response:TaskContract['response'],actionFamily:TaskContract['actionFamily'],practice=!!task.practice||task.recipe.diagnostic;
   if(fmt==='self_check'){response={kind:'practice-view',cards:task.items.map(i=>({entityId:i.entityId,claimKey:i.factId?`fact:${i.factId}`:`entity:${i.entityId}`}))};actionFamily='explore';practice=true;}else if(fmt==='multi_choice'){
     const g=completeSetGoal(b,first.entityId,task.recipe.answerKey),rows=b.facts.filter(f=>f.entityId===first.entityId&&f.key===task.recipe.answerKey&&!f.archived);
@@ -90,8 +92,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }else if(fmt==='recall_reveal'){
     if(task.items.length!==1)throw Error('Grouped self report is unsupported');const g=goalFor(first);goals.push(g);response={kind:'self-report',goalId:g.id};actionFamily='recall';
   }else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
-    for(const item of task.items){const g=goalFor(item);(task.contextual?.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}
-    response={kind:'mapping',bindings:task.items.map(i=>({responseKey:i.entityId,goalId:goalFor(i).id,expected:i.answerId,...(task.contextual?.supportTargetIds.includes(i.targetId)?{support:true}:{})})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
+    for(const item of task.items){const g=goalFor(item);(isSupport(item)?supportGoals:goals).push(g);}
+    response={kind:'mapping',bindings:task.items.map(i=>({responseKey:i.entityId,goalId:goalFor(i).id,expected:i.answerId,...(isSupport(i)?{support:true}:{})})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
   }else{
     const g=goalFor(first);goals.push(g);response={kind:'choice',goalId:g.id,options:task.options.map(o=>o.id),expected:first.answerId};actionFamily='select';
   }
@@ -127,7 +129,17 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
   if(task.contextual){for(const item of task.items){const f=factFor(b,item);if(f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact year data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
-  const contract:TaskContract={learningRecall:task.learningRecall,id:task.id,primaryGoals:goals,supportGoalIds:supportGoals.map(g=>g.id),actionFamily,visibleEntities,...(task.contextual?{contextual:task.contextual}:{}),
+  if(task.intervalExercise){
+    for(const item of task.items){const f=factFor(b,item),range=yearInterval(f);if(!range||task.recipe.direction==='reverse')throw Error('Interval requires exact year bounds');
+      if(task.intervalExercise.kind==='endpoint'&&(task.items.length!==1||item.answerId!==String(range[task.intervalExercise.edge])||JSON.stringify(item.interval)!==JSON.stringify(range)))throw Error('Incorrect endpoint answer');
+    }
+    if(task.intervalExercise.kind==='bands'){
+     const scale=task.intervalExercise.scale;if(task.recipe.format!=='match'||task.items.length!==scale.bands.length||task.items.length<3||task.items.length>5||scale.min>=scale.max||!Number.isFinite(scale.min)||!Number.isFinite(scale.max))throw Error('Invalid interval scale');
+     for(const item of task.items){const band=scale.bands.find(b=>b.id===item.answerId),r=yearInterval(factFor(b,item))!;if(!band||band.start!==r.start||band.end!==r.end||band.start<scale.min||band.end+1>scale.max)throw Error('Stale interval band');if(band.support)shownClaims.push(addClaim(claimForFact(b,factFor(b,item))));}
+    }
+    if(task.intervalExercise.kind==='endpoint')shownClaims.push(addClaim(claimForFact(b,factFor(b,first))));
+  }
+  const contract:TaskContract={...(task.intervalExercise?{intervalEvidence:task.intervalExercise.kind==='endpoint'?{kind:'endpoint' as const,edge:task.intervalExercise.edge}:{kind:'bands' as const}}:{}),learningRecall:task.learningRecall,id:task.id,primaryGoals:goals,supportGoalIds:supportGoals.map(g=>g.id),actionFamily,visibleEntities,...(task.contextual?{contextual:task.contextual}:{}),
     shownClaims:[...new Map(shownClaims.map(c=>[c.key,c])).values()],hintClaims,feedbackClaims,
     contentRevisions:revisions,response,practice,...(task.reason==='game'?{game:true}:{}),...(task.intent?{intent:task.intent,repairEpisodeIds:task.repairEpisodeIds}:{})};
   validateContract(contract);return contract;

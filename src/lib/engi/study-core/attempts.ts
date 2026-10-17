@@ -6,7 +6,7 @@ export type Attempt = {
   hintedGoalIds?: string[];
   firstAnswer?: unknown;
   submittedAt?: string;
-  results?: (GoalResult & { credit: boolean; contextCredit?:boolean;acquisitionCredit?:boolean;acquisitionStageBefore?:string;acquisitionStageAfter?:string; repairEligible?:boolean })[];
+  results?: (GoalResult & { credit: boolean; intervalCredit?:boolean; contextCredit?:boolean;acquisitionCredit?:boolean;acquisitionStageBefore?:string;acquisitionStageAfter?:string; repairEligible?:boolean })[];
   matchedAnswers?: Record<string,string>;
   pairHistory?: MatchingPair[];
 };
@@ -17,7 +17,7 @@ export function startAttempt(contract: TaskContract, id: string, now: Date, bloc
   if (contract.response.kind === 'mapping' && contract.response.bijective && contract.primaryGoals.some(g => shown.has(g.id))) {
     contract.primaryGoals.forEach(g => shown.add(g.id));
   }
-  return { id, taskId: contract.id, startedAt: now.toISOString(), phase: 'open', ineligibleGoalIds: [...new Set([
+  return { ...(contract.intervalEvidence?.kind==='bands'&&contract.response.kind==='mapping'?{matchedAnswers:Object.fromEntries(contract.response.bindings.filter(b=>b.support).map(b=>[b.responseKey,b.expected]))}:{}),id, taskId: contract.id, startedAt: now.toISOString(), phase: 'open', ineligibleGoalIds: [...new Set([
     ...blockedGoalIds, ...shown
   ])] };
 }
@@ -42,8 +42,9 @@ export function submitAttempt(attempt: Attempt, contract: TaskContract, answer: 
     return { ...attempt, phase: 'stale', submittedAt: now.toISOString(), results: [] };
   }
   const shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));
-  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.learningRecall&&!contract.contextual&&contract.intent!=='repair'&&!contract.practice &&
+  const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.intervalEvidence&&!contract.learningRecall&&!contract.contextual&&contract.intent!=='repair'&&!contract.practice &&
     !attempt.ineligibleGoalIds.includes(r.goalId) && !automaticGoalIds.includes(r.goalId),
-    ...(contract.intent==='repair'?{repairEligible:!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
+    ...(contract.intervalEvidence?{intervalCredit:!contract.practice&&!attempt.hintedGoalIds?.includes(r.goalId)}:{}),
+    ...(contract.intent==='repair'?{repairEligible:!contract.intervalEvidence&&!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
   return { ...attempt, phase: 'submitted', firstAnswer: structuredClone(answer), submittedAt: now.toISOString(), results };
 }

@@ -73,19 +73,19 @@ export function createTrainerService(d:EngiDB){return {
   return selectNext(d,s);
  })},
  async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(t=>t.items.map(i=>i.image).filter((url):url is string=>!!url)))];},
- async startGoalFeed(tag='all',format='mixed',mode='daily',options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
- async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){
+ async startGoalFeed(tag='all',format='mixed',mode='daily',options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
+ async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');
   if(options.deckIds!==undefined){const active=(await d.decks.toArray()).filter(deck=>!deck.archived);if(!options.deckIds.length||options.deckIds.some(id=>!active.some(deck=>deck.id===id)))throw Error('Выберите доступные колоды');tag=SELECTED_DECKS;}
-  await reconcileKnowledgeUnits(d);const now=new Date().toISOString(),s:SessionRow={deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
+  await reconcileKnowledgeUnits(d);const now=new Date().toISOString(),s:SessionRow={presentationWidth:Number.isFinite(options.presentationWidth)?Math.max(280,Math.min(3000,options.presentationWidth!)):undefined,deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){
    // Carry completed presentations, not the next preselected/unseen question.
    if(s.memoryModel==='goals'&&previous.memoryModel==='goals')s.cooldown=[...previous.cooldown??[]].slice(-3);
    const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);
   }await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },
- async advanceFeed(id:string,skip=false,expectedTaskId?:string){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
-  const s=await d.activeSessions.get(id);if(!s?.feed||s.status!=='active')throw Error('Лента не найдена');const task=s.tasks[s.currentPosition];if(expectedTaskId&&task?.id!==expectedTaskId)return s;
+ async advanceFeed(id:string,skip=false,expectedTaskId?:string,presentationWidth?:number){return measureFeed('advance.total',()=>d.transaction('rw',sessionTables(d),async()=>{
+  const s=await d.activeSessions.get(id);if(!s?.feed||s.status!=='active')throw Error('Лента не найдена');if(Number.isFinite(presentationWidth))s.presentationWidth=Math.max(280,Math.min(3000,presentationWidth!));const task=s.tasks[s.currentPosition];if(expectedTaskId&&task?.id!==expectedTaskId)return s;
   if(s.intro)throw Error('Сначала завершите знакомство');
   if(task){if(skip){await abandonReview(d,task.id);if(task.intent==='repair')await markRepairUnavailable(d,task.repairEpisodeIds??[],task.recipe.cue==='image'?task.items[0].image:undefined);if(task.studyContract)await feedStudyCore(d).skip(task.id);}if(!skip&&!await d.reviewEvents.get(task.id))throw Error('Сначала завершите карточку');s.cooldown=[...s.cooldown??[],task].slice(-30);s.completedCount=(s.completedCount??0)+1;if(!skip&&!task.recipe.diagnostic&&!task.retryOf&&task.intent!=='repair')s.ordinaryCount=(s.ordinaryCount??0)+1;if(task.recipe.diagnostic)s.diagnosticSeen=[...s.diagnosticSeen??[],task.recipe.id]}
   return selectNext(d,s);
@@ -109,7 +109,7 @@ export function createTrainerService(d:EngiDB){return {
   const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload));await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
   s.completedCount=(s.completedCount??0)+1;s.intro=undefined;if(receiptKey)await d.appMeta.put({key:receiptKey,value:true});return selectNext(d,s);
  }))},
- async getResumableSession(options:{endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
+ async getResumableSession(options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
   if(s.memoryModel!=='goals')return s;
   return d.transaction('rw',sessionTables(d),async()=>{
    const settings=await readDeckPropertySettings(d);if(s.deckIds&&s.propertySettingsRevision!==settings.revision){await retirePresentation(d,s);return selectNext(d,s);}
@@ -118,7 +118,7 @@ export function createTrainerService(d:EngiDB){return {
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
-   if(task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)&&!task.contextual){const affinity=groupContext(await getBundle(d)),signatures=task.items.map(i=>affinity.signature(i,task.recipe));if(signatures.some(signature=>!signature||signature!==signatures[0])){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
+   if(task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)&&!task.contextual&&!task.intervalExercise){const affinity=groupContext(await getBundle(d)),signatures=task.items.map(i=>affinity.signature(i,task.recipe));if(signatures.some(signature=>!signature||signature!==signatures[0])){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
    if(task&&((task.recipe.format==='match'&&task.items.length===2)||(task.presentation==='conveyor'&&(task.items.length<3||task.items.length>6)))){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
    if(task?.recipe.format==='sort'&&task.studyContract?.response.kind==='order'&&task.studyContract.response.direction!=='bottom-up'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
    if(task?.recipe.format==='timeline'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);s.format='sort';return selectNext(d,s);}

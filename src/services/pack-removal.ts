@@ -81,7 +81,7 @@ async function removePack(packId:string,d:EngiDB){
    if(row.key==='studyCore:learningLifecycle'){
     const v=row.value,units=v.units.filter((u:any)=>!removedReference(u.entityId,ids)&&!removedReference(u.goal,ids)).map((u:any)=>({...u,attemptIds:u.attemptIds.filter((id:string)=>!ids.has(id)),contextEvidence:u.contextEvidence?.filter((e:unknown)=>!removedReference(e,ids))})),cards=v.cards.filter((c:any)=>!entities.has(c.entityId));
     if(cards.length)await d.appMeta.put({key:row.key,value:{...v,cards,units}});else await d.appMeta.delete(row.key);
-   }else if(/^studyCore:(contract|attempt|openAttempt|taskAttempt|episode|reviewReceipt|revision|exposure):/.test(row.key))await d.appMeta.delete(row.key);
+   }else if(/^studyCore:(contract|attempt|openAttempt|taskAttempt|episode|reviewReceipt|revision|exposure|intervalEvidence):/.test(row.key))await d.appMeta.delete(row.key);
    else await d.appMeta.put({key:row.key,value:prune(row.value,ids)});
   }
   const hashes=new Set<string>([...(await d.appMeta.get(PENDING_MEDIA))?.value??[],...pack.files.map(f=>f.sha256),...b.media.filter(m=>removedMedia.has(m.id)).map(m=>hashFromUrl(m.url)).filter((h):h is string=>!!h)]);

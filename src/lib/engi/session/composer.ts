@@ -49,7 +49,8 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   const imagePool=r.answerPresentation==='image'?answerPool.filter((i,n,all)=>i.answerImage&&(i.answerId===item.answerId||i.answerImage!==item.answerImage)&&all.findIndex(x=>x.answerImage===i.answerImage)===n):answerPool;
   const nearby=(nearbyNumericDistractors(b,item,r)??intervalDistractors(b,item,r)),previousNumeric=[...history].reverse().find(t=>t.numericChoiceMode&&!t.retryOf);
   const precision=!!nearby&&(previousNumeric?previousNumeric.numericChoiceMode==='related':Math.random()<0.5);
-  const wrong=precision?nearby!:distractors(b,item,imagePool,m,history),twin=!precision&&r.answerPresentation!=='image'&&r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
+  const related=precision?[]:distractors(b,item,imagePool,m,history);
+  const wrong=precision?nearby!:nearby?[...related,...nearby.filter(o=>!related.some(r=>r.id===o.id))].slice(0,3):related,twin=!precision&&r.answerPresentation!=='image'&&r.format==='choice'&&stage>=3&&wrong.some(o=>(m.confusions[o.id]??0)>=1);
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
   if(r.answerPresentation==='image')for(const o of options){const candidate=answerPool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
   const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.valueCue?.text??item.name,r.format,r.direction);

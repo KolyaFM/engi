@@ -15,7 +15,7 @@ export function formatDateFact(f:Pick<Fact,'dateStart'|'dateEnd'|'datePrecision'
  if(f.datePrecision==='range'||f.dateStart!==f.dateEnd&&f.datePrecision==='circa'){
   const inferred=f.dateStart?.endsWith('-01-01')&&f.dateEnd?.endsWith('-12-31');
   const start=point(f.dateStart,f.dateBoundaryPrecision?.start??(inferred?'year':'day')),end=point(f.dateEnd,f.dateBoundaryPrecision?.end??(inferred?'year':'day'));
-  return (f.datePrecision==='circa'?'Около ':'')+(start===end?start:`${start}–${end}`);
+  return (f.datePrecision==='circa'?'Около ':'')+(start===end&&f.datePrecision==='circa'?start:`${start}–${end}`);
  }
  return (f.datePrecision==='circa'?'Около ':'')+point(f.dateStart,f.datePrecision==='circa'?'year':f.datePrecision??'year');
 }

@@ -1,3 +1,4 @@
+import {saveIntervalEvidence,recordIntervalDisclosure} from './interval-evidence-service';
 import {acquisitionBlocks,applyAcquisitionEvidence} from './acquisition-evidence-service';
 import {ACQUISITION_CONFIRMATION_MS} from '../lib/engi/study-core/acquisition';
 import type { EngiDB } from '../db/engi-db';
@@ -84,6 +85,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           const entry=(await db.appMeta.get(key('exposure',id)))?.value as ExposureEntry|undefined;
           if(!entry||new Date(entry.lastVisibleAt)<=new Date(episode.lastVisibleAt))await db.appMeta.put({key:key('exposure',id),value:{goalId:id,lastVisibleAt:episode.lastVisibleAt,episodeId,...(contract.practice&&contract.id.startsWith('intro:')?{cooldownMs:INTRO_DISCLOSURE_COOLDOWN_MS}:{})}});
         }
+        await recordIntervalDisclosure(db,contract,ids,episode.lastVisibleAt);
         const open=await db.appMeta.where('key').startsWith(key('openAttempt','')).toArray();
         for(const owner of open){
           const active=await db.appMeta.get(key('attempt',owner.value));
@@ -133,6 +135,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           ...(options.applyMemory===false?[]:memories.filter(m => credited.has(m.goalId)).map(m => ({ key: key('memory', m.goalId), value: {...m,goal:contract.primaryGoals.find(g=>g.id===m.goalId)} }))),
           { key: row.key, value: attempt }
         ]);
+        await saveIntervalEvidence(db,attempt,contract);
         await db.appMeta.delete(key('openAttempt',attemptId));
         return attempt;
       });
@@ -155,7 +158,8 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
         const pair={id:requestId,responseKey,answer,correct:answer===binding.expected,at:now.toISOString()};
         const memory=(await db.appMeta.get(key('memory',binding.goalId)))?.value as GoalMemory|undefined;const acquisition=options.lifecycle?await acquisitionBlocks(db,[binding.goalId],now,undefined,contract.primaryGoals):undefined;
           let firstResult:NonNullable<Attempt['results']>[number]|undefined=binding.support||previous.results?.some(r=>r.goalId===binding.goalId)?undefined:{goalId:binding.goalId,correct:pair.correct,selfReported:false,
-            credit:!contract.contextual&&!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
+            ...(contract.intervalEvidence?{intervalCredit:!contract.practice&&!previous.hintedGoalIds?.includes(binding.goalId)&&Object.keys(matched).length<rule.bindings.length-1}:{}),
+            credit:!contract.intervalEvidence&&!contract.contextual&&!contract.practice&&!previous.ineligibleGoalIds.includes(binding.goalId)&&(!rule.bijective||rule.exhaustive===false||Object.keys(matched).length<rule.bindings.length-1)&&(!memory||acquisition?.active.has(binding.goalId)||new Date(memory.card.due)<=now)};
         if(pair.correct)matched[responseKey]=answer;
         const complete=Object.keys(matched).length===rule.bindings.length;
         let attempt:Attempt={...previous,matchedAnswers:matched,pairHistory:[...previous.pairHistory??[],pair],
@@ -166,6 +170,7 @@ export function createStudyCoreService(db: EngiDB, options: {applyMemory?: boole
           const updated=graduated[0]??updateGoalMemories(memory?[memory]:[],{...attempt,id:attempt.id+':pair:'+responseKey,phase:'submitted',submittedAt:now.toISOString(),results:[firstResult]})[0];
           await db.appMeta.put({key:key('memory',binding.goalId),value:{...updated,goal:contract.primaryGoals.find(g=>g.id===binding.goalId)}});
         }
+        await saveIntervalEvidence(db,{...attempt,id:attempt.id+':pair:'+responseKey,submittedAt:now.toISOString(),results:firstResult?[firstResult]:[]},contract);
         await db.appMeta.put({key:row.key,value:attempt});
         if(complete)await db.appMeta.delete(key('openAttempt',attemptId));
         return {attempt,pair,firstResult};

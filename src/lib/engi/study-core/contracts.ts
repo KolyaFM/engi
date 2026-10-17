@@ -12,6 +12,7 @@ export type ResponseRule =
   | { kind: 'practice-number'; expected: number; tolerance: number; min: number; max: number }
   | { kind: 'self-report'; goalId: string };
 export type TaskContract = {
+  intervalEvidence?:{kind:'endpoint';edge:'start'|'end'}|{kind:'bands'};
   learningRecall?:true;
   contextual?:{kind:'order'|'boundary';threshold?:number;supportTargetIds:string[]};
   game?:boolean;
@@ -33,6 +34,7 @@ const unique = (values: string[]) => new Set(values).size === values.length;
 const permutation = (values: string[], expected: string[]) => unique(values) && values.length === expected.length && values.every(v => expected.includes(v));
 export function validateContract(contract: TaskContract): void {
   if(contract.learningRecall&&(contract.response.kind!=='self-report'||contract.practice))throw Error('Learning recall must be an unassisted rehearsal');
+  if(contract.intervalEvidence&&((contract.intervalEvidence.kind==='endpoint'&&contract.response.kind!=='choice')||(contract.intervalEvidence.kind==='bands'&&contract.response.kind!=='mapping')||contract.primaryGoals.some(g=>g.precision!=='range'||g.knowledge.kind!=='fact')))throw Error('Invalid interval evidence contract');
   const ids = contract.primaryGoals.map(g => g.id), rule = contract.response;
   if (!contract.id || !unique(ids) || !unique(contract.visibleEntities)) throw Error('Invalid contract identity');
   if (contract.supportGoalIds.some(id => ids.includes(id))) throw Error('Support cannot receive primary credit');

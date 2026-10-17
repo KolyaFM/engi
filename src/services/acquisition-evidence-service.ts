@@ -1,3 +1,4 @@
+import {intervalAvailableAt} from '../lib/engi/study-core/interval-evidence';
 import type {EngiDB} from '../db/engi-db';
 import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {TaskContract} from '../lib/engi/study-core/contracts';
@@ -11,6 +12,8 @@ export async function acquisitionBlocks(db:EngiDB,goalIds:string[],now:Date,self
  for(const goal of goals){const unit=ledger?.units.find(u=>u.stage!=='completed'&&u.goal.skill===goal.skill&&propertyKey(u.goal)===propertyKey(goal));if(unit)active.set(goal.id,unit);}
  // A future confirmation can be practised, but cannot acquire independent credit.
  const blocked:string[]=[];
+ const intervalRows=await db.appMeta.bulkGet(goalIds.map(id=>'studyCore:intervalEvidence:'+id));
+ for(const row of intervalRows)if(row&&intervalAvailableAt(row.value)>now.getTime())blocked.push(row.value.goalId);
  for(const id of goalIds){const unit=active.get(id);if(!unit)continue;
   if(new Date(unit.availableAt)>now){blocked.push(id);continue;}
   if(unit.stage==='confirmation'){
@@ -24,6 +27,7 @@ export async function acquisitionBlocks(db:EngiDB,goalIds:string[],now:Date,self
 }
 /** Acquisition, FSRS and error rights are distinct. Only a real final answer seeds new memory. */
 export async function applyAcquisitionEvidence(db:EngiDB,attempt:Attempt,contract:TaskContract,previous:GoalMemory[]){
+ if(contract.intervalEvidence)return {attempt,graduated:[] as GoalMemory[]};
  let ledger=await readLifecycle(db);if(!ledger)return {attempt,graduated:[] as GoalMemory[]};
  const now=new Date(attempt.submittedAt!),blocks=await acquisitionBlocks(db,contract.primaryGoals.map(g=>g.id),now,contract.response.kind==='self-report'?attempt.id:undefined,contract.primaryGoals),graduated:GoalMemory[]=[];
  if(contract.learningRecall){const next=structuredClone(ledger),results=(attempt.results??[]).map(result=>{const goal=contract.primaryGoals.find(g=>g.id===result.goalId)!,unit=next.units.find(u=>propertyKey(u.goal)===propertyKey(goal)&&u.stage==='first-check');const eligible=!!unit&&!unit.rehearsedAt&&new Date(unit.availableAt)<=now&&!attempt.ineligibleGoalIds.includes(result.goalId);if(unit&&!unit.rehearsedAt){unit.rehearsedAt=now.toISOString();unit.lastAttemptAt=now.toISOString();unit.attemptIds.push(attempt.id);unit.availableAt=new Date(now.getTime()+ACQUISITION_CONFIRMATION_MS).toISOString();if(eligible&&result.correct){unit.stage='confirmation';unit.requiredSuccesses=1;unit.successes=0;}}return {...result,credit:false,contextCredit:eligible&&result.correct};});await db.appMeta.put({key:LIFECYCLE_KEY,value:next});return {attempt:{...attempt,results},graduated};}

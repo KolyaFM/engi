@@ -16,6 +16,7 @@ test('year intervals share one compact display without rounding full dates',()=>
  assert.deepEqual(yearInterval({...f,dateBoundaryPrecision:undefined}),{start:1147,end:1149});
  assert.equal(yearInterval({...f,dateStart:'1147-02-01',dateBoundaryPrecision:undefined}),undefined);
  assert.equal(formatDateFact(fact({start:'1941-06-22',end:'1945-05-09'})),'22.06.1941–09.05.1945');
+ assert.equal(formatDateFact(fact({start:1900,end:1900})),'1900–1900','a range must not expose its correctness by looking like a single-date option');
 });
 test('precision survives validation, old fact identities and repeated pack import',()=>{
  const pkg=parseV3({schemaVersion:3,name:'Periods',properties:[{name:'Period',valueType:'date'}],entities:[{name:'Event',type:'Event',facts:[{property:'Period',value:{start:1147,end:1149},verification:'verified',source:{kind:'manual',name:'test'}}]}]});
@@ -23,4 +24,10 @@ test('precision survives validation, old fact identities and repeated pack impor
  const old={...f,dateBoundaryPrecision:undefined};assert.equal(factValue(old),factValue(f),'precision annotation must not reset old year-range goals');
  const valid=validateImport(first.bundle,empty);assert.deepEqual(valid.facts[0].dateBoundaryPrecision,f.dateBoundaryPrecision);
  const again=buildImportPlan(pkg,first.bundle,{},'two');assert.equal(again.bundle.facts.length,1);assert.equal(again.bundle.facts[0].id,f.id);
+});
+test('reimport enriches legacy boundary precision and never downgrades an explicit day',()=>{
+ const pack=(start:unknown,end:unknown)=>parseV3({schemaVersion:3,name:'P',properties:[{name:'Period',valueType:'date'}],entities:[{name:'Event',type:'Event',facts:[{property:'Period',value:{start,end},verification:'verified',source:{kind:'manual',name:'test'}}]}]});
+ const first=buildImportPlan(pack(1900,1905),empty,{},'first').bundle;delete first.facts[0].dateBoundaryPrecision;
+ const second=buildImportPlan(pack('1900-01-01','1905-12-31'),first,{},'second').bundle;assert.equal(second.facts.length,1);assert.equal(second.facts[0].id,first.facts[0].id);assert.deepEqual(second.facts[0].dateBoundaryPrecision,{start:'day',end:'day'});assert.equal(yearInterval(second.facts[0]),undefined);
+ const third=buildImportPlan(pack(1900,1905),second,{},'third').bundle;assert.deepEqual(third.facts[0].dateBoundaryPrecision,{start:'day',end:'day'});
 });

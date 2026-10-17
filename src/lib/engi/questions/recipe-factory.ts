@@ -1,4 +1,4 @@
-import {formatDateFact} from './date-interval';
+import {formatDateFact,yearInterval} from './date-interval';
 import {reversePromptAvailable} from './question-templates';
 import {valueCue,valueOwners,refreshValueOwners} from './value-cue';
 import {allowedMedia} from './exemplar-selector';
@@ -47,7 +47,7 @@ export function recipes(b:Bundle):Recipe[]{refreshValueOwners(b);const ix=indexe
    if(direction==='reverse'){
     const recall={...base,format:'recall_reveal' as const};if(p.learning?.recallReveal!=='off'&&questionPool(recall).length)formats.push('recall_reveal');
     if(p.learning?.choice!=='off'&&pool.some(i=>new Set(pool.filter(other=>!valueOwners(b,i.valueCue!.key).has(other.answerId)).map(other=>other.answerId)).size>=2))formats.push('choice');
-   }else{if(enabled('recall_reveal'))formats.push('recall_reveal');if(unique.size>=3&&enabled('choice'))formats.push('choice');if(unique.size>=3&&pool.length>=3&&p.valueKind==='entity'&&enabled('match'))formats.push('match');if(unique.size>=2&&repeated&&p.valueKind==='entity'&&enabled('categorize'))formats.push('categorize');}
+   }else{if(enabled('recall_reveal'))formats.push('recall_reveal');if((unique.size>=3||pool.some(i=>{const f=b.facts.find(f=>f.id===i.factId);return f&&yearInterval(f);}))&&enabled('choice'))formats.push('choice');if(unique.size>=3&&pool.length>=3&&p.valueKind==='entity'&&enabled('match'))formats.push('match');if(unique.size>=2&&repeated&&p.valueKind==='entity'&&enabled('categorize'))formats.push('categorize');}
    if(['date','number'].includes(p.valueKind)&&direction==='forward'&&new Set(pool.map(i=>i.year)).size>=3&&(p.valueKind!=='number'||new Set(pool.map(i=>b.facts.find(f=>f.id===i.factId)?.unit??'')).size===1)){if(enabled('sort'))formats.push('sort');if(p.valueKind==='date'&&enabled('timeline'))formats.push('timeline');if(p.valueKind==='date'&&enabled('missing'))formats.push('missing')}
    for(const f of formats){const next=recipe(tag,type,p.id,base.cue,base.memoryKey,f,base.label!,direction);if(cue!==cues[0])next.id=next.id.replace(`:${f}`,`:${cue}:${f}`);result.push(next)}
   }
