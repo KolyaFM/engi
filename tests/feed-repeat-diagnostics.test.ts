@@ -28,17 +28,22 @@ test('waiting confirmations and same-screen corrections do not cause immediate r
    }
    const consecutive=screens.filter((q,n)=>n&&q.fact===screens[n-1].fact).length;
    assert.equal(new Set(screens.map(q=>q.id)).size,screens.length,'new repeats are distinct tasks, not restored old screen IDs');
-   if(!scenario.startsWith('single-'))assert.equal(consecutive,0,'rotate actual knowledge even when other goals are waiting or the first attempt was wrong');
+   if(scenario!=='single-admitted')assert.equal(consecutive,0,'rotate actual knowledge even when other goals are waiting or the first attempt was wrong');
    else {assert.equal(consecutive,4,'a truly single playable question remains playable');assert(screens.every(q=>q.fact==='f0'),'suspended properties never enter practice');}
    if(failFirst){const unit=(await d.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>u.entityId==='e0');assert.equal(unit.stage,'first-check');assert.equal(unit.successes,0);assert(Date.parse(unit.availableAt)<=Date.now());}
    if(scenario==='one-completed'||scenario==='single-reserve'){
-    assert(screens.every(q=>q.intent==='practice'));if(scenario==='one-completed')assert(new Set(screens.map(q=>q.fact)).size>=3);assert(!screens.some(q=>q.fact==='f1'),'nearest pending property is reserved from practice');assert.equal((await svc.getDayPlan()).workload!.mistakes,0);
+    assert(screens.every(q=>q.intent==='practice'));assert.equal(new Set(screens.map(q=>q.fact)).size,scenario==='one-completed'?4:2,'disclosure preference must not exclude playable knowledge');assert.equal((await svc.getDayPlan()).workload!.mistakes,0);
     const before=(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray());assert.equal(before.length,1,'practice never manufactures independent memories');
     const reservedBefore=(await d.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>u.entityId==='e1');assert.equal(Date.parse(reservedBefore.availableAt),at+ACQUISITION_CONFIRMATION_MS);
-    mock.timers.setTime(at+ACQUISITION_CONFIRMATION_MS+1);const current=s.tasks[0],rule=current.studyContract!.response;if(rule.kind!=='choice')throw Error('Expected practice choice');await svc.answer({sessionId:s.id,taskId:current.id,answer:rule.expected});await svc.observeVisibility(s.id,current.id,'feedback','last-practice','start');
+    // Practice may disclose any pending property. Wait beyond its actual last
+    // disclosure instead of pretending the original reserve stayed untouched.
+    mock.timers.setTime(at+2*ACQUISITION_CONFIRMATION_MS);const current=s.tasks[0],rule=current.studyContract!.response;if(rule.kind!=='choice')throw Error('Expected practice choice');await svc.answer({sessionId:s.id,taskId:current.id,answer:rule.expected});
     assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),before,'practice does not alter FSRS');s=await svc.advanceFeed(s.id,false,current.id);
-    const check=s.tasks[0];assert.equal(check.intent,'learn');assert.equal(check.items[0].factId,'f1','reserved property receives its independent check on time');const response=check.studyContract!.response;if(response.kind!=='choice')throw Error('Expected independent choice');await svc.answer({sessionId:s.id,taskId:check.id,answer:response.expected});
-    assert.equal((await d.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>u.entityId==='e1').stage,'completed');
+    // With only two enabled properties, one intervening screen can prevent an
+    // immediate repeat of the practice question that was already on screen.
+    if(s.tasks[0].intent==='practice'){assert.equal(scenario,'single-reserve');const intervening=s.tasks[0],response=intervening.studyContract!.response;assert.equal(intervening.items[0].factId,'f0');if(response.kind!=='choice')throw Error('Expected intervening choice');await svc.answer({sessionId:s.id,taskId:intervening.id,answer:response.expected});s=await svc.advanceFeed(s.id,false,intervening.id);}
+    const check=s.tasks[0];assert.equal(check.intent,'learn','a ready confirmation must return after at most one intervening screen');assert.notEqual(check.items[0].factId,'f0','a ready confirmation outranks practice');const response=check.studyContract!.response;if(response.kind!=='choice')throw Error('Expected independent choice');await svc.answer({sessionId:s.id,taskId:check.id,answer:response.expected});
+    assert.equal((await d.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>u.entityId===check.items[0].entityId).stage,'completed');
    }
    reports.push({scenario,failFirst,consecutive,screens,trace:studyTraceReport(d)});
   }finally{stopStudyTrace(d);d.close();await d.delete();}

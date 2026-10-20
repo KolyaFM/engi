@@ -89,8 +89,8 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const recentProperties=new Set(history.at(-1)?.studyContract?.primaryGoals.map(propertyKey)??[]);
  const knownKeys=new Set([...ledger.units.map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>propertyKey(e.goal))]);
  const practicePool=pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(propertyKey(g))));
- // Reserve only the closest pending property, including all its directions and
- // disclosure aliases. Other admitted properties can fill a continuous feed.
+ // Prefer presentations that leave the nearest confirmation undisclosed, but
+ // never let this preference exclude older knowledge from continuous practice.
  const pending=new Map<string,number>();for(const p of practicePool)for(const g of p.goals){const key=propertyKey(g),date=at(g.id);if(active.has(key)&&date>now)pending.set(key,Math.min(pending.get(key)??Infinity,date));}
  const reservedProperty=[...pending].sort((a,c)=>a[1]-c[1]||a[0].localeCompare(c[0]))[0]?.[0];
  const reservedGoals=new Set(reservedProperty?(byProperty.get(reservedProperty)??[]).map(e=>e.goal.id):[]);
@@ -175,15 +175,21 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  if(nextIntroduction)return finish(nextIntroduction,'remaining-introduction');
  const diagnosticTask=diagnostic();if(diagnosticTask&&(contextActions>=8||['timeline','sort','missing'].includes(s.format??'')))return finish({task:diagnosticTask,intro:undefined},'diagnostic');
  const games=[...practicePool];
- games.sort((a,c)=>Number(repeatsRecent(a))-Number(repeatsRecent(c))||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||Number(a.goals.some(g=>recent.includes(g.id)))-Number(c.goals.some(g=>recent.includes(g.id)))||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));
- 
- let fallback:Task|undefined,safeFallback:Task|undefined;
- for(const p of games){const prepared=practiceTask(p);if(!prepared)continue;const {task,safe}=prepared;
-  if(safe){if(!repeatsRecent(p))return finish({task,intro:undefined},task.reason??'selected');safeFallback??=task;}
-  fallback??=task;
+ const lastPropertyTurn=new Map<string,number>();history.forEach((t,n)=>{for(const g of t.studyContract?.primaryGoals??[])lastPropertyTurn.set(propertyKey(g),n+1);});
+ const propertyRank=(p:typeof pool.proposals[number])=>Math.max(0,...p.goals.map(g=>lastPropertyTurn.get(propertyKey(g))??0));
+ games.sort((a,c)=>propertyRank(a)-propertyRank(c)||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));
+
+ let fallback:Task|undefined,rank:{property:number;object:number}|undefined;
+ for(const p of games){
+  // First choose the least recently practised knowledge. Disclosure and format
+  // can break ties within that priority, not force a return to newer knowledge.
+  const priority={property:propertyRank(p),object:objectRank(p)};
+  if(fallback&&rank&&(priority.property!==rank.property||priority.object!==rank.object))return finish({task:fallback,intro:undefined},'practice-disclosure-fallback');
+  const prepared=practiceTask(p);if(!prepared)continue;const {task,safe}=prepared;
+  if(safe)return finish({task,intro:undefined},'game');
+  fallback??=task;rank??=priority;
  }
- if(safeFallback)return finish({task:safeFallback,intro:undefined},'only-unreserved-practice');
- if(fallback)return finish({task:fallback,intro:undefined},'protected-practice-fallback');
+ if(fallback)return finish({task:fallback,intro:undefined},'practice-disclosure-fallback');
  const dates=[...active.values()].filter(u=>activeIds.has(u.goal.id)).map(u=>at(u.goal.id)).filter(t=>t>now);
  return finish({task:undefined,intro:undefined,exhausted:true as const,waitingUntil:dates.length?new Date(Math.min(...dates)).toISOString():undefined},'no-playable-content');
 }
