@@ -42,7 +42,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const hasRepair=!!episodes?.some(e=>e.status==='open'||e.status==='unavailable'&&e.unavailableReason);
  // A fresh collection has no review proposals yet. Open its first object before
  // compiling the full question pool; the normal path takes over after exposure.
- if(s.mode!=='practice'&&!ledger.units.length&&!memories.size&&!hasRepair&&!plan.mistakes?.length){
+ if(s.mode!=='practice'&&!ledger.cards.length&&!ledger.units.length&&!memories.size&&!hasRepair&&!plan.mistakes?.length){
   const configuration=enabled.map(m=>({...m,bootstrap:undefined,card:{...m.card,due:new Date(now+365*86400000)}}));
   const next=pickFeed(b,configuration,{...s,repairQueue:[],mode:'daily'},{...daily,extraBudget:0,introducedEntityIds:[]},introduced,1);
   if(next.intro&&(next.intro.newProperty||plan.newBudget>0))return finish(next,'first-introduction');
@@ -120,6 +120,12 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const scopedKeys=new Set(pool.proposals.flatMap(p=>p.goals.filter(g=>activeIds.has(g.id)).map(propertyKey))),firstChecks=ledger.units.filter(u=>u.stage==='first-check'&&scopedKeys.has(propertyKey(u.goal)));
  const introIndex=history.map(t=>t.reason).lastIndexOf('intro'),sinceIntro=history.slice(introIndex+1).reduce((n,t)=>n+Math.max(1,t.studyContract?.primaryGoals.length??t.items.length),0);
  const due=eligible.filter(p=>p.goals.some(g=>active.get(propertyKey(g))?.stage!=='first-check')),first=eligible.filter(p=>p.goals.every(g=>active.get(propertyKey(g))?.stage==='first-check'));
+ const sinceOrder=history.slice(history.map(t=>t.recipe.format).lastIndexOf('sort')+1).length;
+ if(pool.context.standaloneOrderingTargets.size&&(!s.format||['mixed','sort'].includes(s.format))&&!due.length&&(sinceOrder>=6||!catalog.length&&(sinceOrder>=3||!history.length))){
+  const known=new Set(catalog.filter(e=>!e.suspended&&e.goal.knowledge.kind==='fact'&&(ledger.units.some(u=>u.stage==='completed'&&propertyKey(u.goal)===propertyKey(e.goal))||memories.has(e.goal.id)&&!active.has(propertyKey(e.goal)))).map(e=>e.goal.knowledge.key));
+  const task=chronologyPractice(b,enabled,known,new Set(catalog.filter(e=>active.has(propertyKey(e.goal))).map(e=>e.goal.id)),s.tag??'all','sort',history,s.id+(s.completedCount??0),true);
+  if(task)return finish({task,intro:undefined},'standalone-ordering');
+ }
  const admission=shouldIntroduce({firstChecks:firstChecks.length,firstCheckObjects:new Set(firstChecks.map(u=>u.entityId)).size,actionsSinceIntro:sinceIntro,hasReady:eligible.length>0,onlyLastObject:eligible.length>0&&eligible.every(p=>owners(p.items).some(id=>lastObjects.has(id)))});
  const candidateIntroduction=introduce(),nextIntroduction=candidateIntroduction?.intro?.newProperty||admission?candidateIntroduction:undefined;
  if(nextIntroduction?.intro?.newProperty)return finish(nextIntroduction,'new-property');
@@ -190,6 +196,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   fallback??=task;rank??=priority;
  }
  if(fallback)return finish({task:fallback,intro:undefined},'practice-disclosure-fallback');
+ if(diagnosticTask&&pool.context.standaloneOrderingTargets.size)return finish({task:diagnosticTask,intro:undefined},'standalone-ordering-fallback');
  const dates=[...active.values()].filter(u=>activeIds.has(u.goal.id)).map(u=>at(u.goal.id)).filter(t=>t>now);
  return finish({task:undefined,intro:undefined,exhausted:true as const,waitingUntil:dates.length?new Date(Math.min(...dates)).toISOString():undefined},'no-playable-content');
 }

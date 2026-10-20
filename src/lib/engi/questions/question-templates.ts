@@ -31,7 +31,7 @@ export function questionPrompt(property:PropertyDefinition|undefined,subject:str
  let template:string|undefined;
  if(direction==='reverse')template=present(custom?.reverse)??present(builtin?.reverse);
  else if(format==='missing')template=`Какой объект пропущен в последовательности по полю «${label}»?`;
- else if(format==='sort')template=present(custom?.sort)??present(builtin?.sort)??`Расположите объекты по полю «${label}»: от раннего к позднему.`;
+ else if(format==='sort')template=present(custom?.sort)??present(builtin?.sort)??(property?.valueKind==='number'?`Расположите объекты по возрастанию значения «${label}».`:`Расположите объекты по полю «${label}»: от раннего к позднему.`);
  else if(format==='timeline')template=present(custom?.timeline)??present(custom?.forward)??present(builtin?.timeline)??present(builtin?.forward);
  else template=present(custom?.forward)??present(builtin?.forward);
  if(!template)template=direction==='reverse'?`Какому объекту соответствует значение поля «${label}»?`:`Укажите «${label}».`;

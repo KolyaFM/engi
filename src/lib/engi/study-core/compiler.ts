@@ -1,5 +1,6 @@
 import {matchingResponseKey} from '../questions/matching-response-key';
 import {yearInterval} from '../questions/date-interval';
+import {orderingValues,compatibleOrder} from '../questions/ordering';
 import type { Bundle, Fact, Item, Task } from '../types';
 import { factValue, trusted, properties } from '../knowledge/properties';
 import { defineGoal, type LearningGoal } from './goals';
@@ -84,6 +85,8 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     goals.push(g);response={kind:'set',goalId:g.id,options:task.options.map(o=>o.id),expected,complete:true};actionFamily='select-set';
   }else if(fmt==='sort'){
     if(task.items.some(i=>!Number.isFinite(i.year))||new Set(task.items.map(i=>i.year)).size!==task.items.length)throw Error('Order is not strict');
+    for(const item of task.items)if(item.ordering){const rows=b.facts.filter(f=>f.entityId===item.entityId&&f.key===task.recipe.answerKey&&!f.archived),current=orderingValues(rows),p=definitions.find(p=>p.id===task.recipe.answerKey);if(!current||p?.learning?.sort==='off'||!p?.learnable||current.kind!==p.valueKind||p.cardinality==='one'&&new Set(rows.map(factValue)).size>1||JSON.stringify(current)!==JSON.stringify(item.ordering)||item.year!==current.min||item.answer!==current.label)throw Error('Ordering values changed or are disabled');for(const f of rows)revisions[`fact:${f.id}`]=factRevision(b,f);}
+    if(task.items.some((item,n)=>task.items.slice(n+1).some(other=>!compatibleOrder(item,other))))throw Error('Ordering values overlap');
     if(task.contextual){for(const item of task.items){const g=goalFor(item);(task.contextual.supportTargetIds.includes(item.targetId)?supportGoals:goals).push(g);}}
     response={kind:'order',grading:'position',direction:'bottom-up',entities:task.items.map(i=>i.entityId),expected:[...task.items].sort((a,c)=>c.year!-a.year!).map(i=>i.entityId),relations:[],...(task.contextual?{contextBindings:task.items.filter(i=>!task.contextual!.supportTargetIds.includes(i.targetId)).map(i=>({entityId:i.entityId,goalId:goalFor(i).id}))}:{})};actionFamily='order';practice=!task.contextual||!!task.practice;
   }else if(fmt==='missing'){
@@ -113,6 +116,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(task.recipe.cue==='image'&&task.recipe.answerKey!=='identity'&&task.recipe.prompt?.includes(first.name))shownClaims.push(addClaim(claimForName(b,first.entityId)));
   const feedbackClaims:Claim[]=[];
     if(fmt!=='missing'&&task.contextual?.kind!=='boundary')for(const item of task.items){
+    if(fmt==='sort'&&item.ordering){for(const id of item.ordering.factIds){const f=b.facts.find(f=>f.id===id)!;feedbackClaims.push(addClaim({...claimForFact(b,f),when:'order-complete'}));}continue;}
     if(item.factId){
       const fact=factFor(b,item),claim=claimForFact(b,fact);
       // Ordering reveals years only after the player completes the screen.
@@ -130,7 +134,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(fmt==='recall_reveal')hintClaims.push({key:'early-answer',revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
-  if(task.contextual){for(const item of task.items){const f=factFor(b,item);if(f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact year data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
+  if(task.contextual){for(const item of task.items){const f=factFor(b,item),number=task.contextual.kind==='order'&&f.valueKind==='number'&&Number.isFinite(f.valueNumber);if(number?item.year!==f.valueNumber:f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact ordering data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
   if(task.intervalExercise){
     for(const item of task.items){const f=factFor(b,item),range=yearInterval(f);if(!range||task.recipe.direction==='reverse')throw Error('Interval requires exact year bounds');
       if(task.intervalExercise.kind==='endpoint'&&(task.items.length!==1||item.answerId!==String(range[task.intervalExercise.edge])||JSON.stringify(item.interval)!==JSON.stringify(range)))throw Error('Incorrect endpoint answer');

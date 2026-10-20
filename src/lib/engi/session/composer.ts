@@ -9,12 +9,13 @@ import {shuffle,preflight,normalize} from '../engine';
 import {difficultyStage} from '../learning/mastery';
 import {selectExemplar} from '../questions/exemplar-selector';
 import {questionPrompt} from '../questions/question-templates';
+import {orderingTargets,selectOrderItems} from '../questions/ordering';
 export function cooled(i:Item,recent:Task[]){return !recent.slice(-3).some(t=>t.items.some(x=>x.targetId===i.targetId||x.entityId===i.entityId||!!i.answerEntityId&&x.answerEntityId===i.answerEntityId))}
 function distinctSetDistractors(answers:Bundle['entities']){
  const labels=new Set(answers.flatMap(e=>[e.name,...e.aliases].map(normalize))),names=new Set(answers.map(e=>normalize(e.name)));
  return (e:Bundle['entities'][number])=>{const name=normalize(e.name);if(names.has(name)||[e.name,...e.aliases].some(label=>labels.has(normalize(label))))return false;names.add(name);return true;};
 }
-export type CompositionContext={recipes:Recipe[];pools:Map<Recipe,Item[]>;targets:Map<string,{r:Recipe;i:Item}[]>};
+export type CompositionContext={recipes:Recipe[];pools:Map<Recipe,Item[]>;targets:Map<string,{r:Recipe;i:Item}[]>;standaloneOrderingTargets:Set<string>};
 // Derived question structure depends on content and scope, not progress or time.
 // Value keys retain invalidation for imports, edits and freshly read DB bundles.
 const contextCache:{key:string;context:CompositionContext}[]=[];
@@ -30,7 +31,8 @@ export function compositionContext(b:Bundle):CompositionContext{
  b=structuredClone(b);
  const all=recipes(b),pools=new Map(all.map(r=>[r,eligible(b,r)])),targets=new Map<string,{r:Recipe;i:Item}[]>();
  for(const r of all)for(const i of pools.get(r)!){const list=targets.get(i.targetId)??[];list.push({r,i});targets.set(i.targetId,list);}
- const context={recipes:all,pools,targets};freezeContext(context);contextCache.push({key,context});if(contextCache.length>4)contextCache.shift();return context;
+ const atomic=new Set(all.filter(r=>!r.diagnostic).flatMap(r=>(pools.get(r)??[]).map(i=>i.targetId))),standaloneOrderingTargets=new Set(all.filter(r=>r.format==='sort').flatMap(r=>(pools.get(r)??[]).flatMap(orderingTargets)).filter(id=>!atomic.has(id)));
+ const context={recipes:all,pools,targets,standaloneOrderingTargets};freezeContext(context);contextCache.push({key,context});if(contextCache.length>4)contextCache.shift();return context;
 }
 export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:Task[]=[],context?:CompositionContext):Task|undefined{
  const poolFor=(r:Recipe)=>context?.pools.get(r)??eligible(b,r);
@@ -62,10 +64,10 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
  }
 }
 /** Bounded builder: main mode never creates non-due filler or duplicates. */
-export function composeFeed(b:Bundle,memories:Memory[],tag='all',format='mixed',mode='daily',recent:Task[]=[],count=12):Task[]{
+export function composeFeed(b:Bundle,memories:Memory[],tag='all',format='mixed',mode='daily',recent:Task[]=[],count=12,allowedOrderingTargets?:Set<string>):Task[]{
  const main=mode!=='practice',out:Task[]=[];
  if(['timeline','sort','missing'].includes(format)){
-  for(const r of recipes(b).filter(r=>r.format===format&&(tag==='all'?r.tag===undefined:r.tag===tag))){const pool=eligible(b,r),seen=new Set<number>(),items=shuffle(pool).filter(i=>{if(i.year===undefined||seen.has(i.year))return false;seen.add(i.year);return true}).slice(0,format==='sort'?5:4);if(format==='timeline'?items.length<1:items.length<3)continue;
+  for(const r of recipes(b).filter(r=>r.format===format&&(tag==='all'?r.tag===undefined:r.tag===tag))){const pool=eligible(b,r).filter(i=>format!=='sort'||!allowedOrderingTargets||orderingTargets(i).every(id=>allowedOrderingTargets.has(id))),seen=new Set<number>(),items=format==='sort'?selectOrderItems(shuffle(pool)):shuffle(pool).filter(i=>{if(i.year===undefined||seen.has(i.year))return false;seen.add(i.year);return true}).slice(0,4);if(format==='timeline'?items.length<1:items.length<3)continue;
    const t:Task={id:crypto.randomUUID(),recipe:{...r,prompt:questionPrompt(properties(b).find(p=>p.id===r.answerKey),items[0].name,r.format,r.direction)},items:format==='timeline'?[items[0]]:items,options:shuffle(items.map(i=>({id:i.entityId,name:i.name}))),reason:'challenge'};
    if(format==='timeline')t.timeline=timelineContext(pool);if(format==='missing')t.sequence=[...items].sort((a,c)=>a.year!-c.year!).map((i,n)=>n===1?null:{name:i.name,entityId:i.entityId});if(preflight(t))out.push(t);if(out.length>=count)break;
   }return out;
