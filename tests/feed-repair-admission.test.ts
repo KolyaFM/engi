@@ -73,3 +73,47 @@ test('unseen objects are sampled uniformly without property weighting or import-
   Math.random=()=>0;const next=pickFeed(b,memories,session(),dailyNewState(undefined),seen,10);assert.equal(next.intro!.entityId,'e2');
  }finally{Math.random=random;}
 });
+
+
+function mixedTypeFixture():Bundle{
+ const b=fixture();b.entities=Array.from({length:96},(_,n)=>({...b.entities[0],id:'e'+n,name:'Object '+n,type:n<80?'event':n<88?'person':'book'}));
+ b.facts=b.entities.map((e,n)=>({...b.facts[0],id:'f'+n,entityId:e.id,valueText:'Value '+n}));
+ b.properties![0].subjectTypes=['event','person','book'];b.decks=b.decks!.slice(0,1);b.deckMembers=b.entities.map(e=>({deckId:'a',entityId:e.id}));return b;
+}
+
+test('introductions interleave custom object types even when eighty events precede people and books',()=>{
+ const b=mixedTypeFixture(),s=session(),introduced:string[]=[],memories:ReturnType<typeof triagedMemory>[]=[],types:string[]=[];
+ const random=Math.random;Math.random=()=>0;try{
+  const units=canonicalTargets(b);
+  for(let n=0;n<9;n++){
+   const next=pickFeed(b,memories,s,dailyNewState(undefined),introduced,10);assert(next.intro);
+   types.push(b.entities.find(e=>e.id===next.intro!.entityId)!.type);introduced.push(next.intro.entityId);
+   for(const i of units.filter(i=>next.intro!.unitIds.includes(i.targetId))){const m=triagedMemory(i,'red',s.id,0);m.status='suspended';memories.push(m);}
+  }
+  for(let n=0;n<9;n+=3)assert.equal(new Set(types.slice(n,n+3)).size,3,'each available type enters before another block of events');
+ }finally{Math.random=random;}
+});
+
+test('new properties on many familiar events cannot monopolize introductions ahead of fresh types',()=>{
+ const b=mixedTypeFixture(),s=session(),introduced=b.entities.slice(0,80).map(e=>e.id),types:string[]=[];
+ const memories:ReturnType<typeof triagedMemory>[]=[],units=canonicalTargets(b),random=Math.random;Math.random=()=>0;
+ try{
+  for(let n=0;n<3;n++){
+   const next=pickFeed(b,memories,s,dailyNewState(undefined),introduced,10);assert(next.intro);
+   const entity=b.entities.find(e=>e.id===next.intro!.entityId)!;types.push(entity.type);if(!introduced.includes(entity.id))introduced.push(entity.id);
+   const items=units.filter(i=>next.intro!.unitIds.includes(i.targetId));
+   s.cooldown!.push({id:'intro'+n,recipe:{id:'intro',format:'choice',cue:'name',answerKey:'identity',memoryKey:'intro',diagnostic:false},items:items.slice(0,1),options:[],reason:'intro'});
+   for(const i of items){const m=triagedMemory(i,'red',s.id,0);m.status='suspended';memories.push(m);}
+  }
+  assert.equal(new Set(types).size,3,'pending properties and unseen objects share type rotation');
+ }finally{Math.random=random;}
+});
+
+
+test('type rotation falls back when a small type runs out and keeps disabled types outside the scope',()=>{
+ const b=mixedTypeFixture();b.entities=b.entities.filter(e=>e.type==='event'||e.id==='e80');b.facts=b.facts.filter(f=>b.entities.some(e=>e.id===f.entityId));b.deckMembers=b.deckMembers!.filter(m=>b.entities.some(e=>e.id===m.entityId));
+ const introduced=['e0','e80'],units=canonicalTargets(b),memories=units.filter(i=>introduced.includes(i.entityId)).map(i=>{const m=triagedMemory(i,'red','test',0);m.status='suspended';return m;});
+ const next=pickFeed(b,memories,session(),dailyNewState(undefined),introduced,10);assert(next.intro);assert.equal(b.entities.find(e=>e.id===next.intro!.entityId)!.type,'event');
+ b.decks!.push({id:'other',name:'other',learning:{imageRecognition:false}});b.deckMembers!.find(m=>m.entityId==='e80')!.deckId='other';
+ const scope=deckStudyScope(b,['a']);const scoped=pickFeed(scope,[],{...session(),tag:scope.studyScope!.id,deckIds:['a']},dailyNewState(undefined),['e0'],10);assert(scoped.intro);assert.notEqual(scoped.intro.entityId,'e80');
+});

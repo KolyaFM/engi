@@ -23,7 +23,8 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  candidates.sort((a,c)=>{const rank=(i:typeof a)=>{const m=mem.get(i.targetId)!,overdue=Math.max(0,Date.now()-new Date(m.card.due).getTime())/86400000,tagPenalty=narrowTags(i.entityId).some(id=>recentTags.filter(t=>t===id).length>=2)?10:0;return (m.status==='triaged'||m.status==='learning'?-4:0)-Math.min(overdue,20)+tagPenalty};return rank(a)-rank(c)});
  const diagnosticFormat=['timeline','sort','missing'].includes(s.format??'');
  if(!diagnosticFormat)for(const i of candidates){const m=mem.get(i.targetId)!,task=composeUnit(b,m,s.tag,s.format,history);if(task){task.practice=s.mode==='practice'&&!unitDue(m,s.id,completed);task.reason=task.practice?'practice':m.status==='triaged'||m.status==='learning'?'bootstrap':'due';return {task}}}
- const entityOf=(i:typeof units[number])=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId;
+ const factsById=new Map(b.facts.map(f=>[f.id,f])),typesById=new Map(b.entities.map(e=>[e.id,e.type]));
+ const entityOf=(i:typeof units[number])=>i.factId?factsById.get(i.factId)?.entityId??i.entityId:i.entityId;
  const seenEntities=new Set([...introduced,...units.filter(i=>mem.has(i.targetId)).map(entityOf)]),newUnits=units.filter(i=>!mem.has(i.targetId)&&(!i.factId||!mem.has(i.targetId.replace(/:(forward|reverse)$/,i.targetId.endsWith(':reverse')?':forward':':reverse'))));
  const budget=Math.max(0,(newCardsPerDay??(due.length>=20?1:3))+newState.extraBudget-newState.introducedEntityIds.length);
  const ownerKnown=(i:typeof units[number])=>seenEntities.has(entityOf(i));
@@ -32,11 +33,21 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  const deckIds=new Set((b.decks??[]).filter(d=>!d.archived&&(!s.deckIds||s.deckIds.includes(d.id))).map(d=>d.id)),membership=new Map<string,string[]>(),lastIntroduced=new Map<string,number>();
  for(const member of b.deckMembers??[])if(!member.archived&&deckIds.has(member.deckId)){const list=membership.get(member.entityId)??[];list.push(member.deckId);membership.set(member.entityId,list);}
  introduced.forEach((id,index)=>{for(const deck of membership.get(id)??[])lastIntroduced.set(deck,index);});
+ history.forEach((task,index)=>{if(task.reason==='intro')for(const item of task.items)for(const deck of membership.get(entityOf(item))??[])lastIntroduced.set(deck,introduced.length+index);});
  const deckRank=(id:string)=>Math.min(...(membership.get(id)??[]).map(deck=>lastIntroduced.get(deck)??-1));
- const newPropertyUnit=newUnits.find(ownerKnown),freshByOwner=new Map<string,typeof units[number]>();let freshRank=Infinity;
+ // Rotate available subject types as well as decks. A large type must not
+ // hide smaller ones; newly enabled properties participate in the same rotation.
+ const lastType=new Map<string,number>();
+ introduced.forEach((id,index)=>{const type=typesById.get(id);if(type)lastType.set(type,index);});
+ history.forEach((task,index)=>{if(task.reason==='intro')for(const item of task.items){const type=typesById.get(entityOf(item));if(type)lastType.set(type,introduced.length+index);}});
+ const byOwner=new Map<string,typeof units[number]>();
+ for(const item of newUnits){const id=entityOf(item);if(!ownerKnown(item)&&(budget<=0||sameEntity(id)))continue;if(!byOwner.has(id))byOwner.set(id,item);}
+ const typeRank=(item:typeof units[number])=>lastType.get(typesById.get(entityOf(item))??'')??-1;
+ const rank=(a:typeof units[number],c:typeof units[number])=>deckRank(entityOf(a))-deckRank(entityOf(c))||typeRank(a)-typeRank(c)||Number(ownerKnown(c))-Number(ownerKnown(a));
  // Sample objects, not properties: an object with more facts gets no extra tickets.
- if(!newPropertyUnit&&budget>0)for(const item of newUnits){const id=entityOf(item);if(ownerKnown(item)||sameEntity(id))continue;const rank=deckRank(id);if(rank<freshRank){freshRank=rank;freshByOwner.clear();}if(rank===freshRank&&!freshByOwner.has(id))freshByOwner.set(id,item);}
- const fresh=[...freshByOwner.values()],first=newPropertyUnit??(fresh.length?fresh[fresh.length===1?0:Math.floor(Math.random()*fresh.length)]:undefined);
+ const candidatesForIntro=[...byOwner.values()].sort(rank),best=candidatesForIntro[0];
+ const choices=best?candidatesForIntro.filter(item=>!rank(item,best)):[];
+ const first=choices.length?choices[choices.length===1?0:Math.floor(Math.random()*choices.length)]:undefined;
  if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}
  if(diagnosticFormat||(s.ordinaryCount??0)>=8&&ordinary.slice(-8).every(t=>!t.recipe.diagnostic)){
   const activeIds=new Set(known.map(i=>i.factId)),db={...b,facts:b.facts.filter(f=>activeIds.has(f.id))};
