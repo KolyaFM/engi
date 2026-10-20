@@ -22,6 +22,8 @@ const media=new Map<string,Response>();Object.defineProperty(globalThis,'caches'
 const prepared:PreparedImport[]=[],inventory=[];const staging=new EngiDB('real-pack-validation');
 try{for(const path of paths){const p=await prepareDeclarativePack(new Blob([await readFile(path)]),staging);assert(p,'Expected a v3 pack');prepared.push(p);inventory.push({file:basename(path),name:p.pkg.name,objects:p.pkg.entities.length,images:p.files.length,bytes:p.files.reduce((sum,f)=>sum+f.bytes,0),properties:p.pkg.properties.map(p=>({name:p.name,valueType:p.valueType,subjectTypes:p.subjectTypes,questions:p.promptTemplates,learning:p.learning}))});console.log('Validated',basename(path),p.pkg.entities.length,p.files.length);}}finally{staging.close();await staging.delete();}
 await writeFile(folder+'/inventory.json',JSON.stringify(inventory,null,2));
+const stepMs=Number(process.env.ENGI_PACK_STEP_MS??20000),presentationWidth=Number(process.env.ENGI_PACK_WIDTH??393);
+assert(Number.isFinite(stepMs)&&stepMs>0,'ENGI_PACK_STEP_MS must be positive');assert(Number.isFinite(presentationWidth)&&presentationWidth>=280,'ENGI_PACK_WIDTH must be at least 280');
 const at=Date.parse('2026-10-14T09:00:00Z'),random=Math.random,uuid=crypto.randomUUID,reports:any[]=[];
 mock.timers.enable({apis:['Date'],now:at});let serial=0,seed=41;
 Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};crypto.randomUUID=()=>`00000000-0000-4000-8000-${(++serial).toString(16).padStart(12,'0')}`;
@@ -35,10 +37,10 @@ try{
    const bundle=await getBundle(d),deckIds=bundle.decks!.filter(d=>!d.archived).map(d=>d.id),catalog=createDeckStudyCatalog(bundle),disabled:string[]=[];
    if(profile==='partial')for(const deck of deckIds){const options=catalog.optionsFor(deck),off=options.filter(o=>o.kind==='property').at(-1);if(off){await saveDeckStudySelection(d,deck,options.filter(o=>o.defaultEnabled&&o.id!==off.id).map(o=>o.id));disabled.push(off.label);}}
    const targets=catalog.targetsFor(deckIds,await readDeckPropertySettings(d));stats.disabled=disabled;stats.enabledTargets=targets.size;
-   const svc=createTrainerService(d);startStudyTrace(d,1000);let s=await svc.startGoalFeed('all','mixed','daily',{endless:true,deckIds}),question=0;const known=new Set<string>();phase='learning';
+   const svc=createTrainerService(d);startStudyTrace(d,1000);let s=await svc.startGoalFeed('all','mixed','daily',{endless:true,deckIds,presentationWidth}),question=0;const known=new Set<string>();phase='learning';
    async function play(steps:number,offset:number,inject:boolean,drain=false){for(let n=0;n<steps;n++){
     if(drain&&!(await svc.getDayPlan('all','mixed',deckIds)).workload?.mistakes)return;
-    mock.timers.setTime(at+offset+(n+1)*20000);stats.steps++;assert(!s.exhausted,`Stopped with remaining selected content at ${stats.steps}`);
+    mock.timers.setTime(at+offset+(n+1)*stepMs);stats.steps++;assert(!s.exhausted,`Stopped with remaining selected content at ${stats.steps}`);
     if(s.intro){assert(s.intro.unitIds.every(id=>targets.has(id)),'Disabled property reintroduced');let selections:Record<string,'red'|'green'>|undefined;
      if(profile==='partial'){const units=[...new Set(s.intro.unitIds.map(id=>id.replace(/:(forward|reverse)$/,'')))];selections=Object.fromEntries(s.intro.unitIds.map(id=>{const familiar=units.indexOf(id.replace(/:(forward|reverse)$/,''))%3===0;if(familiar)known.add(id);return[id,familiar?'green':'red'];}));stats.declaredKnown+=Object.values(selections).filter(v=>v==='green').length;}
      s=await svc.completeIntro(s.id,selections?{entityId:s.intro.entityId,introId:s.intro.introId,selections}:undefined);continue;
@@ -58,13 +60,14 @@ try{
       if(inject&&response.kind==='choice'&&question%5===0&&stats.errorsInjected<8){const wrong=q.options.find(o=>o.id!==response.expected)!;await svc.answer({sessionId:s.id,taskId:q.id,answer:wrong.id});stats.errorsInjected++;}
       await svc.answer({sessionId:s.id,taskId:q.id,answer:expected});
      }
+     if(q.intervalExercise){await svc.observeVisibility(s.id,q.id,'feedback','feedback:'+q.id,'start');await svc.observeVisibility(s.id,q.id,'feedback','feedback:'+q.id,'end');}
      await svc.observeVisibility(s.id,q.id,'question','q:'+q.id,'end');s=await svc.advanceFeed(s.id,false,q.id);
     }
     if(q.intent==='practice')assert.deepEqual(await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),memory,'Practice changed FSRS');
     if(n%20===19){s=(await createTrainerService(d).getResumableSession({endless:true}))!;stats.restarts++;assert(s);}
    }}
    if(profile==='returning'){await play(90,0,false);stats.checkpoints.push({phase:'before-break',workload:(await svc.getDayPlan('all','mixed',deckIds)).workload});mock.timers.setTime(at+7*86400000);s=(await svc.getResumableSession({endless:true}))!;assert(s);await play(60,7*86400000,true);}else await play(profile==='extended'?160:70,0,profile==='novice');
-   if(profile==='novice'||profile==='returning'){stats.errorsBeforeDrain=(await svc.getDayPlan('all','mixed',deckIds)).workload?.mistakes??0;const before=stats.steps;await play(100,profile==='returning'?7*86400000+60*20000:70*20000,false,true);stats.drainSteps=stats.steps-before;assert.equal((await svc.getDayPlan('all','mixed',deckIds)).workload?.mistakes,0,'Correct continuation must resolve remaining errors');}
+   if(profile==='novice'||profile==='returning'){stats.errorsBeforeDrain=(await svc.getDayPlan('all','mixed',deckIds)).workload?.mistakes??0;const before=stats.steps;await play(100,profile==='returning'?7*86400000+60*stepMs:70*stepMs,false,true);stats.drainSteps=stats.steps-before;assert.equal((await svc.getDayPlan('all','mixed',deckIds)).workload?.mistakes,0,'Correct continuation must resolve remaining errors');}
    const plan=await svc.getDayPlan('all','mixed',deckIds),ledger=(await d.appMeta.get('studyCore:learningLifecycle'))!.value,trace=studyTraceReport(d);stats.workload=plan.workload;stats.introduced=ledger.cards.length;stats.dailyIntroductions=ledger.cards.filter((c:any)=>c.source==='daily').length;stats.extraIntroductions=ledger.cards.filter((c:any)=>c.source==='extra').length;stats.completedProperties=ledger.units.filter((u:any)=>u.stage==='completed').length;stats.resolvedErrors=((await d.appMeta.get('studyCore:mistakeEpisodes'))?.value.episodes??[]).filter((e:any)=>e.status==='resolved').length;stats.groupOpportunities=trace.filter(e=>e.kind==='selection'&&(e.decision as any)?.checks.matching.status==='generated').length;
    reports.push({stats,trace});console.log(JSON.stringify(stats));await writeFile(folder+'/'+reports.length+'.json',JSON.stringify({stats,trace},null,2));
   }catch(error){stats.failure={phase,message:(error as Error).message,stack:(error as Error).stack};const state={mistakes:(await d.appMeta.get('studyCore:mistakeEpisodes'))?.value,lifecycle:(await d.appMeta.get('studyCore:learningLifecycle'))?.value,memories:await d.appMeta.where('key').startsWith('studyCore:memory:').toArray(),exposures:await d.appMeta.where('key').startsWith('studyCore:exposure:').toArray()};reports.push({stats,state,trace:studyTraceReport(d)});await writeFile(folder+'/'+reports.length+'.json',JSON.stringify(reports.at(-1),null,2));console.log('FAILED',label,profile,(error as Error).message);}

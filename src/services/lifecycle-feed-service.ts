@@ -27,7 +27,7 @@ import type {SelectionDecision} from './selection-decision';
 import {proposalDiversityPenalty,presentationFamily} from './proposal-diversity';
 /** One source of eligible work: acquisition, due reviews, repair, admission, then safe practice. */
 export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now(),audit?:(decision:SelectionDecision)=>void){
- const decision:SelectionDecision={branch:'',checks:{matching:{status:'not-reached'},chronology:{status:'not-reached'},recall:{status:'not-reached'},selfCheck:{status:'not-reached'}}};
+ const decision:SelectionDecision={branch:'',checks:{matching:{status:'not-reached'},chronology:{status:'not-reached'},recall:{status:'not-reached'},selfCheck:{status:'not-reached'},intervalBands:{status:'not-reached'}}};
  function finish<T extends {task?:Task;intro?:{entityId:string};exhausted?:boolean}>(next:T,branch:string):T&{exhausted?:boolean}{
   if(audit){const history=s.cooldown??[],objects=(items:Task['items'])=>items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId),chosen=next.task,ids=chosen?objects(chosen.items):next.intro?[next.intro.entityId]:[],keys=chosen?.studyContract?.primaryGoals.map(propertyKey)??[];
    const distance=(match:(t:Task)=>boolean)=>{const n=[...history].reverse().findIndex(match);return n<0?null:n+1;};
@@ -102,6 +102,9 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  if(nextIntroduction&&(!due.length||history.slice(introIndex+1).some(t=>['due','confirmation'].includes(t.reason))))return finish(nextIntroduction,'admission');
  const dueStreak=dueTurnsSinceFirstCheck(history.map(t=>t.reason));
  const lane=chooseWorkLane(due.length>0,first.length>0,dueStreak),selected=lane==='due'?due:first;
+ // Partial exercises share one disclosure budget between exact checks. A
+ // practice screen in history does not replenish that budget.
+ const freshIntervalContext=(p:typeof pool.proposals[number])=>p.goals.every(g=>{const u=active.get(propertyKey(g)),e=intervalEvidence.get(g.id),lastContext=Math.max(e?.lastExerciseAt?Date.parse(e.lastExerciseAt):0,e?.lastDisclosureAt?Date.parse(e.lastDisclosureAt):0),review=memories.get(g.id)?.card.last_review,lastExact=Math.max(u?.lastAttemptAt?Date.parse(u.lastAttemptAt):0,review?new Date(review).getTime():0);return !lastContext||lastContext<lastExact;});
  if(audit){decision.lane=lane;decision.checks.selfCheck={status:!s.format||s.format==='mixed'?'cooldown':'disabled'};decision.checks.recall={status:(!s.format||s.format==='mixed')&&lane==='first'?'cooldown':'disabled'};decision.checks.chronology={status:s.mode!=='practice'&&['mixed','sort','timeline','missing'].includes(s.format??'mixed')?'cooldown':'disabled'};}
  const affinity=await readGroupContext(db,b,history),sinceSelfCheck=history.slice(history.map(t=>t.recipe.format).lastIndexOf('self_check')+1).length;
  if((!s.format||s.format==='mixed')&&sinceSelfCheck>=9){const targets=selected.filter(p=>!active.get(propertyKey(p.goals[0]))?.selfCheckedAt).sort((a,c)=>objectRank(a)-objectRank(c));const task=buildSelfCheck(b,targets,affinity);if(audit)decision.checks.selfCheck={status:task?'generated':'no-compatible-group',count:task?1:0};if(task)return finish({task,intro:undefined},'self-check');}
@@ -109,7 +112,18 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  // never another memory obligation or an objective graduation.
  const sinceRecall=history.slice(history.map(t=>t.recipe.format).lastIndexOf('recall_reveal')+1).length;
  if((!s.format||s.format==='mixed')&&lane==='first'&&sinceRecall>=5){const readyKeys=new Set(first.filter(p=>!owners(p.items).some(id=>lastObjects.has(id))).flatMap(p=>p.goals.map(acquisitionKey))),recalls=pool.proposals.filter(p=>p.recipe.format==='recall_reveal'&&p.goals.length===1&&readyKeys.has(acquisitionKey(p.goals[0]))&&!active.get(propertyKey(p.goals[0]))?.rehearsedAt);if(audit)decision.checks.recall={status:recalls.length?'generated':'no-compatible-group',count:recalls.length};recalls.sort((a,c)=>objectRank(a)-objectRank(c));for(const proposal of recalls){const task=materializeGoalProposal(b,enabled,proposal,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.learningRecall=true;task.intent='learn';task.reason='rehearsal';return finish({task,intro:undefined},task.reason??'selected');}}}
- if((!s.format||s.format==='mixed')&&s.mode!=='practice'&&history.length>=4){const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&memories.has(g.id)&&!active.has(propertyKey(g))&&new Date(memories.get(g.id)!.card.due).getTime()>now));const task=buildIntervalGroup(b,selected,supports,history,Math.max(160,Math.min(560,(s.presentationWidth??360)-100)));if(task)return finish({task,intro:undefined},'interval-bands');}
+ if((!s.format||s.format==='mixed')&&s.mode!=='practice'&&history.length>=4){
+  // A contextual period comparison is not an exact review. Pending acquisition
+  // work can participate before its confirmation date without earning FSRS credit.
+  const pending=pool.proposals.filter(p=>p.goals.every(g=>{const u=active.get(propertyKey(g));return activeIds.has(g.id)&&u?.goal.skill===g.skill&&intervalAvailableAt(intervalEvidence.get(g.id))<=now;})&&!owners(p.items).some(id=>lastObjects.has(id)));
+  // At most one partial/contextual disclosure between exact checks; otherwise
+  // the repeated reveals would perpetually push confirmations five minutes away.
+  const targets=[...new Map([...selected,...pending].filter(freshIntervalContext).map(p=>[p.goals.map(g=>g.id).join()+':'+p.recipe.format,p])).values()];
+  const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&memories.has(g.id)&&!active.has(propertyKey(g))&&new Date(memories.get(g.id)!.card.due).getTime()>now));
+  const task=buildIntervalGroup(b,targets,supports,history,Math.max(160,Math.min(560,(s.presentationWidth??360)-100)));
+  if(audit)decision.checks.intervalBands={status:task?'generated':history.slice(-6).some(t=>t.intervalExercise?.kind==='bands')?'cooldown':'no-compatible-group',count:targets.length};
+  if(task)return finish({task,intro:undefined},'interval-bands');
+ }
  const protectedGoals=new Set(catalog.filter(e=>active.has(propertyKey(e.goal))).map(e=>e.goal.id));
  const completedKeys=new Set([...ledger.units.filter(u=>u.stage==='completed').map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)&&!active.has(propertyKey(e.goal))).map(e=>propertyKey(e.goal))]);
  const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(propertyKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
@@ -132,7 +146,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   return repeatsLast(a)-repeatsLast(c)||urgency(a)-urgency(c)||(objectRank(a)+formatRank(a))-(objectRank(c)+formatRank(c))||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id)+a.recipe.format)-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)+c.recipe.format);
  });
  if(audit){const nearest=proposals.slice(0,8);decision.alternatives=[...nearest,...proposals.filter(p=>p.group&&!nearest.includes(p)).slice(0,3)].map(p=>({priority:proposals.indexOf(p)+1,format:p.recipe.format,presentation:presentationFamily(p),objects:owners(p.items),properties:p.goals.map(propertyKey),group:!!p.group,objectPenalty:objectRank(p),formatPenalty:formatRank(p)}));}
- for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(propertyKey(g)))?'confirmation':'due';const partial=(!s.format||s.format==='mixed')&&!history.slice(-3).some(t=>t.intervalExercise)?buildEndpointTask(b,task,intervalEvidence.get(p.goals[0].id),history):undefined;return finish({task:partial??task,intro:undefined},task.reason??'selected');}if(audit&&(decision.rejected?.length??0)<8){(decision.rejected??=[]).push({priority:proposals.indexOf(p)+1,format:p.recipe.format,group:!!p.group,reason:'materialization'});}}
+ for(const p of proposals){const task=materializeGoalProposal(b,enabled,p,pool.context,s.tag??'all',history,false,memories);if(task){task.learningLifecycle=1;task.intent='learn';task.reason=lane==='first'?'bootstrap':p.goals.some(g=>active.has(propertyKey(g)))?'confirmation':'due';const partial=(!s.format||s.format==='mixed')&&freshIntervalContext(p)&&!history.slice(-3).some(t=>t.intervalExercise)?buildEndpointTask(b,task,intervalEvidence.get(p.goals[0].id),history):undefined;return finish({task:partial??task,intro:undefined},task.reason??'selected');}if(audit&&(decision.rejected?.length??0)<8){(decision.rejected??=[]).push({priority:proposals.indexOf(p)+1,format:p.recipe.format,group:!!p.group,reason:'materialization'});}}
  const remainingRepair=await selectRepairWork(db,b,enabled,s,memories,false,repairOptions);if(remainingRepair){remainingRepair.learningLifecycle=1;return finish({task:remainingRepair,intro:undefined},'drain-repairs');}
  if(nextIntroduction)return finish(nextIntroduction,'remaining-introduction');
  const diagnosticTask=diagnostic();if(diagnosticTask&&(contextActions>=8||['timeline','sort','missing'].includes(s.format??'')))return finish({task:diagnosticTask,intro:undefined},'diagnostic');
