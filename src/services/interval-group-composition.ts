@@ -4,6 +4,7 @@ import {indexes} from '../lib/engi/indexes';
 import {shuffle} from '../lib/engi/engine';
 import {yearInterval} from '../lib/engi/questions/date-interval';
 import {buildIntervalScale} from '../lib/engi/questions/interval-scale';
+import {arePeriodsClose} from '../lib/engi/questions/interval-proximity';
 /** Group facts, not entities or identically named fields. Never fetch global filler. */
 export function buildIntervalGroup(b:Bundle,ready:GoalProposal[],supports:GoalProposal[],history:Task[],width:number):Task|undefined{
  if(history.slice(-6).some(t=>t.intervalExercise?.kind==='bands')||history.at(-1)?.recipe.format==='sort')return;
@@ -13,6 +14,7 @@ export function buildIntervalGroup(b:Bundle,ready:GoalProposal[],supports:GoalPr
  const candidates=[...new Map(ready.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,24);
  const known=[...new Map(supports.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,12);
  function create(selected:GoalProposal[],support?:GoalProposal):Task|undefined{
+  if(!arePeriodsClose(selected.map(p=>range(p)!)))return;
   const sorted=[...selected].sort((a,c)=>range(a)!.start-range(c)!.start||range(a)!.end-range(c)!.end||a.items[0].targetId.localeCompare(c.items[0].targetId));
   const scale=buildIntervalScale(sorted.map(p=>({id:'band:'+p.items[0].targetId,...range(p)!,...(p===support?{support:true}:{})})),'dated',width);
   if(!scale)return;
