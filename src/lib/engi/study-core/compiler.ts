@@ -160,8 +160,8 @@ export function compileIntroContract(b:Bundle,intro:{introId?:string;entityId:st
   const visible=rows.filter(f=>intro.unitIds.some(id=>id.startsWith(`ku:fact:${f.id}:`))||!intro.newProperty&&(f.learnable===false||definitions.get(f.key)?.learnable===false));
   for(const f of visible){
     const claim=claimForFact(b,f);
-    // Intro currently collapses even precise same-year dates to a year label.
-    if(f.valueKind==='date'&&f.datePrecision!=='year')claim.revealsGoalIds=[];
+    // Year ranges are displayed in full by ObjectIntroCard's shared formatter.
+    if(f.valueKind==='date'&&f.datePrecision!=='year'&&!yearInterval(f))claim.revealsGoalIds=[];
     shownClaims.push(claim);
   }
   for(const propertyId of new Set(visible.map(f=>f.key))){

@@ -53,7 +53,7 @@ try{
     if(q.recipe.format==='self_check'){for(const item of q.items)await svc.observeVisibility(s.id,q.id,`card-reveal:${item.entityId}`,'flip:'+q.id+':'+item.entityId,'start');s=await svc.advanceFeed(s.id,true,q.id);}
     else{
      if(q.recipe.format==='recall_reveal'){await svc.saveInteraction(s.id,q.id,{revealed:true,recallElapsedMs:5000});await svc.observeVisibility(s.id,q.id,'answer-reveal','answer:'+q.id,'start');}
-     if(response.kind==='mapping'){for(const item of q.items)await svc.answerMatchPair({sessionId:s.id,taskId:q.id,entityId:item.entityId,answerId:item.answerId,requestId:crypto.randomUUID()});}
+     if(response.kind==='mapping'){for(const binding of response.bindings.filter(b=>!b.support))await svc.answerMatchPair({sessionId:s.id,taskId:q.id,entityId:binding.responseKey,answerId:binding.expected,requestId:crypto.randomUUID()});}
      else{const expected='expected' in response?response.expected:response.kind==='self-report'?true:undefined;assert.notEqual(expected,undefined,response.kind);
       if(inject&&response.kind==='choice'&&question%5===0&&stats.errorsInjected<8){const wrong=q.options.find(o=>o.id!==response.expected)!;await svc.answer({sessionId:s.id,taskId:q.id,answer:wrong.id});stats.errorsInjected++;}
       await svc.answer({sessionId:s.id,taskId:q.id,answer:expected});

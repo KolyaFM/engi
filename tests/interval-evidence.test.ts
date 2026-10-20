@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';import {test} from 'node:test';import assert from '
 import {intervals,intervalRecipe} from './helpers-intervals';
 import {recordIntervalEvidence} from '../src/lib/engi/study-core/interval-evidence';
 import {canonicalTargets} from '../src/lib/engi/questions/recipe-factory';
-import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
+import {compileTaskContract,compileIntroContract,associationGoal} from '../src/lib/engi/study-core/compiler';
 import {createStudyCoreService} from '../src/services/study-core-service';
 import {EngiDB} from '../src/db/engi-db';
 import {recordMistakeOutcome,MISTAKE_EPISODES_KEY} from '../src/services/mistake-episodes';
@@ -10,6 +10,17 @@ import {admitAcquisition,emptyLifecycle} from '../src/lib/engi/study-core/acquis
 import type {Task} from '../src/lib/engi/types';
 import {exportBackup,restoreBackup} from '../src/services/backup-service';
 import {putBundle,getBundle} from '../src/db/repositories';
+import {createTrainerService} from '../src/services/trainer-service';
+
+test('a year interval shown in an intro enters acquisition and produces a playable question',async()=>{
+ const b=intervals(),d=new EngiDB('interval-intro-'+crypto.randomUUID());
+ try{const item=canonicalTargets(b).find(i=>i.factId==='f0')!,contract=compileIntroContract(b,{entityId:item.entityId,unitIds:[item.targetId],newProperty:false},'intro');
+  assert(contract.shownClaims.some(c=>c.revealsGoalIds.includes(associationGoal(b,b.facts[0],'recognition').id)),'displayed year bounds reveal the full range');
+  await putBundle(d,b);const svc=createTrainerService(d);let s=await svc.startGoalFeed('all','mixed','daily',{endless:true});
+  for(let n=0;n<8&&s.intro;n++)s=await svc.completeIntro(s.id);
+  const ledger=(await d.appMeta.get('studyCore:learningLifecycle'))!.value;assert(ledger.units.length>0,'new range properties must enter learning');assert(!s.exhausted);assert(s.tasks[s.currentPosition],'fresh interval pack must offer a question');
+ }finally{d.close();await d.delete();}
+});
 test('boundary evidence is idempotent and revision scoped',()=>{const input={taskId:'t',goalId:'g',revision:'r',kind:'end' as const,correct:false,at:new Date(0).toISOString()};const a=recordIntervalEvidence(undefined,input);assert.equal(a.end?.correct,false);assert.equal(a.start,undefined);assert.deepEqual(recordIntervalEvidence(a,input),a);const b=recordIntervalEvidence(a,{...input,taskId:'t2',revision:'r2',kind:'start',correct:true});assert.equal(b.end,undefined);assert.equal(b.start?.correct,true);});
 test('partial answers preserve FSRS/acquisition, open one error, and cannot resolve it',async()=>{
  const b=intervals(),i=canonicalTargets(b).find(i=>i.factId==='f0')!,t:Task={id:'endpoint',memoryModel:'goals',learningLifecycle:1,intervalExercise:{kind:'endpoint',edge:'end'},recipe:intervalRecipe,items:[{...i,interval:{start:1900,end:1905},answer:'1905',answerId:'1905'}],options:[1904,1905,1906,1907].map(y=>({id:String(y),name:String(y)})),reason:'bootstrap'};

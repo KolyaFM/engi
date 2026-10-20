@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 3,
+  "name": "Периоды — тест механик",
+  "description": "12 исторических периодов для проверки границ, выбора полного диапазона и сопоставления полос. Границы заданы с точностью до года; это не полные календарные даты. Есть короткие, длинные, пересекающиеся и вложенные периоды.",
+  "properties": [
+    {
+      "name": "Период полномочий",
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "subjectTypes": [
+        "Событие"
+      ],
+      "promptTemplates": {
+        "forward": "В какие годы?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    }
+  ],
+  "entities": [
+    {
+      "name": "Президентство Трумэна",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1945,
+            "end": 1953
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Эйзенхауэра",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1953,
+            "end": 1961
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Кеннеди",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1961,
+            "end": 1963
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Джонсона",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1963,
+            "end": 1969
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Никсона",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1969,
+            "end": 1974
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Форда",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1974,
+            "end": 1977
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Картера",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1977,
+            "end": 1981
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Президентство Рейгана",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1981,
+            "end": 1989
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/art-artifacts/thematic-collections/historic-events/inauguration/all-inaugurations.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Трумэн в Сенате",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1935,
+            "end": 1945
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/senators/SenatorsWhoBecamePresident.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Кеннеди в Сенате",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1953,
+            "end": 1960
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/senators/SenatorsWhoBecamePresident.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Джонсон в Сенате",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1949,
+            "end": 1961
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/senators/SenatorsWhoBecamePresident.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    },
+    {
+      "name": "Никсон в Сенате",
+      "type": "Событие",
+      "tags": [
+        "Тест периодов",
+        "История США"
+      ],
+      "description": "Период указан с точностью до календарного года. Месяцы и дни в этой колоде не изучаются.",
+      "facts": [
+        {
+          "property": "Период полномочий",
+          "value": {
+            "start": 1950,
+            "end": 1953
+          },
+          "source": {
+            "kind": "url",
+            "name": "Сенат США — исторические сведения",
+            "url": "https://www.senate.gov/senators/SenatorsWhoBecamePresident.htm"
+          },
+          "verification": "verified"
+        }
+      ]
+    }
+  ],
+  "deck": {
+    "name": "Периоды — тест механик",
+    "description": "Тест трёх форматов работы с периодами.",
+    "members": [
+      {
+        "name": "Президентство Трумэна",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Эйзенхауэра",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Кеннеди",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Джонсона",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Никсона",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Форда",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Картера",
+        "type": "Событие"
+      },
+      {
+        "name": "Президентство Рейгана",
+        "type": "Событие"
+      },
+      {
+        "name": "Трумэн в Сенате",
+        "type": "Событие"
+      },
+      {
+        "name": "Кеннеди в Сенате",
+        "type": "Событие"
+      },
+      {
+        "name": "Джонсон в Сенате",
+        "type": "Событие"
+      },
+      {
+        "name": "Никсон в Сенате",
+        "type": "Событие"
+      }
+    ],
+    "learning": {
+      "properties": [
+        "Период полномочий"
+      ],
+      "imageRecognition": false
+    }
+  }
+}
