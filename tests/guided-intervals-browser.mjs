@@ -21,7 +21,7 @@ for(const engine of [chromium,webkit]){
   assert.equal(await page.locator('.interval-answer').count(),5);assert.equal(await page.locator('.interval-band-row').count(),5);
   assert((await page.locator('.interval-chart').boundingBox()).height<240);assert(await page.locator('.interval-current-years').innerText()==='1961–1963');
   await page.getByRole('button',{name:'СССР — Период существования',exact:true}).click();await page.locator('.interval-answer.is-wrong').waitFor();assert.equal(await page.locator('.interval-status').innerText(),'');assert.equal(await page.locator('.interval-current-years').innerText(),'1961–1963');
-  await page.getByRole('button',{name:'Джон Кеннеди — Президентство',exact:true}).click();await page.locator('.interval-found-row').waitFor();assert.equal(await page.locator('.interval-answer').count(),4);assert.equal(await page.locator('.interval-current-years').innerText(),'1922–1991');
+  await page.getByRole('button',{name:'Джон Кеннеди — Президентство',exact:true}).click();await page.locator('.interval-found-row').waitFor();assert.equal(await page.locator('.interval-found-check').count(),0,'matched periods need no checkmark');assert.equal(await page.locator('.interval-answer').count(),4);assert.equal(await page.locator('.interval-current-years').innerText(),'1922–1991');
   await page.waitForTimeout(220);await page.screenshot({path:`artifacts/guided-intervals/${engine.name()}-five.png`});
   await page.setViewportSize({width:852,height:393});await page.evaluate(()=>{window.probe.mount++;window.renderGuided();});assert.equal(await page.locator('.interval-found-row').count(),1);assert.equal(await page.locator('.interval-current-years').innerText(),'1922–1991');
   await page.setViewportSize({width:393,height:852});

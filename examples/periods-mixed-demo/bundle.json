@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 3,
+  "name": "Периоды XX века — смешанный тест",
+  "description": "Вторая тестовая колода: 9 объектов, 11 диапазонов и 7 разных полей. Для совместного включения с «Периоды — тест механик». Все границы заданы с точностью до года; сведения и источники проверены 20.10.2026.",
+  "entityTypes": [
+    {
+      "name": "Сооружение"
+    },
+    {
+      "name": "Космическая программа"
+    }
+  ],
+  "properties": [
+    {
+      "name": "Период существования",
+      "shortName": "Существование",
+      "subjectTypes": [
+        "Страна"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Период разделения Берлина стеной",
+      "shortName": "Разделение Берлина",
+      "subjectTypes": [
+        "Сооружение"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Период активных боевых действий",
+      "shortName": "Боевые действия",
+      "subjectTypes": [
+        "Событие"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Годы жизни",
+      "shortName": "Годы жизни",
+      "subjectTypes": [
+        "Человек"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Период заключения",
+      "shortName": "Заключение",
+      "subjectTypes": [
+        "Человек"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Период президентства в ЮАР",
+      "shortName": "Президентство ЮАР",
+      "subjectTypes": [
+        "Человек"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    },
+    {
+      "name": "Период пилотируемых полётов",
+      "shortName": "Пилотируемые полёты",
+      "subjectTypes": [
+        "Космическая программа"
+      ],
+      "valueType": "date",
+      "multiple": false,
+      "learnable": true,
+      "promptTemplates": {
+        "forward": "В какие годы длился этот период?",
+        "rangeStart": "В каком году начался этот период?",
+        "rangeEnd": "В каком году закончился этот период?"
+      },
+      "learning": {
+        "forward": true,
+        "reverse": false,
+        "choice": "on",
+        "recallReveal": "off",
+        "match": "on",
+        "categorize": "off",
+        "timeline": "off",
+        "sort": "off",
+        "missing": "off",
+        "rangeBoundary": "on",
+        "rangeBands": "on"
+      }
+    }
+  ],
+  "entities": [
+    {
+      "name": "СССР",
+      "type": "Страна",
+      "description": "Союз Советских Социалистических Республик. В этой колоде изучается период существования государства с точностью до года.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период существования",
+          "value": {
+            "start": 1922,
+            "end": 1991
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Australian War Memorial",
+            "url": "https://www.awm.gov.au/collection/PL503376"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ГДР",
+      "type": "Страна",
+      "description": "Германская Демократическая Республика существовала с 1949 года до объединения Германии в 1990 году.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период существования",
+          "value": {
+            "start": 1949,
+            "end": 1990
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Бундестаг — история ГДР",
+            "url": "https://www.bundestag.de/parlament/geschichte/parlamentarismus/ddr/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Берлинская стена",
+      "type": "Сооружение",
+      "description": "Здесь проверяется период закрытой границы, разделявшей Берлин: от возведения стены в 1961 году до открытия переходов в 1989 году. Это не дата завершения демонтажа стены.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период разделения Берлина стеной",
+          "value": {
+            "start": 1961,
+            "end": 1989
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Berlin Wall Foundation",
+            "url": "https://www.stiftung-berliner-mauer.de/en/east-side-gallery/historical-site/berlin-wall-muehlenstrasse"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Корейская война",
+      "type": "Событие",
+      "description": "Активные боевые действия начались в 1950 году и были остановлены перемирием 1953 года. Мирный договор этим диапазоном не подразумевается.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период активных боевых действий",
+          "value": {
+            "start": 1950,
+            "end": 1953
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Армия США — Корейская война",
+            "url": "https://www.army.mil/koreanwar/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Вторая мировая война",
+      "type": "Событие",
+      "description": "Общепринятая датировка войны: 1939–1945. В колоде изучаются годы, без отдельных дат окончания войны в Европе и Азии.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период активных боевых действий",
+          "value": {
+            "start": 1939,
+            "end": 1945
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "The National WWII Museum",
+            "url": "https://www.nationalww2museum.org/students-teachers/student-resources/explore-wwii-history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Альберт Эйнштейн",
+      "type": "Человек",
+      "description": "Физик. В этой колоде изучаются только годы жизни, без дня и месяца рождения и смерти.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Годы жизни",
+          "value": {
+            "start": 1879,
+            "end": 1955
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "NobelPrize.org — биография Эйнштейна",
+            "url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Нельсон Мандела",
+      "type": "Человек",
+      "description": "У одного объекта три независимых периода: годы жизни, непрерывное заключение после ареста в августе 1962 года и президентство в ЮАР. Заключение начинается с ареста 1962 года, а не с пожизненного приговора 1964 года.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Годы жизни",
+          "value": {
+            "start": 1918,
+            "end": 2013
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Nelson Mandela Foundation",
+            "url": "https://www.nelsonmandela.org/biography"
+          }
+        },
+        {
+          "property": "Период заключения",
+          "value": {
+            "start": 1962,
+            "end": 1990
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Nelson Mandela Foundation",
+            "url": "https://www.nelsonmandela.org/biography"
+          }
+        },
+        {
+          "property": "Период президентства в ЮАР",
+          "value": {
+            "start": 1994,
+            "end": 1999
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "Nelson Mandela Foundation",
+            "url": "https://www.nelsonmandela.org/biography"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Аполлон",
+      "type": "Космическая программа",
+      "description": "Изучается период пилотируемых полётов программы: от Аполлона-7 в 1968 году до Аполлона-17 в 1972 году. Это не общий срок разработки программы и не отдельный полёт Союз — Аполлон 1975 года.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период пилотируемых полётов",
+          "value": {
+            "start": 1968,
+            "end": 1972
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "NASA — Mission Transcripts",
+            "url": "https://www.nasa.gov/history/mission-transcripts-mercury-gemini-and-apollo/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Спейс шаттл",
+      "type": "Космическая программа",
+      "description": "Период орбитальных пилотируемых полётов, от первого запуска в 1981 году до последней посадки в 2011 году. Разработка программы началась раньше.",
+      "tags": [
+        "XX век",
+        "Тест периодов"
+      ],
+      "facts": [
+        {
+          "property": "Период пилотируемых полётов",
+          "value": {
+            "start": 1981,
+            "end": 2011
+          },
+          "verification": "verified",
+          "source": {
+            "kind": "url",
+            "name": "NASA — Space Shuttle",
+            "url": "https://www.nasa.gov/space-shuttle/"
+          }
+        }
+      ]
+    }
+  ],
+  "deck": {
+    "name": "Периоды XX века — смешанный тест",
+    "description": "Государства, войны, люди и космические программы. Смешивайте с первой тестовой колодой.",
+    "members": [
+      {
+        "name": "СССР",
+        "type": "Страна"
+      },
+      {
+        "name": "ГДР",
+        "type": "Страна"
+      },
+      {
+        "name": "Берлинская стена",
+        "type": "Сооружение"
+      },
+      {
+        "name": "Корейская война",
+        "type": "Событие"
+      },
+      {
+        "name": "Вторая мировая война",
+        "type": "Событие"
+      },
+      {
+        "name": "Альберт Эйнштейн",
+        "type": "Человек"
+      },
+      {
+        "name": "Нельсон Мандела",
+        "type": "Человек"
+      },
+      {
+        "name": "Аполлон",
+        "type": "Космическая программа"
+      },
+      {
+        "name": "Спейс шаттл",
+        "type": "Космическая программа"
+      }
+    ],
+    "learning": {
+      "properties": [
+        "Период существования",
+        "Период разделения Берлина стеной",
+        "Период активных боевых действий",
+        "Годы жизни",
+        "Период заключения",
+        "Период президентства в ЮАР",
+        "Период пилотируемых полётов"
+      ],
+      "imageRecognition": false
+    }
+  }
+}
