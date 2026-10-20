@@ -2,7 +2,12 @@ import {test} from 'node:test';import assert from 'node:assert/strict';
 import {buildIntervalScale,intervalAxisTicks} from '../src/lib/engi/questions/interval-scale';
 
 test('axis restores readable intermediate years for old sparse and anchored tasks',()=>{
- for(const width of [220,288,560]){const ticks=intervalAxisTicks(1920,2000,width);assert(ticks.length>=3);assert(ticks.some(y=>y>1920&&y<2000));assert(ticks.every((y,n)=>!n||(y-ticks[n-1])/80*width>=44));}
+ for(const width of [220,288,560]){const ticks=intervalAxisTicks(1920,2000,width);assert(ticks.length>=3);assert(ticks.some(y=>y>1920&&y<2000));assert(ticks.every((y,n)=>n<2||(y-ticks[n-2])/80*width>=44));}
+});
+
+test('timeline labels mark every decade rather than every twenty years',()=>{
+ assert.deepEqual(intervalAxisTicks(1940,2020,324),[1940,1950,1960,1970,1980,1990,2000,2010,2020]);
+ assert(intervalAxisTicks(1940,2020,220).every(Number.isInteger));
 });
 test('bands share one linear scale, have usable geometry, and never accept duplicate periods',()=>{
  const values=[{id:'a',start:1939,end:1945},{id:'b',start:1941,end:1945},{id:'c',start:1947,end:1950}];

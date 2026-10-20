@@ -3,7 +3,8 @@ export type IntervalScale={min:number;max:number;ticks:number[];mode:'dated'|'sp
 export function intervalAxisTicks(min:number,max:number,width:number):number[]{
  if(!Number.isFinite(min)||!Number.isFinite(max)||max<=min||!Number.isFinite(width)||width<=0)return [];
  const span=max-min,limit=Math.max(2,Math.min(5,Math.floor(width/48)+1));
- const step=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,2500,5000,10000].find(n=>span/n<=limit-1)??Math.ceil(span);
+ const baseStep=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,2500,5000,10000].find(n=>span/n<=limit-1)??Math.ceil(span);
+ const step=Math.max(1,Math.ceil(baseStep/2));
  const ticks:number[]=[];for(let year=Math.ceil(min/step)*step;year<=max;year+=step)ticks.push(year);
  return ticks;
 }

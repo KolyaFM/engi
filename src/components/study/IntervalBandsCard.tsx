@@ -17,6 +17,8 @@ export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaR
  const current=remaining[0],activeBand=complete?inspect:current?.answerId,active=scale.bands.find(v=>v.id===activeBand);
  const position=(year:number)=>(year-scale.min)/(scale.max-scale.min)*100,color=(index:number)=>`var(--interval-color-${index%5})`;
  const ticks=intervalAxisTicks(scale.min,scale.max,plotWidth);
+ const tickSpacing=ticks.length>1?(ticks[1]-ticks[0])/(scale.max-scale.min)*plotWidth:plotWidth;
+ const tickFontSize=Math.min(14,tickSpacing/(Math.max(...ticks.map(year=>String(year).length))*0.62+0.3));
  useEffect(()=>{alive.current=true;onMediaReady(true);return()=>{alive.current=false}},[]);
  useLayoutEffect(()=>{const el=axis.current;if(!el)return;const measure=()=>setPlotWidth(el.clientWidth),observer=new ResizeObserver(measure);measure();observer.observe(el);return()=>observer.disconnect();},[]);
  useLayoutEffect(()=>{
@@ -37,7 +39,7 @@ export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaR
   <div className="interval-stage">
    <div className="interval-heading"><h2>Какой это период?</h2></div>
    <div className="interval-chart" role="img" aria-label={`Общая временная шкала: ${scale.min}–${scale.max}. ${scale.bands.length} периодов.`}>
-    <div className="interval-axis" ref={axis}>{ticks.map((year,n)=><span key={year} className={n===0?'first':n===ticks.length-1?'last':''} style={{left:position(year)+'%'}}>{year}</span>)}</div>
+    <div className="interval-axis" ref={axis} style={{fontSize:tickFontSize}}>{ticks.map((year,n)=><span key={year} className={n===0?'first':n===ticks.length-1?'last':''} style={{left:position(year)+'%',top:0}}>{year}</span>)}</div>
     <div className="interval-plot">
      <div className="interval-grid" aria-hidden="true">{ticks.map(year=><i key={year} style={{left:position(year)+'%'}}/>)}</div>
      {scale.bands.map(band=><div key={band.id} className={`interval-band-row ${activeBand===band.id?'is-active':''}`} data-active-band={activeBand===band.id?band.id:undefined} style={{'--band-color':color(band.colorIndex)} as CSSProperties} aria-hidden="true"><span className="interval-band-indicator">›</span><span className="interval-band-bar" style={{left:position(band.start)+'%',width:(position(band.end+1)-position(band.start))+'%'}}/></div>)}
