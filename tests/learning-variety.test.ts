@@ -23,9 +23,60 @@ test('mixed feed schedules a self-check from ready properties without adding lea
  const d=new EngiDB('grid-select-'+crypto.randomUUID());try{await putBundle(d,b);for(const item of canonicalTargets(b))await d.learningState.put(learningRow(triagedMemory(item,'red','seed',0)));const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(b,enabled);let ledger=emptyLifecycle();for(const e of b.entities)ledger=admitAcquisition(ledger,e.id,catalog.filter(c=>c.entityIds.includes(e.id)).map(c=>c.goal),new Date(0));await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});
  const s:any={id:'grid',tasks:[],currentPosition:0,results:[],mode:'daily',memoryModel:'goals',learningLifecycle:1,endless:true,format:'mixed',tag:'all',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),status:'active',timeLeft:0,cooldown:Array.from({length:9},(_,n)=>({id:'h'+n,recipe:{format:'choice'},items:[{entityId:'e8',factId:'f8'}],reason:'bootstrap',options:[]}))};
  const result=await pickLifecycleFeed(d,b,enabled,s,{day:'test',introducedEntityIds:b.entities.map(e=>e.id),extraBudget:0},b.entities.map(e=>e.id));assert.equal(result.task?.recipe.format,'self_check');assert.equal(result.task?.items.length,4);assert(!result.task?.items.some(i=>i.entityId==='e8'));assert.deepEqual((await d.appMeta.get('studyCore:learningLifecycle'))!.value,ledger);
+ const first=result.task!;s.cooldown.push(first,...s.cooldown.slice(-9));const second=await pickLifecycleFeed(d,b,enabled,s,{day:'test',introducedEntityIds:b.entities.map(e=>e.id),extraBudget:0},b.entities.map(e=>e.id));assert.equal(second.task?.recipe.format,'self_check');assert(second.task!.items.every(i=>!first.items.some(previous=>previous.factId===i.factId)),'feed must rotate the self-check even after its ordinary object cooldown expires');
  }finally{d.close();await d.delete();}
 });
 test('incorrect and hinted timed rehearsals cannot promote a property or raise memory',async()=>{
  for(const hinted of [false,true]){const d=new EngiDB('rehearsal-safe-'+crypto.randomUUID());try{const goal=associationGoal(b,b.facts[0],'recognition');await d.appMeta.put({key:'studyCore:learningLifecycle',value:admitAcquisition(emptyLifecycle(),'e0',[goal],new Date(0))});const t:Task={id:'timer',learningRecall:true,learningLifecycle:1,memoryModel:'goals',intent:'learn',recipe:{...proposals[0].recipe,format:'recall_reveal'},items:[proposals[0].items[0]],options:[],reason:'rehearsal'},c=compileTaskContract(b,t),core=createStudyCoreService(d,{lifecycle:true});await core.setContentRevisions(c.contentRevisions);await core.open(c,t.id,new Date(0));if(hinted)await core.observe(t.id,'early-answer','hint','start',new Date(1000));else await core.observe(t.id,'answer-reveal','normal','start',new Date(5000));const a=await core.submit(t.id,hinted,new Date(6000));assert(a.results!.every(r=>!r.credit&&!r.contextCredit));const unit=(await d.appMeta.get('studyCore:learningLifecycle'))!.value.units[0];assert.equal(unit.stage,'first-check');assert.equal(unit.requiredSuccesses,2);assert.equal(unit.successes,0);assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0);}finally{d.close();await d.delete();}}
 });
 
+
+
+test('self-check rotates facts after nine intervening tasks instead of repeating import order',()=>{
+ const ready=proposals.map(p=>({...p,recipe:{...p.recipe,format:'choice' as const}})),history:Task[]=[];
+ const shown=new Set<string>();
+ for(let round=0;round<2;round++){
+  const task=buildSelfCheck(b,ready,undefined,history)!;
+  assert.equal(task.items.length,4);
+  assert(task.items.every(i=>!shown.has(i.factId!)),'prefer facts absent from earlier self-checks');
+  task.items.forEach(i=>shown.add(i.factId!));
+  history.push(task,...Array.from({length:9},()=>({...task,id:crypto.randomUUID(),recipe:{...task.recipe,format:'choice' as const},items:[proposals[8].items[0]]})));
+ }
+ assert.equal(shown.size,8);
+ const small=ready.slice(0,3),first=buildSelfCheck(b,small)!;
+ assert.equal(buildSelfCheck(b,small,undefined,[first])!.items.length,3,'reuse remains possible when no alternatives are ready');
+});
+
+
+test('self-check rotation is per property and still honors compatible groups and supplied readiness',()=>{
+ const ready=proposals.map(p=>({...p,recipe:{...p.recipe,format:'choice' as const}}));
+ const first=buildSelfCheck(b,ready)!;
+ const other=ready.slice(0,4).map(p=>({...p,recipe:{...p.recipe,answerKey:'other',label:'Other property'},items:p.items.map(i=>({...i,factId:i.factId+':other'}))}));
+ const alternative=buildSelfCheck(b,[...ready.slice(0,4),...other],undefined,[first])!;
+ assert.equal(alternative.recipe.answerKey,'other','seeing an object does not exclude its other properties');
+ const limited=buildSelfCheck(b,ready.slice(0,4),undefined,[first])!;
+ assert(limited.items.every(i=>ready.slice(0,4).some(p=>p.items[0].factId===i.factId)),'never fill from unready objects');
+ const newer={...first,id:'newer',items:ready.slice(4,8).map(p=>p.items[0])};
+ const oldest=buildSelfCheck(b,ready.slice(0,8),undefined,[first,newer])!;
+ assert(oldest.items.every(i=>first.items.some(old=>old.factId===i.factId)),'equally frequent properties rotate oldest first');
+});
+
+
+test('long self-check feeds do not cycle through a fixed prefix when bounded history rolls over',async()=>{
+ const bundle:Bundle={...b,entities:Array.from({length:40},(_,n)=>({...b.entities[0],id:'e'+n,name:'Event '+n})),facts:Array.from({length:40},(_,n)=>({...b.facts[0],id:'f'+n,entityId:'e'+n,dateStart:(1700+n)+'-01-01',dateEnd:(1700+n)+'-12-31'}))};
+ const d=new EngiDB('grid-long-'+crypto.randomUUID());try{
+  await putBundle(d,bundle);for(const item of canonicalTargets(bundle))await d.learningState.put(learningRow(triagedMemory(item,'red','seed',0)));
+  const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(bundle,enabled);let ledger=emptyLifecycle();
+  for(const e of bundle.entities)ledger=admitAcquisition(ledger,e.id,catalog.filter(c=>c.entityIds.includes(e.id)).map(c=>c.goal),new Date(0));
+  await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});
+  const ordinary={id:'ordinary',recipe:{format:'choice'},items:[{entityId:'e39',factId:'f39'}],reason:'bootstrap',options:[]};
+  const s:any={id:'long-grid',tasks:[],currentPosition:0,results:[],completedCount:0,mode:'daily',memoryModel:'goals',learningLifecycle:1,endless:true,format:'mixed',tag:'all',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),status:'active',timeLeft:0,cooldown:Array.from({length:9},()=>ordinary)};
+  const seen=new Set<string>(),ids=bundle.entities.map(e=>e.id);
+  for(let round=0;round<30;round++){
+   const result=await pickLifecycleFeed(d,bundle,enabled,s,{day:'test',introducedEntityIds:ids,extraBudget:0},ids);
+   assert.equal(result.task?.recipe.format,'self_check');result.task!.items.forEach(i=>seen.add(i.entityId));
+   s.cooldown=[...s.cooldown,result.task,...Array.from({length:9},()=>ordinary)].slice(-30);s.completedCount+=10;
+  }
+  assert(seen.size>=30,`should reach beyond the import-order prefix; reached ${seen.size}/40`);
+ }finally{d.close();await d.delete();}
+});
