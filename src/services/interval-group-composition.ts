@@ -12,11 +12,9 @@ export function buildIntervalGroup(b:Bundle,ready:GoalProposal[],supports:GoalPr
  const valid=(p:GoalProposal)=>{const f=fact(p),property=f&&ix.propertyById.get(f.key);return p.goals.length===1&&p.goals[0].skill==='recognition'&&p.recipe.format==='choice'&&p.recipe.direction!=='reverse'&&p.items.length===1&&!!range(p)&&property?.learnable&&property.learning?.rangeBands!=='off'&&property.learning?.match!=='off';};
  const candidates=[...new Map(ready.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,24);
  const known=[...new Map(supports.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,12);
- const previous=history.filter(t=>t.intervalExercise?.kind==='bands').at(-1);
- const mode=previous?.intervalExercise?.kind==='bands'&&previous.intervalExercise.scale.mode==='dated'?'sparse':'dated';
  function create(selected:GoalProposal[],support?:GoalProposal):Task|undefined{
   const sorted=[...selected].sort((a,c)=>range(a)!.start-range(c)!.start||range(a)!.end-range(c)!.end||a.items[0].targetId.localeCompare(c.items[0].targetId));
-  const scale=buildIntervalScale(sorted.map(p=>({id:'band:'+p.items[0].targetId,...range(p)!,...(p===support?{support:true}:{})})),support?'anchored':mode,width);
+  const scale=buildIntervalScale(sorted.map(p=>({id:'band:'+p.items[0].targetId,...range(p)!,...(p===support?{support:true}:{})})),'dated',width);
   if(!scale)return;
   const items=shuffle(selected).map(p=>{const i=p.items[0],f=fact(p)!,property=ix.propertyById.get(f.key)!,band=scale.bands.find(v=>v.id==='band:'+i.targetId)!;
    return {...i,answerId:band.id,answer:band.marker,interval:{...range(p)!,propertyId:f.key,propertyLabel:property.shortName?.trim()||property.name}};

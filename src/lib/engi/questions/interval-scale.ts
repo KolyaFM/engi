@@ -1,4 +1,12 @@
 export type IntervalScale={min:number;max:number;ticks:number[];mode:'dated'|'sparse'|'anchored';bands:{id:string;start:number;end:number;marker:string;colorIndex:number;support?:boolean}[]};
+/** Render from actual bounds, including persisted tasks with intentionally sparse ticks. */
+export function intervalAxisTicks(min:number,max:number,width:number):number[]{
+ if(!Number.isFinite(min)||!Number.isFinite(max)||max<=min||!Number.isFinite(width)||width<=0)return [];
+ const span=max-min,limit=Math.max(2,Math.min(5,Math.floor(width/48)+1));
+ const step=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,2500,5000,10000].find(n=>span/n<=limit-1)??Math.ceil(span);
+ const ticks:number[]=[];for(let year=Math.ceil(min/step)*step;year<=max;year+=step)ticks.push(year);
+ return ticks;
+}
 export function buildIntervalScale(intervals:{id:string;start:number;end:number;support?:boolean}[],mode:IntervalScale['mode'],width:number):IntervalScale|undefined{
  if(intervals.length<3||intervals.length>5||!Number.isFinite(width)||width<160||intervals.some(i=>!Number.isInteger(i.start)||!Number.isInteger(i.end)||i.start<1||i.end>9999||i.start>i.end)||new Set(intervals.map(i=>i.id)).size!==intervals.length||new Set(intervals.map(i=>`${i.start}:${i.end}`)).size!==intervals.length)return;
  if(intervals.filter(i=>i.support).length>1||mode==='anchored'&&!intervals.some(i=>i.support))return;
