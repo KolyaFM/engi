@@ -25,8 +25,8 @@ test('final year reveal delays every exact goal including the last pair inferred
   await core.observe(t.id,'feedback','all-years','end',new Date(202000));assert.equal((await acquisitionBlocks(d,ids,new Date(263000),undefined,c.primaryGoals)).blocked.length,0);
  }finally{d.close();await d.delete();}
 });
-test('wide interval groups can contain five participants while phone groups stay at three',()=>{
+test('guided interval groups can contain five readable participants on phone and desktop',()=>{
  const b=intervals();for(let n=4;n<6;n++){b.entities.push({...b.entities[0],id:'e'+n,name:'E'+n});b.facts.push({...b.facts[0],id:'f'+n,entityId:'e'+n,dateStart:(1900+n*20)+'-01-01',dateEnd:(1905+n*20)+'-12-31'});}
  const ready=goalProposalPool(b,canonicalTargets(b).map(i=>triagedMemory(i,'red','s',0)),'all','choice').proposals;
- assert.equal(buildIntervalGroup(b,ready,[],[],560)?.items.length,5);assert.equal(buildIntervalGroup(b,ready,[],[],240)?.items.length,3);
+ assert.equal(buildIntervalGroup(b,ready,[],[],560)?.items.length,5);assert.equal(buildIntervalGroup(b,ready,[],[],240)?.items.length,5);
 });

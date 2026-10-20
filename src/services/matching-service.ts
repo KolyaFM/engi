@@ -1,3 +1,4 @@
+import {matchingResponseKey} from '../lib/engi/questions/matching-response-key';
 import type {EngiDB} from '../db/engi-db';
 import {getBundle} from '../db/repositories';
 import {prepareStudyTask,feedStudyCore,commitInvalidStudyTask} from './study-core-bridge';
@@ -8,7 +9,7 @@ import {commitReview} from './review-commit';
 import {deckStudyScope} from './deck-study-scope';
 import {readDeckPropertySettings} from './deck-property-settings';
 
-export type MatchPairInput={sessionId:string;taskId:string;entityId:string;answerId:string;requestId:string};
+export type MatchPairInput={sessionId:string;taskId:string;entityId:string;responseKey?:string;answerId:string;requestId:string};
 /** Called inside the trainer's transaction: memory, pair receipt and screen state are atomic. */
 export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  const session=await d.activeSessions.get(input.sessionId),task=session?.tasks[session.currentPosition];
@@ -28,11 +29,12 @@ export async function answerMatchPair(d:EngiDB,input:MatchPairInput){
  const rows=await d.appMeta.bulkGet(catalog.map(e=>'studyCore:memory:'+e.goal.id));
  await ensureDayPlan(d,catalog,rows.filter(r=>!!r).map(r=>r!.value),now,session);
  const before=rows.filter(r=>!!r).map(r=>r!.value);
- const {attempt,pair,firstResult}=await core.submitPair(task.id,input.entityId,input.answerId,input.requestId,now);
+ const responseKey=input.responseKey??input.entityId,item=task.items.find(i=>matchingResponseKey(task,i)===responseKey);if(!item||input.responseKey&&item.entityId!==input.entityId)throw Error('Unknown matching fact');
+ const {attempt,pair,firstResult}=await core.submitPair(task.id,responseKey,input.answerId,input.requestId,now);
  let milestone:string|undefined,mistakeResolved=0;
  if(firstResult){
   // Reuse the review accounting for a single first answer, preserving the parent screen.
-  const item=task.items.find(i=>i.entityId===input.entityId)!,pairTask={...task,id:task.id+':pair:'+input.entityId,items:[item]};
+  const pairTask={...task,id:task.id+':pair:'+responseKey,items:[item],recipe:task.intervalExercise?.kind==='bands'?{...task.recipe,answerKey:bundle.facts.find(f=>f.id===item.factId)!.key}:task.recipe};
   const result=await commitReview(d,{...session,interaction:undefined},pairTask,{sessionId:session.id,taskId:pairTask.id,answer:input.answerId},[input.answerId],
    {...attempt,id:pairTask.id,phase:'submitted',submittedAt:pair.at,results:[firstResult]},false,before);
   milestone=result.milestone;

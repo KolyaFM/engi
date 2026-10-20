@@ -1,37 +1,55 @@
-import {useEffect,useRef,useState,type CSSProperties} from 'react';
-import type {Task} from '../../lib/engi/types';
+import {useEffect,useLayoutEffect,useRef,useState,type CSSProperties} from 'react';
+import type {Task,Item} from '../../lib/engi/types';
 import type {InteractionDraft} from '../../db/engi-db';
+import {matchingResponseKey} from '../../lib/engi/questions/matching-response-key';
 import {SurfaceButton} from '../../ui/SurfaceButton';
-import {KnowledgeImage} from '../knowledge/KnowledgeImage';
 
-export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaReady,onMediaFail}:{task:Task;progress?:InteractionDraft['matching'];busy:boolean;onPair:(pair:{entityId:string;answerId:string},requestId:string)=>Promise<{correct:boolean;complete:boolean}>;onComplete:()=>void;onMediaReady:(ready:boolean)=>void;onMediaFail:()=>void}){
+export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaReady}:{task:Task;progress?:InteractionDraft['matching'];busy:boolean;onPair:(pair:{entityId:string;responseKey?:string;answerId:string},requestId:string)=>Promise<{correct:boolean;complete:boolean}>;onComplete:()=>void;onMediaReady:(ready:boolean)=>void;onMediaFail:()=>void}){
  const exercise=task.intervalExercise;if(exercise?.kind!=='bands')throw Error('Missing interval scale');const scale=exercise.scale;
- const [object,setObject]=useState<string>(),[band,setBand]=useState<string>(),[pending,setPending]=useState(false),[status,setStatus]=useState(''),[wrong,setWrong]=useState<{entityId:string;answerId:string}>(),[complete,setComplete]=useState(false),[loaded,setLoaded]=useState<string[]>([]);
- const alive=useRef(true),lock=useRef(false),timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),request=useRef<{entityId:string;answerId:string;id:string}|undefined>(undefined);
- const support=new Set(scale.bands.filter(b=>b.support).map(b=>b.id)),matched={...Object.fromEntries(task.items.filter(i=>support.has(i.answerId)).map(i=>[i.entityId,i.answerId])),...progress?.matched};
- const images=task.items.filter(i=>task.recipe.cue==='image'&&i.image);
- useEffect(()=>{alive.current=true;return()=>{alive.current=false;clearTimeout(timer.current)}},[]);
- useEffect(()=>{onMediaReady(images.every(i=>loaded.includes(i.entityId)))},[task.id,loaded.join('|')]);
- async function check(entityId:string,answerId:string){
-  if(lock.current||busy||complete)return;lock.current=true;setPending(true);setWrong(undefined);
-  if(request.current?.entityId!==entityId||request.current.answerId!==answerId)request.current={entityId,answerId,id:crypto.randomUUID()};
-  try{const result=await onPair({entityId,answerId},request.current.id);if(!alive.current)return;request.current=undefined;setObject(undefined);setBand(undefined);setPending(false);lock.current=false;
-   if(!result.correct){setWrong({entityId,answerId});setStatus('Пара не подходит');clearTimeout(timer.current);timer.current=setTimeout(()=>setWrong(undefined),400);}else{setStatus(result.complete?'Все периоды найдены':'Период найден');if(result.complete){setComplete(true);clearTimeout(timer.current);timer.current=setTimeout(onComplete,900);}}
-  }catch{if(alive.current){lock.current=false;setPending(false);setObject(undefined);setBand(undefined);setStatus('Не удалось сохранить ответ. Попробуйте ещё раз.');}}
+ const key=(i:Item)=>matchingResponseKey(task,i),label=(i:Item)=>i.interval?.propertyLabel??task.recipe.label??'Период';
+ const [localMatched,setMatched]=useState<Record<string,string>>({}),[pending,setPending]=useState(false),[status,setStatus]=useState(''),[wrong,setWrong]=useState<string>(),[inspect,setInspect]=useState<string>(),[plotWidth,setPlotWidth]=useState(280);
+ const alive=useRef(true),lock=useRef(false),request=useRef<{responseKey:string;answerId:string;id:string}|undefined>(undefined);
+ const records=useRef<HTMLDivElement>(null),axis=useRef<HTMLDivElement>(null),positions=useRef(new Map<string,number>()),scrollToNext=useRef(false);
+ const supports=new Set(scale.bands.filter(v=>v.support).map(v=>v.id));
+ const matched={...Object.fromEntries(task.items.filter(i=>supports.has(i.answerId)).map(i=>[key(i),i.answerId])),...progress?.matched,...localMatched};
+ const remaining=task.items.filter(i=>!matched[key(i)]),found=task.items.filter(i=>matched[key(i)]===i.answerId),questions=task.items.filter(i=>!supports.has(i.answerId)),complete=remaining.length===0;
+ const current=remaining[0],activeBand=complete?inspect:current?.answerId,active=scale.bands.find(v=>v.id===activeBand),foundCount=questions.filter(i=>matched[key(i)]===i.answerId).length;
+ const position=(year:number)=>(year-scale.min)/(scale.max-scale.min)*100,color=(index:number)=>`var(--interval-color-${index%5})`;
+ const tickGap=scale.ticks.length>1?(scale.ticks[1]-scale.ticks[0])/(scale.max-scale.min)*plotWidth:plotWidth;
+ const ticks=scale.ticks.filter((_,n)=>n%Math.max(1,Math.ceil(48/tickGap))===0);
+ useEffect(()=>{alive.current=true;onMediaReady(true);return()=>{alive.current=false}},[]);
+ useLayoutEffect(()=>{const el=axis.current;if(!el)return;const measure=()=>setPlotWidth(el.clientWidth),observer=new ResizeObserver(measure);measure();observer.observe(el);return()=>observer.disconnect();},[]);
+ useLayoutEffect(()=>{
+  const el=records.current;if(!el)return;const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches,next=new Map<string,number>();
+  el.querySelectorAll<HTMLElement>('[data-record]').forEach(node=>{const id=node.dataset.record!,top=node.offsetTop,old=positions.current.get(id);next.set(id,top);if(!reduced&&old!==undefined&&old!==top)node.animate(node.classList.contains('interval-found-row')?[{opacity:0},{opacity:1}]:[{transform:`translateY(${old-top}px)`},{transform:'translateY(0)'}],{duration:180,easing:'cubic-bezier(.22,1,.36,1)'});});positions.current=next;
+  if(scrollToNext.current){el.scrollTop=0;scrollToNext.current=false;}
+ },[remaining.length]);
+ async function check(item:Item){
+  if(lock.current||busy||!current||complete)return;lock.current=true;setPending(true);setWrong(undefined);setStatus('');
+  const responseKey=key(current),answerId=item.answerId;
+  if(request.current?.responseKey!==responseKey||request.current.answerId!==answerId)request.current={responseKey,answerId,id:crypto.randomUUID()};
+  try{const result=await onPair({entityId:current.entityId,responseKey,answerId},request.current.id);if(!alive.current)return;request.current=undefined;
+   if(result.correct){setMatched(old=>({...old,[responseKey]:answerId}));setStatus('');scrollToNext.current=true;}else{setWrong(key(item));setStatus('Попробуйте ещё раз');}
+  }catch{if(alive.current)setStatus('Не удалось сохранить ответ. Попробуйте ещё раз.');}
+  finally{if(alive.current){setPending(false);lock.current=false;}}
  }
- function chooseObject(id:string){if(lock.current||busy||complete)return;const next=object===id?undefined:id;setObject(next);if(next&&band)void check(next,band);}
- function chooseBand(id:string){if(lock.current||busy||complete)return;const next=band===id?undefined:id;setBand(next);if(next&&object)void check(object,next);}
- const position=(year:number)=>(year-scale.min)/(scale.max-scale.min)*100;
  return <section className="interval-bands" aria-label="Сопоставление периодов" aria-busy={pending}>
-  <div className="matching-heading"><h2>Найдите периоды</h2><span>{Object.keys(matched).length} / {task.items.length}</span></div>
-  <div className="interval-chart">
-   <div className="interval-axis" aria-label={scale.mode==='anchored'?'Шкала с событием-опорой':'Годы на общей шкале'}>{scale.ticks.map((y,n)=><span key={y} className={n===0?'first':n===scale.ticks.length-1?'last':''} style={{left:position(y)+'%'}}>{y}</span>)}<span className="interval-axis-arrow" aria-hidden="true">→</span></div>
-   {scale.bands.map(b=>{const item=task.items.find(i=>i.answerId===b.id)!,done=matched[item.entityId]===b.id;return <SurfaceButton key={b.id} className={`interval-band ${done?'is-matched':''} ${band===b.id?'is-selected':''} ${wrong?.answerId===b.id?'is-wrong':''}`} aria-label={`Период ${b.marker}`} aria-pressed={band===b.id} disabled={busy||pending||done||complete} onClick={()=>chooseBand(b.id)}>
-    <span className="interval-band-marker">{b.marker}</span><span className="interval-band-plot"><span className="interval-band-bar" style={{left:position(b.start)+'%',width:(position(b.end+1)-position(b.start))+'%','--band-color':`var(--interval-color-${b.colorIndex%5})`} as CSSProperties}/></span>
-    {done&&<span className="interval-band-name">{item.name}</span>}{complete&&<span className="interval-band-years">{b.start}–{b.end}</span>}
-   </SurfaceButton>})}
+  <div className="interval-stage">
+   <div className="interval-heading"><h2>Какой это период?</h2><span>Найдено {foundCount} из {questions.length}</span></div>
+   <div className="interval-chart" role="img" aria-label={`Общая временная шкала: ${scale.min}–${scale.max}. ${scale.bands.length} периодов.`}>
+    <div className="interval-axis" ref={axis}>{ticks.map((year,n)=><span key={year} className={n===0?'first':n===ticks.length-1?'last':''} style={{left:position(year)+'%'}}>{year}</span>)}</div>
+    <div className="interval-plot">
+     <div className="interval-grid" aria-hidden="true">{ticks.map(year=><i key={year} style={{left:position(year)+'%'}}/>)}</div>
+     {scale.bands.map(band=><div key={band.id} className={`interval-band-row ${activeBand===band.id?'is-active':''}`} data-active-band={activeBand===band.id?band.id:undefined} style={{'--band-color':color(band.colorIndex)} as CSSProperties} aria-hidden="true"><span className="interval-band-indicator">›</span><span className="interval-band-bar" style={{left:position(band.start)+'%',width:(position(band.end+1)-position(band.start))+'%'}}/></div>)}
+    </div>
+   </div>
+   <div className="interval-current" aria-live="polite">{active?<><span className="interval-color-key" style={{background:color(active.colorIndex)}} aria-hidden="true"/><strong className="interval-current-years">{scale.mode==='dated'||complete?`${active.start}–${active.end}`:'Выделенный период'}</strong></>:<strong className="interval-current-years">Все периоды найдены</strong>}</div>
   </div>
-  <div className="interval-objects" role="group" aria-label="Объекты">{task.items.filter(i=>!support.has(i.answerId)).map(item=><SurfaceButton key={item.entityId} aria-label={item.name} aria-pressed={object===item.entityId} disabled={busy||pending||!!matched[item.entityId]||complete} className={`interval-object ${object===item.entityId?'is-selected':''} ${wrong?.entityId===item.entityId?'is-wrong':''} ${matched[item.entityId]?'is-matched':''}`} onClick={()=>chooseObject(item.entityId)}>{task.recipe.cue==='image'&&item.image?<KnowledgeImage src={item.image} alt={item.name} onReady={()=>setLoaded(ids=>ids.includes(item.entityId)?ids:[...ids,item.entityId])} onFail={onMediaFail}/>:item.name}</SurfaceButton>)}</div>
+  <div className="interval-records" ref={records}>
+   <div className="interval-answers" role="group" aria-label="Варианты ответа">{remaining.map(item=><div key={key(item)} data-record={key(item)}><SurfaceButton className={`interval-answer ${wrong===key(item)?'is-wrong':''}`} aria-label={`${item.name} — ${label(item)}`} disabled={busy||pending} onClick={()=>void check(item)}><strong>{item.name}</strong><span>{label(item)}</span></SurfaceButton></div>)}</div>
+   {found.length>0&&<div className="interval-found"><p>Найдено</p>{found.map(item=>{const band=scale.bands.find(b=>b.id===item.answerId)!;return <button key={key(item)} data-record={key(item)} type="button" className={`interval-found-row ${supports.has(item.answerId)?'is-support':''}`} aria-label={`Посмотреть: ${item.name} — ${label(item)}`} aria-pressed={complete&&inspect===band.id} onClick={()=>{if(complete)setInspect(inspect===band.id?undefined:band.id)}}><span className="interval-color-key" style={{background:color(band.colorIndex)}} aria-hidden="true"/><span><strong>{item.name}</strong><small>{label(item)} · <span className="interval-found-years">{band.start}–{band.end}</span>{supports.has(item.answerId)?' · Опора':''}</small></span><span className="interval-found-check" aria-hidden="true">✓</span></button>})}</div>}
+  </div>
   <p className="interval-status" role="status">{status}</p>
+  {complete&&<SurfaceButton className="button primary interval-continue" disabled={pending||busy} onClick={onComplete}>Продолжить</SurfaceButton>}
  </section>;
 }

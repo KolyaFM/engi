@@ -21,7 +21,7 @@
     "test:recall": "node tests/recall22-browser.mjs",
     "test:browser:recall": "node tests/recall-feed-browser.mjs",
     "test:browser:feed:regressions": "node tests/feed-regressions-browser.mjs",
-    "test:browser:intervals": "node tests/interval-exercises-browser.mjs",
+    "test:browser:intervals": "node tests/interval-exercises-browser.mjs && node tests/guided-intervals-browser.mjs",
     "test:browser:v3": "node tests/browser-v3.mjs",
     "test:smoke:mobile": "node scripts/run-mobile-smoke.mjs"
   },

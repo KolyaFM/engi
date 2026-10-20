@@ -1,3 +1,4 @@
+import {matchingResponseKey} from '../questions/matching-response-key';
 import {yearInterval} from '../questions/date-interval';
 import type { Bundle, Fact, Item, Task } from '../types';
 import { factValue, trusted, properties } from '../knowledge/properties';
@@ -67,8 +68,9 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(item.mediaId){const m=b.media.find(m=>m.id===item.mediaId&&!m.archived);if(!m||m.url!==item.image||m.entityId!==item.entityId)throw Error('Media is unavailable');revisions[`media:${m.id}`]=version([m.entityId,m.url,m.role,m.learningExemplar]);}
   }
   if(task.recipe.answerPresentation==='image')for(const option of task.options){const media=b.media.find(m=>m.id===option.mediaId&&!m.archived),owned=task.recipe.answerKey==='identity'?allowedMedia(b,option.id,task.recipe).some(m=>m.id===media?.id):b.facts.some(f=>trusted(f)&&f.entityId===option.id&&f.key===task.recipe.answerKey&&f.valueMediaId===media?.id);if(!media||media.url!==option.image||media.entityId!==option.id||!owned)throw Error('Image option is unavailable');revisions[`media:${media.id}`]=version([media.entityId,media.url,media.role,media.learningExemplar]);}
-  const p=properties(b).find(p=>p.id===task.recipe.answerKey);
-  if(p)revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]);
+  const definitions=properties(b);
+  const keys=task.intervalExercise?.kind==='bands'?new Set(task.items.map(i=>factFor(b,i).key)):new Set([task.recipe.answerKey]);
+  for(const key of keys){const p=definitions.find(p=>p.id===key);if(p){if(task.intervalExercise?.kind==='bands'&&(!p.learnable||p.learning?.rangeBands==='off'||p.learning?.match==='off'))throw Error('Period property is disabled');revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse,...(task.intervalExercise?.kind==='bands'&&task.intervalExercise.interaction==='quiz'?[p.name,p.shortName]:[])]);}}
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
   const goalFor=(i:Item)=>i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
   const isSupport=(item:Item)=>task.contextual?.supportTargetIds.includes(item.targetId)||(task.intervalExercise?.kind==='bands'&&task.intervalExercise.scale.bands.some(b=>b.id===item.answerId&&b.support));
@@ -93,7 +95,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(task.items.length!==1)throw Error('Grouped self report is unsupported');const g=goalFor(first);goals.push(g);response={kind:'self-report',goalId:g.id};actionFamily='recall';
   }else if((fmt==='match'||fmt==='categorize')&&task.items.length>1){
     for(const item of task.items){const g=goalFor(item);(isSupport(item)?supportGoals:goals).push(g);}
-    response={kind:'mapping',bindings:task.items.map(i=>({responseKey:i.entityId,goalId:goalFor(i).id,expected:i.answerId,...(isSupport(i)?{support:true}:{})})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
+    response={kind:'mapping',bindings:task.items.map(i=>({responseKey:matchingResponseKey(task,i),goalId:goalFor(i).id,expected:i.answerId,...(isSupport(i)?{support:true}:{})})),options:task.options.map(o=>o.id),bijective:fmt==='match',...(fmt==='match'&&task.options.length>task.items.length?{exhaustive:false}:{})};actionFamily=fmt==='match'?'match':'categorize';
   }else{
     const g=goalFor(first);goals.push(g);response={kind:'choice',goalId:g.id,options:task.options.map(o=>o.id),expected:first.answerId};actionFamily='select';
   }

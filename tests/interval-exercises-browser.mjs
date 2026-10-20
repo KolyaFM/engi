@@ -3,21 +3,6 @@ await mkdir('artifacts/interval-browser',{recursive:true});
 for(const engine of [chromium,webkit]){
  const browser=await engine.launch({headless:true}),context=await browser.newContext({viewport:{width:393,height:852},hasTouch:true,isMobile:true}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  try{await page.goto(process.env.ENGI_TEST_URL??'http://127.0.0.1:5173/engi/');await page.locator('.feed-home').waitFor();
- await page.evaluate(async()=>{
-  await import('/engi/src/components/study/interval-exercises.css');const R=await import('/engi/node_modules/.vite/deps/react.js'),C=await import('/engi/node_modules/.vite/deps/react-dom_client.js'),React=R.default??R,{createRoot}=C.default??C;
-  const {IntervalBandsCard}=await import('/engi/src/components/study/IntervalBandsCard.tsx'),{buildIntervalScale}=await import('/engi/src/lib/engi/questions/interval-scale.ts');
-  const scale=buildIntervalScale([{id:'b0',start:1939,end:1945},{id:'b1',start:1947,end:1950},{id:'b2',start:1953,end:1960}],'dated',288),items=scale.bands.map((b,n)=>({entityId:'e'+n,name:'Событие '+n,answer:b.marker,answerId:b.id,targetId:'u'+n,aliases:[],sourceUrl:''}));
-  window.intervalProbe={task:{id:'bands',recipe:{id:'r',format:'match',cue:'name',answerKey:'period',memoryKey:'period',diagnostic:false},intervalExercise:{kind:'bands',scale},items,options:scale.bands.map(b=>({id:b.id,name:b.marker})),reason:'context'},progress:{matched:{},history:[]},completed:0,pairs:[]};
-  document.querySelector('#root').style.display='none';const host=document.createElement('main');host.style.cssText='max-width:640px;margin:auto;padding:16px';document.body.append(host);const root=createRoot(host);
-  window.renderInterval=()=>root.render(React.createElement(IntervalBandsCard,{task:window.intervalProbe.task,progress:window.intervalProbe.progress,busy:false,onMediaReady:()=>{},onMediaFail:()=>{},onComplete:()=>window.intervalProbe.completed++,onPair:async(pair,id)=>{const p=window.intervalProbe,correct=p.task.items.find(i=>i.entityId===pair.entityId).answerId===pair.answerId;p.pairs.push(pair);if(correct)p.progress={...p.progress,matched:{...p.progress.matched,[pair.entityId]:pair.answerId}};window.renderInterval();return {correct,complete:Object.keys(p.progress.matched).length===p.task.items.length};}}));window.renderInterval();
- });
- await page.getByRole('button',{name:'Событие 0',exact:true}).click();await page.getByRole('button',{name:'Период B',exact:true}).click();await page.waitForTimeout(450);assert.equal(await page.locator('[aria-pressed=true]').count(),0);
- await page.getByRole('button',{name:'Период A',exact:true}).click();await page.getByRole('button',{name:'Событие 0',exact:true}).click();await page.waitForTimeout(400);assert.equal(await page.getByRole('button',{name:'Период A',exact:true}).isDisabled(),true);assert.equal(await page.getByRole('button',{name:'Период B',exact:true}).isDisabled(),false);
- await page.setViewportSize({width:852,height:393});assert.equal(await page.locator('.interval-band.is-matched').count(),1);
- await page.getByRole('button',{name:'Событие 1',exact:true}).click();await page.getByRole('button',{name:'Период B',exact:true}).click();await page.waitForTimeout(100);
- await page.getByRole('button',{name:'Событие 2',exact:true}).click();await page.getByRole('button',{name:'Период C',exact:true}).click();await page.waitForTimeout(1000);
- assert.equal(await page.evaluate(()=>window.intervalProbe.completed),1);assert.equal(await page.locator('.interval-band-years').count(),3);await page.setViewportSize({width:393,height:852});await page.screenshot({path:`artifacts/interval-browser/${engine.name()}.png`});
- assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'no horizontal scrolling');assert.deepEqual(errors,[]);console.log('PASS '+engine.name()+': matching errors, both selection orders, rotation, remaining buttons available, final year reveal');
  // Exercise the actual persistence/service/StudyFeed path, not only a component fixture.
  await page.goto(process.env.ENGI_TEST_URL??'http://127.0.0.1:5173/engi/');await page.locator('.feed-home').waitFor();
  await page.evaluate(async()=>{
@@ -32,8 +17,13 @@ for(const engine of [chromium,webkit]){
  await page.locator('.study-feed.state-ready .interval-endpoint').waitFor();const expected=await page.evaluate(()=>window.actualIntervalSession.tasks[0].items[0].answerId);await page.locator('.feed-option').filter({hasText:expected}).click();
  await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return !!(await db.reviewEvents.get(window.actualIntervalSession.tasks[0].id));});
  await page.evaluate(()=>window.actualBandSetup());await page.locator('.study-feed.state-ready .interval-bands').waitFor();
- const pairs=await page.evaluate(()=>window.actualIntervalSession.tasks[0].items.map(i=>({name:i.name,band:i.answer})));
- for(const pair of pairs){await page.getByRole('button',{name:pair.name,exact:true}).click();await page.getByRole('button',{name:'Период '+pair.band,exact:true}).click();await page.waitForTimeout(80);}
- await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return !!(await db.reviewEvents.get(window.actualIntervalSession.tasks[0].id));});assert.deepEqual(errors,[]);console.log('PASS '+engine.name()+': real StudyFeed endpoint and bands, persisted answers and matching completion');
+ const pairs=await page.evaluate(()=>window.actualIntervalSession.tasks[0].items.map(i=>({name:i.name,label:i.interval.propertyLabel})));
+ await page.getByRole('button',{name:pairs[1].name+' — '+pairs[1].label,exact:true}).click();await page.locator('.interval-status:not(:empty)').waitFor();assert.equal(await page.locator('.interval-status').innerText(),'Попробуйте ещё раз','wrong choice must be recorded, not reported as a save failure');assert.equal(await page.locator('.interval-found-row').count(),0,'a wrong answer must retain the active question');
+ for(const pair of pairs){await page.getByRole('button',{name:pair.name+' — '+pair.label,exact:true}).click();await page.waitForTimeout(100);}
+ await page.waitForFunction(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');return !!(await db.reviewEvents.get(window.actualIntervalSession.tasks[0].id));});await page.getByRole('button',{name:'Продолжить',exact:true}).waitFor();await page.waitForTimeout(1100);assert.equal(await page.locator('.interval-found-row').count(),pairs.length);
+ await page.screenshot({path:`artifacts/interval-browser/${engine.name()}-actual.png`});
+ await page.evaluate(async()=>{const {db}=await import('/engi/src/db/engi-db.ts');const saved=await db.activeSessions.get(window.actualIntervalSession.id);const {StudyFeed}=await import('/engi/src/components/study/StudyFeed.tsx'),R=await import('/engi/node_modules/.vite/deps/react.js'),React=R.default??R;window.actualRoot.render(React.createElement(StudyFeed,{key:'restored',initial:saved,onExit:()=>{}}));});
+ await page.locator('.study-feed.state-feedback .interval-bands').waitFor();await page.waitForTimeout(600);assert.equal(await page.locator('.interval-found-row').count(),pairs.length);assert(!(await page.getByRole('button',{name:'Продолжить',exact:true}).isDisabled()));
+ assert.deepEqual(errors,[]);console.log('PASS '+engine.name()+': real StudyFeed endpoint and guided bands, persisted answers, restored completion waits for Continue');
  }finally{await context.close();await browser.close();}
 }
