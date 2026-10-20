@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
 const url=process.env.ENGI_TEST_URL??'http://127.0.0.1:5182/engi/';
-const browser=await chromium.launch({headless:true,executablePath:process.env.ENGI_BROWSER_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe'});
+const browser=await chromium.launch({headless:true,executablePath:process.env.ENGI_BROWSER_PATH||undefined});
 const cases=[];
 function check(name,run){cases.push({name,run})}
 async function mount(page,{failReveal=false,elapsed=0}={}){
