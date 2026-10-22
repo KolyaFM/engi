@@ -15,9 +15,9 @@ import type {Bundle} from '../src/lib/engi/types';
 test('successful portrait practice rotates knowledge before choosing its presentation',async()=>{
  const at=Date.parse('2026-10-20T12:00:00Z'),reports=[];
  mock.timers.enable({apis:['Date'],now:at});
- const originalRandom=Math.random;
- try{for(const {count,format} of [{count:3,format:'mixed'},{count:3,format:'choice'},{count:6,format:'mixed'},{count:12,format:'mixed'}]){
-  let seed=123;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};mock.timers.setTime(at);
+ const originalRandom=Math.random,originalUUID=crypto.randomUUID;
+ try{for(const {count,format} of [{count:3,format:'mixed'},{count:3,format:'choice'},{count:4,format:'mixed'},{count:6,format:'mixed'},{count:12,format:'mixed'}]){
+  let seed=123,serial=0;Math.random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};crypto.randomUUID=()=>`00000000-0000-4000-8000-${(++serial).toString(16).padStart(12,'0')}`;mock.timers.setTime(at);
   const db=new EngiDB('recall-frequency-'+crypto.randomUUID());try{
    const b:Bundle={entities:Array.from({length:count},(_,n)=>({id:'president'+n,name:n===2?'George Washington':'President '+n,type:'person',aliases:[],externalIds:{}})),facts:[],properties:[],media:Array.from({length:count},(_,n)=>({id:'portrait'+n,entityId:'president'+n,role:'primary',url:'https://example.test/'+n+'.png',license:'Test'})),tags:[],entityTags:[],missing:[],unresolved:[]};
    await putBundle(db,b);
@@ -52,7 +52,9 @@ test('successful portrait practice rotates knowledge before choosing its present
    if(count===3){assert(screens.every((s,n)=>n<3||!screens.slice(n-2,n).some(previous=>previous.property===s.property)),'use all three portraits before returning to one');if(format==='mixed'){assert(recalls.length>0,'recall remains available');assert.equal(closeRecalls.length,0,'the same portrait recall cannot return after one or two intervening tasks');}}
    reports.push({count,format,recalls:recalls.length,closeReturns,closeRecalls,screens,trace:studyTraceReport(db)});
    console.log('Recall frequency:',JSON.stringify({count,format,recalls:recalls.length,closeReturns:closeReturns.length,closeRecalls}));
+   await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));
+   if(count===4){const byObject=Object.fromEntries(b.entities.map(e=>[e.id,recalls.filter(r=>r.object===e.id).map(r=>r.turn)]));console.log('Four-object recall distribution:',JSON.stringify(byObject));assert.equal(new Set(recalls.map(r=>r.object)).size,4,'recall must not keep choosing the same subset while other admitted objects support it');}
   }finally{stopStudyTrace(db);db.close();await db.delete();}
- }}finally{Math.random=originalRandom;mock.timers.reset();}
+ }}finally{Math.random=originalRandom;crypto.randomUUID=originalUUID;mock.timers.reset();}
  await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));
 });

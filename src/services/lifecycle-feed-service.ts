@@ -183,7 +183,13 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const games=[...practicePool];
  const lastPropertyTurn=new Map<string,number>();history.forEach((t,n)=>{for(const g of t.studyContract?.primaryGoals??[])lastPropertyTurn.set(propertyKey(g),n+1);});
  const propertyRank=(p:typeof pool.proposals[number])=>Math.max(0,...p.goals.map(g=>lastPropertyTurn.get(propertyKey(g))??0));
- games.sort((a,c)=>propertyRank(a)-propertyRank(c)||objectRank(a)-objectRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));
+ // Global format pacing can lock a four-object rotation to the same portrait
+ // on every recall turn. Count presentations for each canonical knowledge too.
+ const knowledgeFamily=(t:Parameters<typeof presentationFamily>[0])=>{const family=presentationFamily(t);return family==='image-choice'?'choice':family;};
+ const presentations=new Map<string,Map<string,number>>();for(const t of history){const family=knowledgeFamily(t);for(const key of new Set(t.studyContract?.primaryGoals.map(propertyKey)??[])){const counts=presentations.get(key)??new Map<string,number>();counts.set(family,(counts.get(family)??0)+1);presentations.set(key,counts);}}
+ const knowledgeFormatRank=(p:typeof pool.proposals[number])=>p.goals.reduce((sum,g)=>sum+(presentations.get(propertyKey(g))?.get(knowledgeFamily(p))??0),0)/Math.max(1,p.goals.length);
+ if(audit&&decision.practice)decision.practice.presentationCounts=[...new Set(games.flatMap(p=>p.goals.map(propertyKey)))].slice(0,32).map(property=>({property,choice:presentations.get(property)?.get('choice')??0,recall:presentations.get(property)?.get('recall_reveal')??0}));
+ games.sort((a,c)=>propertyRank(a)-propertyRank(c)||objectRank(a)-objectRank(c)||knowledgeFormatRank(a)-knowledgeFormatRank(c)||formatRank(a)-formatRank(c)||selectionTie(s.id+(s.completedCount??0)+a.goals.map(g=>g.id))-selectionTie(s.id+(s.completedCount??0)+c.goals.map(g=>g.id)));
 
  let fallback:Task|undefined,rank:{property:number;object:number}|undefined;
  for(const p of games){
