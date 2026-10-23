@@ -4,7 +4,7 @@ import {SurfaceButton} from '../../ui/SurfaceButton';
 import {useHorizontalSwipe} from './useHorizontalSwipe';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import type {SessionRow} from '../../db/engi-db';
-import type {Bundle,Familiarity,Fact} from '../../lib/engi/types';
+import type {Bundle,Familiarity,Fact,Item} from '../../lib/engi/types';
 
 import {canonicalTargets} from '../../lib/engi/questions/recipe-factory';
 import {properties,textValue,trusted} from '../../lib/engi/knowledge/properties';
@@ -29,6 +29,7 @@ function getIdentityInfo(type?:string):{label:string;text:string}{
 export type ObjectIntroCardProps={
  intro:NonNullable<SessionRow['intro']>;
  bundle:Bundle;
+ preparedItems?:Item[];
  onChoose:(unitId:string,color:Familiarity)=>Promise<void>;
  onDone:(selections:Record<string,Familiarity>,animate?:boolean)=>Promise<void>;
  onExit:()=>void;
@@ -36,7 +37,7 @@ export type ObjectIntroCardProps={
  error?:string;
 };
 
-export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,error}:ObjectIntroCardProps){
+export function ObjectIntroCard({intro,bundle,preparedItems,onChoose,onDone,onExit,busy=false,error}:ObjectIntroCardProps){
  const [saving,setSaving]=useState(false),[saveError,setSaveError]=useState('');
  const [selections,setSelections]=useState(intro.selections);
  const writes=useRef<Promise<void>>(Promise.resolve()),latestSelections=useRef(intro.selections),exiting=useRef(false);
@@ -44,7 +45,7 @@ export function ObjectIntroCard({intro,bundle,onChoose,onDone,onExit,busy=false,
  const sheet=useRef<HTMLDivElement>(null),[heroReady,setHeroReady]=useState(false),entered=useRef(false),entryAnimation=useRef<Animation|undefined>(undefined);
  useLayoutEffect(()=>{if(!heroReady||entered.current||!sheet.current)return;entered.current=true;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;entryAnimation.current=sheet.current.animate([{transform:`translateY(${window.innerHeight*.9}px)`},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,1,.36,1)'});},[heroReady]);
  const entity=bundle.entities.find(e=>e.id===intro.entityId);
- const allItems=useMemo(()=>{const ids=new Set(intro.unitIds);const rank=(item:{factId?:string})=>!item.factId?0:bundle.facts.find(f=>f.id===item.factId)?.valueKind==='image'?1:2;return canonicalTargets(bundle).filter(i=>ids.has(i.targetId)).sort((a,b)=>rank(a)-rank(b))},[bundle,intro.unitIds.join('|')]);
+ const allItems=useMemo(()=>{const ids=new Set(intro.unitIds);const rank=(item:{factId?:string})=>!item.factId?0:bundle.facts.find(f=>f.id===item.factId)?.valueKind==='image'?1:2;return (preparedItems??canonicalTargets(bundle).filter(i=>ids.has(i.targetId))).slice().sort((a,b)=>rank(a)-rank(b))},[bundle,preparedItems,intro.unitIds.join('|')]);
  const items=useMemo(()=>[...new Map(allItems.slice().sort((a,b)=>Number(b.targetId.endsWith(':reverse'))-Number(a.targetId.endsWith(':reverse'))).map(i=>[i.factId??i.targetId,i])).values()],[allItems]);
  const propertyById=useMemo(()=>new Map(properties(bundle).map(p=>[p.id,p])),[bundle]);
  const mediaList=useMemo(()=>bundle.media.filter(m=>m.entityId===intro.entityId&&!m.archived&&m.learningExemplar!==false&&['primary','portrait','photo','image','artwork','painting'].includes(m.role)),[bundle,intro.entityId]);

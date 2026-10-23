@@ -1,3 +1,4 @@
+import {introMediaSources} from '../../services/feed-media';
 import {IntervalBandsCard} from './IntervalBandsCard';
 import {IntervalEndpointCard} from './IntervalEndpointCard';
 import './interval-exercises.css';
@@ -26,9 +27,8 @@ import './study-feed.css';
 import './entity-description.css';
 import {ObjectIntroCard} from './ObjectIntroCard';
 import {StopStudyCard} from './StopStudyCard';
-import {getBundle} from '../../db/repositories';
-import {db} from '../../db/engi-db';
-import type {Bundle,Familiarity} from '../../lib/engi/types';
+import type {Familiarity} from '../../lib/engi/types';
+import type {IntroPresentation} from '../../services/intro-presentation';
 import {feedSpan,measureFeed} from '../../services/feed-performance';
 
 const delay=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
@@ -36,12 +36,17 @@ const delay=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
 export function StudyFeed(props:{initial:SessionRow;onExit:()=>void}){return <EntityDescriptionProvider><StudyFeedContent {...props}/></EntityDescriptionProvider>;}
 function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void}){
  const {isOpen:descriptionOpen,close:closeDescription}=useEntityDescription();
- const [introBundle,setIntroBundle]=useState<Bundle|null>(null);
+ const [loadedIntro,setLoadedIntro]=useState<{id:string;view:IntroPresentation}>();
  const [dayPlan,setDayPlan]=useState<GoalDayPlan>();
  const [session,setSession]=useState(initial),[feedback,setFeedback]=useState<any>(null),[storedDraft,setDraft]=useState<InteractionDraft|undefined>(initial.interaction);
  const [state,setState]=useState<'loading'|'ready'|'saving'|'feedback'|'exiting'>('loading'),[error,setError]=useState(''),[imageFailed,setImageFailed]=useState(false),[mediaReady,setMediaReady]=useState(false);
  const [details,setDetails]=useState(false),[headerHelp,setHeaderHelp]=useState(false),[reportText,setReportText]=useState(''),[notice,setNotice]=useState(''),[challengeIntro,setChallengeIntro]=useState(false);
  const {preferences}=useStudyPreferences(),reduced=useReducedMotion();
+ const introKey=session.intro?.introId??session.intro?.entityId;
+ const preparedIntro=useRef<{id:string;view:IntroPresentation}|undefined>(undefined);
+ const selectedIntro=trainerService.introPresentation(session);
+ if(selectedIntro&&introKey)preparedIntro.current={id:introKey,view:selectedIntro};
+ const introView=selectedIntro??(loadedIntro&&loadedIntro.id===introKey?loadedIntro.view:undefined)??(preparedIntro.current&&preparedIntro.current.id===introKey?preparedIntro.current.view:undefined);
  const task=session.tasks[session.currentPosition],sessionRef=useRef(session),lock=useRef(false),advancing=useRef(false),alive=useRef(true),started=useRef(Date.now());
  // A new card mounts before the task-change effect clears the previous draft.
  const draft=storedDraft?.taskId===task?.id?storedDraft:undefined;
@@ -60,7 +65,7 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
 
  function showNotice(text:string){setNotice(text);clearTimeout(noticeTimer.current);noticeTimer.current=setTimeout(()=>setNotice(''),1600)}
  async function loadDayPlan(expired=false){if(session.memoryModel!=='goals')return;const p=await trainerService.getDayPlan(session.tag,session.format??'mixed',session.deckIds);if(alive.current)setDayPlan(p);}
- useEffect(()=>{void loadDayPlan().catch(visibilityError)},[session.id,task?.id,session.exhausted,session.intro?.entityId]);
+ useEffect(()=>{if(!session.intro)void loadDayPlan().catch(visibilityError)},[session.id,task?.id,session.exhausted,session.intro?.entityId]);
  function scheduleNext(f:any){
   clearTimeout(timer.current);
   if(detailsRef.current)return;
@@ -77,10 +82,10 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   setDraft(session.interaction?.taskId===task?.id?session.interaction:undefined);
   setMediaReady(task?.recipe.answerPresentation!=='image'&&(task?.recipe.cue!=='image'||!task.items[0]?.image));setChallengeIntro(!!task?.recipe.diagnostic);
   clearTimeout(introTimer.current);if(task?.recipe.diagnostic)introTimer.current=setTimeout(()=>setChallengeIntro(false),500);
-  if(!task)setState('ready');if(session.intro)void getBundle(db).then(setIntroBundle).catch(e=>setError(e.message));
+  if(!task)setState('ready');if(session.intro&&!introView)void trainerService.loadIntroPresentation(session).then(view=>{if(valid&&view&&introKey)setLoadedIntro({id:introKey,view})}).catch(e=>{if(valid)setError(e.message)});
   if(task)trainerService.getFeedback(task.id).then(f=>{if(!valid)return;cardLoadReadyTask.current=task.id;if(f){lock.current=true;setState('feedback');setFeedback(f);scheduleNext(f)}else setState('ready')}).catch(e=>{if(valid){setError(e.message);setState('ready')}});
   const warmup=new AbortController();
-  void trainerService.preloadMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal)).then(()=>warmup.signal.aborted?undefined:trainerService.previewFeedMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal))).catch(()=>{});
+  void (session.intro&&introView?mediaStore.prewarm(introMediaSources(introView.bundle,session.intro.entityId,introView.items),warmup.signal):trainerService.preloadMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal))).then(()=>warmup.signal.aborted||session.intro?undefined:trainerService.previewFeedMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal))).catch(()=>{});
   return()=>{valid=false;warmup.abort();cardLoadEnd.current?.();cardLoadEnd.current=undefined;clearTimeout(timer.current);clearTimeout(introTimer.current)};
  },[task?.id,session.intro?.unitIds.join('|'),session.exhausted]);
 
@@ -100,7 +105,7 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
  useStudyVisibility(task?.id+':'+answerPhase,answerVisible,(id,event)=>observe(answerPhase,id,event),visibilityError);
  const matchedKeys=Object.keys(draft?.matching?.matched??{}).sort().join('|');
  useStudyVisibility(task?.id+':matched:'+matchedKeys,rendered&&!details&&!!matchedKeys&&!feedback,(id,event)=>observe('matched-pairs',id,event),visibilityError);
- useStudyVisibility(session.intro?'intro:'+session.id+':'+session.intro.entityId+':'+session.intro.unitIds.join('|'):undefined,!!session.intro&&!!introBundle,(id,event)=>{
+ useStudyVisibility(session.intro?'intro:'+session.id+':'+session.intro.entityId+':'+session.intro.unitIds.join('|'):undefined,!!session.intro&&!!introView,(id,event)=>{
   const sid=session.id,write=writes.current.catch(()=>{}).then(()=>trainerService.observeIntroVisibility(sid,id,event));writes.current=write;return write;
  },visibilityError);
  useStudyVisibility(task?.id+':details',!!task&&details,(id,event)=>observe('details',id,event),visibilityError);
@@ -110,10 +115,11 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   const write=writes.current.catch(()=>{}).then(()=>trainerService.saveInteraction(sid,id,delta));writes.current=write;
   return write.then(next=>{if(alive.current&&sessionRef.current.tasks[sessionRef.current.currentPosition]?.id===id){setDraft(next);if(delta.revealed)setError('')}}).catch(e=>{if(alive.current&&sessionRef.current.tasks[sessionRef.current.currentPosition]?.id===id)setError(e.message);throw e});
  }
+ function warmIncoming(next:SessionRow){const view=trainerService.introPresentation(next);if(next.intro&&view)void mediaStore.prewarm(introMediaSources(view.bundle,next.intro.entityId,view.items));return next;}
  async function advance(skip=false){
   if(advancing.current)return;advancing.current=true;clearTimeout(timer.current);setState('exiting');
   const current=sessionRef.current,currentTask=current.tasks[current.currentPosition];
-  try{await measureFeed('ui.advance.writeQueue',()=>writes.current.catch(()=>{}));const [next]=await Promise.all([trainerService.advanceFeed(current.id,skip,currentTask?.id,window.innerWidth),reduced?Promise.resolve():delay(180)]);if(!alive.current)return;setSession(next);
+  try{await measureFeed('ui.advance.writeQueue',()=>writes.current.catch(()=>{}));const [next]=await Promise.all([trainerService.advanceFeed(current.id,skip,currentTask?.id,window.innerWidth).then(warmIncoming),reduced?Promise.resolve():delay(180)]);if(!alive.current)return;setSession(next);
    if(next.exhausted||next.intro)setState('ready');
   }catch(e){if(alive.current){setError((e as Error).message);setState(feedback?'feedback':'ready')}}finally{advancing.current=false}
  }
@@ -151,11 +157,11 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
  const busy=state!=='ready'||challengeIntro||details||headerHelp||!mediaReady;
  const cue=task?.recipe.format==='sort'?null:<div className="feed-cue">{task?.recipe.format==='missing'?<ol className="feed-sequence">{task.sequence?.map((i,n)=><li key={n}>{i?.name??'?'}</li>)}</ol>:task?.recipe.cue==='image'&&task.items[0].image?<KnowledgeImage src={task.items[0].image} alt="Изображение для вопроса" onReady={()=>setMediaReady(true)} onFail={()=>setImageFailed(true)}/>:<h1>{task?.items[0].valueCue?.text??task?.items[0].name}</h1>}{task?.items[0]&&<DescriptionButton {...task.items[0]}/>}</div>;
  async function introChoose(id:string,color:Familiarity){setSession(await trainerService.saveIntroSelection(session.id,id,color))}
- async function introDone(selections:Record<string,Familiarity>,animate=false){if(advancing.current||!session.intro)return;advancing.current=true;setState('saving');setError('');try{const [next]=await Promise.all([trainerService.completeIntro(session.id,{entityId:session.intro.entityId,introId:session.intro.introId,selections}),delay(reduced||!animate?0:260)]);setSession(next)}catch(e){setError((e as Error).message);throw e}finally{advancing.current=false;setState('ready')}}
+ async function introDone(selections:Record<string,Familiarity>,animate=false){if(advancing.current||!session.intro)return;advancing.current=true;setState('saving');setError('');try{const [next]=await Promise.all([trainerService.completeIntro(session.id,{entityId:session.intro.entityId,introId:session.intro.introId,selections}).then(warmIncoming),delay(reduced||!animate?0:260)]);setSession(next)}catch(e){setError((e as Error).message);throw e}finally{advancing.current=false;setState('ready')}}
  async function more(practice=false){if(advancing.current)return;advancing.current=true;setState('saving');setError('');try{setSession(await trainerService.openMore(session.id,practice))}catch(e){setError((e as Error).message)}finally{advancing.current=false;setState('ready')}}
  async function refresh(){if(advancing.current)return;advancing.current=true;setState('saving');setError('');try{setSession(await trainerService.refreshGoalFeed(session.id))}catch(e){setError((e as Error).message)}finally{advancing.current=false;setState('ready')}}
  async function retryMistakes(){setState('saving');setError('');try{setSession(await trainerService.retryUnavailableMistakes(session.id));await loadDayPlan()}catch(e){setError((e as Error).message)}finally{setState('ready')}}
- if(session.intro)return introBundle?<ObjectIntroCard key={session.intro.introId??session.intro.entityId} intro={session.intro} bundle={introBundle} onChoose={introChoose} onDone={introDone} onExit={()=>void exit()} busy={state==='saving'} error={error}/>:<main className="study-feed"><p>Готовим знакомство…</p></main>;
+ if(session.intro)return introView?<ObjectIntroCard key={session.intro.introId??session.intro.entityId} intro={session.intro} bundle={introView.bundle} preparedItems={introView.items} onChoose={introChoose} onDone={introDone} onExit={()=>void exit()} busy={state==='saving'} error={error}/>:<main className="study-feed"><p>Готовим знакомство…</p></main>;
  if(session.exhausted)return <><DayPlanPanel plan={dayPlan} onExpired={()=>void loadDayPlan(true).catch(visibilityError)}/><StopStudyCard newCardsPerDay={preferences.newCardsPerDay} unavailableMistakes={dayPlan?.unavailableMistakes??0} mistakes={dayPlan?.mistakes?.length??0} dailyPending={dayPlan?!dayPlanSummary(dayPlan).completed:false} waitingUntil={session.waitingUntil} onRetryMistakes={session.memoryModel==='goals'?()=>void retryMistakes():undefined} onRefresh={session.memoryModel==='goals'?()=>void refresh():undefined} onMore={()=>void more()} onPractice={()=>void more(true)} onExit={()=>void exit()} busy={state==='saving'} error={error}/></>;
  const prompt=task?.recipe.prompt??task?.recipe.label??'Вспомните ответ';
  return <main className={`study-feed state-${state}`}><header className="feed-header"><button className="icon-button" aria-label="Выйти из практики" disabled={state==='saving'||state==='exiting'} onClick={()=>void exit()}>×</button><DayPlanPanel inline onHelpChange={setHeaderHelp} plan={dayPlan} onExpired={()=>void loadDayPlan(true).catch(visibilityError)}/><button className="icon-button" aria-label="Подробнее о вопросе" disabled={state==='saving'||state==='exiting'} onClick={()=>{clearTimeout(timer.current);setDetails(true)}}>···</button></header>

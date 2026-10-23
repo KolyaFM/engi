@@ -48,7 +48,7 @@ export function pickFeed(b:Bundle,memories:Memory[],s:SessionRow,newState:NonNul
  const candidatesForIntro=[...byOwner.values()].sort(rank),best=candidatesForIntro[0];
  const choices=best?candidatesForIntro.filter(item=>!rank(item,best)):[];
  const first=choices.length?choices[choices.length===1?0:Math.floor(Math.random()*choices.length)]:undefined;
- if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty}}}
+ if(first){const targetId=entityOf(first),newProperty=ownerKnown(first),items=newUnits.filter(i=>entityOf(i)===targetId);return {intro:{entityId:targetId,unitIds:items.map(i=>i.targetId),selections:Object.fromEntries(items.map(i=>[i.targetId,'red' as const])),newProperty},introItems:items}}
  if(diagnosticFormat||(s.ordinaryCount??0)>=8&&ordinary.slice(-8).every(t=>!t.recipe.diagnostic)){
   const activeIds=new Set(known.map(i=>i.factId)),db={...b,facts:b.facts.filter(f=>activeIds.has(f.id))};
   for(const format of diagnosticFormat?[s.format!]:['timeline','sort','missing']){

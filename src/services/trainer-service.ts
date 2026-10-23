@@ -1,3 +1,4 @@
+import {introPresentation,prepareIntroPresentation} from './intro-presentation';
 import {taskMediaSources,proposalMediaPreview} from './feed-media';
 import {peekGoalProposalPool} from './goal-proposals';
 import {propertyKey} from '../lib/engi/study-core/acquisition';
@@ -43,7 +44,7 @@ async function selectNext(d:EngiDB,s:SessionRow){
  const b=await measureFeed('bundle.read',async()=>deckStudyScope(await getBundle(d),s.deckIds,settings)),stored=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),memories=directionConfiguration(b,stored,!!s.learningLifecycle),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
  if(memories.length>stored.length)await d.learningState.bulkPut(memories.slice(stored.length).map(learningRow));
  let decision:SelectionDecision|undefined;const audit=studyTraceEnabled(d)?(value:SelectionDecision)=>{decision=value;}:undefined;
- const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced,Date.now(),audit):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s,Date.now(),decision);return s;
+ const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced,Date.now(),audit):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s,Date.now(),decision);prepareIntroPresentation(s,b,'introItems' in next?next.introItems:undefined);return s;
 }
 const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSessions,d.reviewEvents,d.appMeta];
 async function retirePresentation(d:EngiDB,s:SessionRow){
@@ -51,6 +52,8 @@ async function retirePresentation(d:EngiDB,s:SessionRow){
  if(s.intro){const contract=compileIntroContract(await getBundle(d),s.intro,s.id);if(await d.appMeta.get('studyCore:attempt:'+contract.id))await feedStudyCore(d).skip(contract.id);}
 }
 export function createTrainerService(d:EngiDB){return {
+ introPresentation,
+ async loadIntroPresentation(session:SessionRow){return introPresentation(session)??prepareIntroPresentation(session,deckStudyScope(await getBundle(d),session.deckIds,await readDeckPropertySettings(d)))},
  getSnapshot:()=>getSnapshot(d),
  getGoalSnapshot:(lifecycle=false)=>getGoalSnapshot(d,lifecycle),
  async getDayPlan(tag='all',format?:string,deckIds?:string[]){return d.transaction('rw',sessionTables(d),async()=>{

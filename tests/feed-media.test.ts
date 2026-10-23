@@ -1,10 +1,14 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {taskMediaSources,proposalMediaPreview} from '../src/services/feed-media';
+import {taskMediaSources,proposalMediaPreview,introMediaSources} from '../src/services/feed-media';
 import type {Task} from '../src/lib/engi/types';
 import 'fake-indexeddb/auto';
 import {EngiDB} from '../src/db/engi-db';
 import {putBundle} from '../src/db/repositories';
 import {createTrainerService} from '../src/services/trainer-service';
+test('intro warmup includes the displayed hero and enabled image properties only',()=>{
+ const b={media:[{id:'hero',entityId:'e',role:'primary',url:'hero'},{id:'flag',entityId:'e',role:'flag',url:'flag'},{id:'other',entityId:'other',role:'primary',url:'other'},{id:'disabled',entityId:'e',role:'flag',url:'disabled'}],facts:[{id:'f',valueKind:'image',valueMediaId:'flag'}]} as any;
+ assert.deepEqual(introMediaSources(b,'e',[{factId:'f'}] as any),['hero','flag']);
+});
 test('preview includes cue, answer properties, image options and all group members with a strict budget',()=>{
  const task={items:[{image:'map',answerImage:'flag'},{image:'portrait'}],options:[{image:'flag'},{image:'answer'}]} as Task;
  assert.deepEqual(taskMediaSources(task),['map','flag','portrait','answer']);
