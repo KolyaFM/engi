@@ -98,7 +98,7 @@ export function createTrainerService(d:EngiDB){return {
   await reconcileKnowledgeUnits(d);const now=new Date().toISOString(),s:SessionRow={presentationWidth:Number.isFinite(options.presentationWidth)?Math.max(280,Math.min(3000,options.presentationWidth!)):undefined,deckIds:options.deckIds===undefined?undefined:[...new Set(options.deckIds)],memoryModel,...(options.endless&&memoryModel==='goals'?{endless:true,...(options.lifecycle!==false?{learningLifecycle:1 as const}:{})}:{}),id:crypto.randomUUID(),tasks:[],currentPosition:0,results:[],mode,createdAt:now,updatedAt:now,status:'active',timeLeft:90,feed:true,tag,format,completedCount:0,ordinaryCount:0,cooldown:[],repairQueue:[],diagnosticSeen:[]};
   return d.transaction('rw',sessionTables(d),async()=>{for(const receipt of await d.appMeta.where('key').startsWith('studyCore:reviewReceipt:').toArray())await abandonReview(d,receipt.value.id);for(const previous of await d.activeSessions.where('status').equals('active').toArray()){
    // Carry completed presentations, not the next preselected/unseen question.
-   if(s.memoryModel==='goals'&&previous.memoryModel==='goals')s.cooldown=[...previous.cooldown??[]].slice(-3);
+   if(s.memoryModel==='goals'&&previous.memoryModel==='goals')s.cooldown=[...previous.cooldown??[]].slice(-30);
    const task=previous.tasks[previous.currentPosition];if(task?.studyContract)await feedStudyCore(d).skip(task.id);
   }await d.activeSessions.where('status').equals('active').modify({status:'completed'});return selectNext(d,s)});
  },

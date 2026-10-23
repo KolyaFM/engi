@@ -220,7 +220,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  // Canonical knowledge age remains ahead of format. A safer disclosure must
  // not permanently reserve a portrait out of the player's practice rotation.
  const gameCandidates=buildPresentationCandidates(focused,[]);
- const practice=choose(gameCandidates,true);
+ const practice=choose(gameCandidates,true)??(focused.length<games.length?choose(buildPresentationCandidates(games,[]),true):undefined);
  if(practice)return finish({task:practice,intro:undefined},'game');
  const diagnosticTask=diagnostic();
  if(diagnosticTask)return finish({task:diagnosticTask,intro:undefined},'standalone-ordering-fallback');

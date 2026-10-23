@@ -24,13 +24,14 @@ test('audit four-object fresh feeds with correct recall answers, resume and long
     else if(response.kind==='choice'||response.kind==='order'||response.kind==='practice-choice')await svc.answer({sessionId:s.id,taskId:q.id,answer:response.expected});
     else throw Error('Unexpected response '+response.kind);
     await svc.observeVisibility(s.id,q.id,'feedback','feedback'+turn,'start');await svc.observeVisibility(s.id,q.id,'feedback','feedback'+turn,'end');s=await svc.advanceFeed(s.id,false,q.id);
+    if(turn>0&&turn%13===0){const previous=s.cooldown!;s=await svc.startGoalFeed('all','mixed','daily',{endless:true});assert.deepEqual(s.cooldown?.map(t=>t.id),previous.map(t=>t.id),'a new visit must retain the bounded recall history, not only the last three tasks');}
    }
    const recalls=screens.filter(q=>q.format==='recall_reveal'),byObject=Object.fromEntries(content(withFacts).entities.map(e=>[e.id,recalls.filter(q=>q.objects.includes(e.id)).map(q=>q.turn)]));
    const trace=studyTraceReport(db);assert(trace.filter(e=>e.kind==='answer').every(e=>(e.results as {correct:boolean}[]).every(r=>r.correct)),'all submitted answers are correct');assert.equal((await svc.getDayPlan()).workload!.mistakes,0);
    reports.push({withFacts,seedValue,byObject,screens,trace});console.log('Fresh four-object feed:',JSON.stringify({withFacts,seedValue,byObject}));
    assert.equal(new Set(screens.flatMap(q=>q.objects)).size,4,'all four objects remain in the feed across formats');
-   const lastRecall=new Map<string,number>();for(const recall of recalls){const key=recall.objects[0]+':'+recall.properties[0],previous=lastRecall.get(key);assert(previous===undefined||recall.turn-previous>=5,'successful knowledge cannot return as optional recall after just one or two questions');lastRecall.set(key,recall.turn);}
-   for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(q=>q.format==='recall_reveal').length<=4,'actual mixed screens respect the global recall budget');
+   const lastRecall=new Map<string,number>();for(const [index,screen] of screens.entries()){if(screen.format!=='recall_reveal')continue;const key=screen.objects[0]+':'+screen.properties[0],previous=lastRecall.get(key);assert(previous===undefined||index-previous>=20,'the same knowledge must not return as optional recall within twenty exercises');lastRecall.set(key,index);}
+   for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(q=>q.format==='recall_reveal').length<=2,'actual mixed screens keep optional recall at most two in twenty');
   }finally{stopStudyTrace(db);db.close();await db.delete();}
  }}finally{Math.random=random;crypto.randomUUID=uuid;mock.timers.reset();await mkdir('artifacts',{recursive:true});await writeFile('artifacts/four-object-feed.json',JSON.stringify(reports,null,2));}
 });

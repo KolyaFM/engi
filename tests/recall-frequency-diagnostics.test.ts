@@ -54,7 +54,7 @@ test('successful portrait practice rotates knowledge before choosing its present
    reports.push({count,format,recalls:recalls.length,closeReturns,closeRecalls,screens,trace:studyTraceReport(db)});
    console.log('Recall frequency:',JSON.stringify({count,format,recalls:recalls.length,closeReturns:closeReturns.length,closeRecalls}));
    await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));
-   if(format==='mixed'){assert(recalls.length<=Math.ceil(screens.length*.2),'optional recall should occupy at most 20% of practice with objective alternatives');for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(s=>s.format==='recall_reveal').length<=4,'rolling recall budget');}
+   if(format==='mixed'){assert(recalls.length<=Math.ceil(screens.length*.1),'optional recall should occupy at most 10% of practice with objective alternatives');for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(s=>s.format==='recall_reveal').length<=2,'rolling recall budget');}
    if(count===4){const counts=new Map<string,number>();for(const r of recalls){counts.set(r.object,(counts.get(r.object)??0)+1);assert(!(counts.get(r.object)!>=3&&counts.size<4),'no third recall of one portrait before other portraits receive a chance');}}
   }finally{stopStudyTrace(db);db.close();await db.delete();}
  }}finally{Math.random=originalRandom;crypto.randomUUID=originalUUID;mock.timers.reset();}
