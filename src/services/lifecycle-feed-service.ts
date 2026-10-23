@@ -28,7 +28,7 @@ import {proposalDiversityContext,presentationFamily} from './proposal-diversity'
 import {buildPresentationCandidates,materializePresentationChoice,earliestDueCohort} from './feed-presentations';
 import {classifyFeedInteraction} from './feed-interactions';
 /** One source of eligible work: acquisition, due reviews, repair, admission, then safe practice. */
-export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now(),audit?:(decision:SelectionDecision)=>void){
+export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:SessionRow,daily:NonNullable<Snapshot['newLearning']>,introduced:string[],now=Date.now(),audit?:(decision:SelectionDecision)=>void,transactionCatalog?:ReturnType<typeof buildGoalCatalog>,transactionLedger?:Awaited<ReturnType<typeof ensureLifecycle>>){
  const keyCache=new WeakMap<object,string>(),propertyKey=(g:Parameters<typeof canonicalPropertyKey>[0])=>{let key=keyCache.get(g);if(key===undefined){key=canonicalPropertyKey(g);keyCache.set(g,key);}return key;};
  const factOwners=new Map(b.facts.map(f=>[f.id,f.entityId]));
  const decision:SelectionDecision={branch:'',checks:{matching:{status:'not-reached'},chronology:{status:'not-reached'},recall:{status:'not-reached'},selfCheck:{status:'not-reached'},intervalBands:{status:'not-reached'}}};
@@ -38,7 +38,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
    audit({...decision,branch,selected:{objectDistance:distance(t=>objects(t.items).some(id=>ids.includes(id))),propertyDistance:distance(t=>(t.studyContract?.primaryGoals??[]).some(g=>keys.includes(propertyKey(g)))),formatDistance:chosen?distance(t=>presentationFamily(t)===presentationFamily(chosen)):null}});
   }return next;
  }
- const catalog=buildGoalCatalog(b,enabled),ledger=await ensureLifecycle(db,catalog,new Date(now));
+ const catalog=transactionCatalog??buildGoalCatalog(b,enabled),ledger=transactionLedger??await ensureLifecycle(db,catalog,new Date(now));
  const rows=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'memory'),memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
  const plan=await lifecycleProjection(db,catalog,[...memories.values()],await ensureDayPlan(db,catalog,[...memories.values()],new Date(now),s),undefined,new Date(now),ledger);
  await db.appMeta.put({key:'studyCore:lifecycleDayPlan',value:plan});

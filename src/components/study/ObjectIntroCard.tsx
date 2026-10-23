@@ -162,7 +162,6 @@ export function ObjectIntroCard({intro,bundle,preparedItems,onChoose,onDone,onEx
    <footer className="learning22-footer">
     {displayError&&<p className="learning22-error" role="alert">{displayError}</p>}
     <SurfaceButton type="button" className="learning22-action learning22-primary" onClick={()=>void finish()} disabled={disabled}>Готово</SurfaceButton>
-    <span className="learning22-status" role="status">{saving?'Сохраняем выбор…':''}</span>
    </footer>
   </div>
  </main>;

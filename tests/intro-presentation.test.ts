@@ -4,6 +4,7 @@ import {EngiDB} from '../src/db/engi-db';import {putBundle} from '../src/db/repo
 import {createTrainerService} from '../src/services/trainer-service';
 import {propertyFixture} from './fixtures/deck-properties';
 import {saveDeckPropertySelection} from '../src/services/deck-property-settings';
+import {feedPerformance} from '../src/services/feed-performance';
 test('new introductions carry their selected content without another database read; restored sessions have a read-only fallback',async()=>{
  const d=new EngiDB('intro-presentation-'+crypto.randomUUID());try{
   await putBundle(d,{entities:Array.from({length:6},(_,n)=>({id:'e'+n,name:'E'+n,type:'person',aliases:[],externalIds:{}})),media:Array.from({length:6},(_,n)=>({id:'m'+n,entityId:'e'+n,role:'primary',url:'https://example.test/'+n+'.png',license:'Test'})),facts:[],tags:[],entityTags:[],missing:[],unresolved:[]});
@@ -25,5 +26,16 @@ test('prepared intros use current selected properties and never reuse a previous
   const next=await svc.startGoalFeed('all','mixed','daily',{endless:true,deckIds:['a']}),view=svc.introPresentation(next)!;
   assert(view.items.length);assert(view.items.every(i=>i.factId?.startsWith('other')));assert.notEqual(view,old);
   assert(!('bundle' in (await d.activeSessions.get(next.id))!), 'content snapshots stay out of IndexedDB');
+ }finally{d.close();await d.delete();}
+});
+test('completing an intro reads content once for both acceptance and next selection',async()=>{
+ const d=new EngiDB('intro-done-'+crypto.randomUUID());try{
+  await putBundle(d,propertyFixture());const svc=createTrainerService(d),s=await svc.startGoalFeed('all','mixed','daily',{endless:true,deckIds:['a']});assert(s.intro);
+  let reads=0,memoryReads=0;const read=d.entities.toArray.bind(d.entities);d.entities.toArray=(()=>{reads++;return read()}) as typeof d.entities.toArray;
+  const readMemory=d.learningState.toArray.bind(d.learningState);d.learningState.toArray=(()=>{memoryReads++;return readMemory()}) as typeof d.learningState.toArray;
+  feedPerformance.start();const next=await svc.completeIntro(s.id,{entityId:s.intro.entityId,introId:s.intro.introId,selections:s.intro.selections});const stages=feedPerformance.report();feedPerformance.stop();
+  assert.equal(reads,1,'reuse the transaction content snapshot rather than reading it again in selectNext');assert(next.intro||next.tasks.length);
+  assert.equal(stages.filter(s=>s.stage==='catalog').length,1,'acceptance and selection share the same up-to-date catalog');
+  assert.equal(memoryReads,1,'configuration is normalized once after applying the choices');
  }finally{d.close();await d.delete();}
 });

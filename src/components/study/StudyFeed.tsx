@@ -1,4 +1,4 @@
-import {introMediaSources} from '../../services/feed-media';
+import {introMediaSources,taskMediaSources} from '../../services/feed-media';
 import {IntervalBandsCard} from './IntervalBandsCard';
 import {IntervalEndpointCard} from './IntervalEndpointCard';
 import './interval-exercises.css';
@@ -65,7 +65,6 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
 
  function showNotice(text:string){setNotice(text);clearTimeout(noticeTimer.current);noticeTimer.current=setTimeout(()=>setNotice(''),1600)}
  async function loadDayPlan(expired=false){if(session.memoryModel!=='goals')return;const p=await trainerService.getDayPlan(session.tag,session.format??'mixed',session.deckIds);if(alive.current)setDayPlan(p);}
- useEffect(()=>{if(!session.intro)void loadDayPlan().catch(visibilityError)},[session.id,task?.id,session.exhausted,session.intro?.entityId]);
  function scheduleNext(f:any){
   clearTimeout(timer.current);
   if(detailsRef.current)return;
@@ -95,6 +94,9 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
  }
  const visibilityError=(e:Error)=>{if(alive.current)setError(e.message)};
  const rendered=!!task&&state!=='loading'&&state!=='exiting'&&!imageFailed&&mediaReady&&!feedback?.invalidContent;
+ // A hidden incoming question must not wait behind a counter reconciliation
+ // transaction. Render/decode it first; refresh counters after its first frame.
+ useEffect(()=>{if(session.intro||!session.exhausted&&!rendered)return;let timer:ReturnType<typeof setTimeout>|undefined;const frame=requestAnimationFrame(()=>{timer=setTimeout(()=>void loadDayPlan().catch(visibilityError),0)});return()=>{cancelAnimationFrame(frame);clearTimeout(timer)}},[session.id,task?.id,session.exhausted,session.intro?.entityId,rendered]);
  const taskContent=useRef<HTMLDivElement>(null),enteredTask=useRef<string|undefined>(undefined);
  useLayoutEffect(()=>{const node=taskContent.current;if(!rendered||!node||enteredTask.current===task.id)return;enteredTask.current=task.id;const viewport=node.closest('.feed-viewport');if(viewport)viewport.scrollTop=0;if(reduced)return;const animation=node.animate([{transform:`translateY(${Math.round((viewport?.clientHeight??window.innerHeight)*.9)}px)`},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,1,.36,1)'});return()=>animation.cancel();},[rendered,task?.id,reduced]);
  useEffect(()=>{if(rendered&&cardLoadReadyTask.current===task?.id||!task){cardLoadEnd.current?.();cardLoadEnd.current=undefined;}},[rendered,task?.id]);
@@ -115,7 +117,7 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   const write=writes.current.catch(()=>{}).then(()=>trainerService.saveInteraction(sid,id,delta));writes.current=write;
   return write.then(next=>{if(alive.current&&sessionRef.current.tasks[sessionRef.current.currentPosition]?.id===id){setDraft(next);if(delta.revealed)setError('')}}).catch(e=>{if(alive.current&&sessionRef.current.tasks[sessionRef.current.currentPosition]?.id===id)setError(e.message);throw e});
  }
- function warmIncoming(next:SessionRow){const view=trainerService.introPresentation(next);if(next.intro&&view)void mediaStore.prewarm(introMediaSources(view.bundle,next.intro.entityId,view.items));return next;}
+ function warmIncoming(next:SessionRow){const view=trainerService.introPresentation(next);const task=next.tasks[next.currentPosition];if(next.intro&&view)void mediaStore.prewarm(introMediaSources(view.bundle,next.intro.entityId,view.items));else if(task)void mediaStore.prewarm(taskMediaSources(task));return next;}
  async function advance(skip=false){
   if(advancing.current)return;advancing.current=true;clearTimeout(timer.current);setState('exiting');
   const current=sessionRef.current,currentTask=current.tasks[current.currentPosition];

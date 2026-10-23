@@ -7,7 +7,7 @@ import {directionConfiguration} from '../lib/engi/learning/direction-configurati
 import {readDeckPropertySettings} from './deck-property-settings';
 import {deckStudyScope,SELECTED_DECKS} from './deck-study-scope';
 import {db,type EngiDB,type SessionRow,type InteractionDraft} from '../db/engi-db';
-import type {Familiarity} from '../lib/engi/types';
+import type {Bundle,Familiarity,Memory} from '../lib/engi/types';
 import {getSnapshot,getBundle,putBundle,contentTables,learningRow} from '../db/repositories';
 import {reconcileKnowledgeUnits} from '../db/learning-migration';
 import {saveEntity} from './knowledge-service';
@@ -39,12 +39,15 @@ import {acceptLifecycleIntro,lifecycleProjection,LIFECYCLE_KEY} from './learning
 import {studyWorkload} from '../lib/engi/study-core/workload';
 
 function setIntroProperty(intro:NonNullable<SessionRow['intro']>,unitId:string,color:Familiarity){const base=unitId.replace(/:(forward|reverse)$/,'');for(const id of intro.unitIds)if(id===unitId||id.replace(/:(forward|reverse)$/,'')===base)intro.selections[id]=color;}
-async function selectNext(d:EngiDB,s:SessionRow){
- const settings=await readDeckPropertySettings(d);
- const b=await measureFeed('bundle.read',async()=>deckStudyScope(await getBundle(d),s.deckIds,settings)),stored=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),memories=directionConfiguration(b,stored,!!s.learningLifecycle),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
+// Only forwarded inside the accepting write transaction, after the choices have
+// been applied. Never cache mutable progress across tasks or transactions.
+type SelectionContent={bundle:Bundle;settings:Awaited<ReturnType<typeof readDeckPropertySettings>>;catalog?:ReturnType<typeof buildGoalCatalog>;ledger?:Awaited<ReturnType<typeof acceptLifecycleIntro>>;stored?:Memory[];memories?:Memory[]};
+async function selectNext(d:EngiDB,s:SessionRow,content?:SelectionContent){
+ const settings=content?.settings??await readDeckPropertySettings(d);
+ const b=await measureFeed('bundle.read',async()=>deckStudyScope(content?.bundle??await getBundle(d),s.deckIds,settings)),stored=content?.stored??(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),memories=content?.memories??directionConfiguration(b,stored,!!s.learningLifecycle),daily=dailyNewState((await d.appMeta.get('newLearning'))?.value),introduced=(await d.appMeta.get('introducedEntities'))?.value??[];
  if(memories.length>stored.length)await d.learningState.bulkPut(memories.slice(stored.length).map(learningRow));
  let decision:SelectionDecision|undefined;const audit=studyTraceEnabled(d)?(value:SelectionDecision)=>{decision=value;}:undefined;
- const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced,Date.now(),audit):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s,Date.now(),decision);prepareIntroPresentation(s,b,'introItems' in next?next.introItems:undefined);return s;
+ const next=s.memoryModel==='goals'?await measureFeed('selection',()=>s.learningLifecycle?pickLifecycleFeed(d,b,memories,s,daily,introduced,Date.now(),audit,content?.catalog,content?.ledger):s.endless?pickEndlessFeed(d,b,memories,s,daily,introduced):pickGoalFeed(d,b,memories,s,daily,introduced)):pickFeed(b,memories,s,daily,introduced);if(next.task)await measureFeed('task.prepare',()=>prepareStudyTask(d,b,next.task));s.waitingUntil='waitingUntil' in next?next.waitingUntil as string|undefined:undefined;s.tasks=next.task?[next.task]:[];s.currentPosition=0;s.intro=next.intro?{...next.intro,introId:crypto.randomUUID()}:undefined;s.propertySettingsRevision=settings.revision;s.exhausted=!!next.exhausted;s.interaction=undefined;s.updatedAt=new Date().toISOString();await d.activeSessions.put(s);await traceStudySelection(d,b,memories,s,Date.now(),decision);prepareIntroPresentation(s,b,'introItems' in next?next.introItems:undefined);return s;
 }
 const sessionTables=(d:EngiDB)=>[...contentTables(d),d.learningState,d.activeSessions,d.reviewEvents,d.appMeta];
 async function retirePresentation(d:EngiDB,s:SessionRow){
@@ -121,8 +124,8 @@ export function createTrainerService(d:EngiDB){return {
   const introduced=new Set<string>((await d.appMeta.get('introducedEntities'))?.value??[]);introduced.add(intro.entityId);await d.appMeta.put({key:'introducedEntities',value:[...introduced]});
   if(!intro.newProperty){const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.introducedEntityIds=[...new Set([...daily.introducedEntityIds,intro.entityId])];await d.appMeta.put({key:'newLearning',value:daily})}
   const item=units[0];if(item)s.cooldown=[...s.cooldown??[],{id:'intro:'+crypto.randomUUID(),items:[item],options:[],reason:'intro',recipe:{id:'intro',format:'choice' as const,cue:'name' as const,answerKey:'identity',memoryKey:'intro',diagnostic:false}}].slice(-30);
-  const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){const catalog=buildGoalCatalog(b,(await d.learningState.toArray()).map(r=>r.payload));await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
-  s.completedCount=(s.completedCount??0)+1;s.intro=undefined;if(receiptKey)await d.appMeta.put({key:receiptKey,value:true});return selectNext(d,s);
+  let stored:Memory[]|undefined,memories:Memory[]|undefined,catalog:ReturnType<typeof buildGoalCatalog>|undefined,ledger:Awaited<ReturnType<typeof acceptLifecycleIntro>>|undefined;const introContract=compileIntroContract(b,intro,s.id);if(s.learningLifecycle){stored=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload);memories=directionConfiguration(deckStudyScope(b,s.deckIds,settings),stored,true);catalog=buildGoalCatalog(b,memories);ledger=await acceptLifecycleIntro(d,catalog,intro.entityId,intro.unitIds,introContract.shownClaims.flatMap(c=>c.revealsGoalIds),new Date(),s.format==='recall_reveal'?'recall':'recognition');}if(await d.appMeta.get('studyCore:attempt:'+introContract.id))await feedStudyCore(d).skip(introContract.id);
+  s.completedCount=(s.completedCount??0)+1;s.intro=undefined;if(receiptKey)await d.appMeta.put({key:receiptKey,value:true});return selectNext(d,s,{bundle:b,settings,catalog,ledger,stored,memories});
  }))},
  async getResumableSession(options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){const s=(await d.activeSessions.where('status').equals('active').sortBy('updatedAt')).at(-1);if(!s)return;if(!s.feed){await d.activeSessions.update(s.id,{status:'completed'});return}
   if(s.memoryModel!=='goals')return s;
