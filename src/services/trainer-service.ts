@@ -1,3 +1,6 @@
+import {taskMediaSources,proposalMediaPreview} from './feed-media';
+import {peekGoalProposalPool} from './goal-proposals';
+import {propertyKey} from '../lib/engi/study-core/acquisition';
 import {readGoalStateRows} from './goal-state-rows';
 import {directionConfiguration} from '../lib/engi/learning/direction-configuration';
 import {readDeckPropertySettings} from './deck-property-settings';
@@ -72,7 +75,16 @@ export function createTrainerService(d:EngiDB){return {
   if(row){for(const episode of row.value.episodes as MistakeEpisode[])if(episode.status==='unavailable'&&keys.has(episode.key)){episode.status='open';episode.failedImage=undefined;episode.unavailableReason=undefined;}await d.appMeta.put(row);}
   return selectNext(d,s);
  })},
- async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(t=>t.items.map(i=>i.image).filter((url):url is string=>!!url)))];},
+ async preloadMedia(id:string){const s=await d.activeSessions.get(id);if(!s)return [];return [...new Set(s.tasks.slice(s.currentPosition,s.currentPosition+4).flatMap(taskMediaSources))].slice(0,12);},
+ async previewFeedMedia(id:string){
+  const s=await d.activeSessions.get(id);if(!s||s.status!=='active')return [];
+  const settings=await readDeckPropertySettings(d),b=deckStudyScope(await getBundle(d),s.deckIds,settings),stored=(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload),enabled=directionConfiguration(b,stored,!!s.learningLifecycle);
+  const pool=peekGoalProposalPool(b,enabled,s.tag??'all','mixed');if(!pool)return [];
+  const ledger=(await d.appMeta.get(LIFECYCLE_KEY))?.value,known=new Set<string>((ledger?.units??[]).map((u:any)=>propertyKey(u.goal)));
+  const recent=new Set(s.tasks.flatMap(t=>t.items.map(i=>i.entityId))),last=new Map<string,number>();(s.cooldown??[]).forEach((t,n)=>t.items.forEach(i=>last.set(i.entityId,n+1)));
+  const candidates=pool.proposals.filter(p=>p.goals.every(g=>known.has(propertyKey(g)))&&!p.items.some(i=>recent.has(i.entityId))).sort((a,c)=>Math.max(0,...a.items.map(i=>last.get(i.entityId)??0))-Math.max(0,...c.items.map(i=>last.get(i.entityId)??0)));
+  return proposalMediaPreview(candidates);
+ },
  async startGoalFeed(tag='all',format='mixed',mode='daily',options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){return createTrainerService(d).startFeed(tag,format,mode,'goals',options)},
  async startFeed(tag='all',format='mixed',mode='daily',memoryModel?:'goals',options:{presentationWidth?:number;endless?:boolean;lifecycle?:boolean;deckIds?:string[]}={}){
   if(!['mixed','multi_choice','choice','recall_reveal','match','categorize','timeline','sort','missing'].includes(format))throw Error('Выберите доступный формат без ввода текста');

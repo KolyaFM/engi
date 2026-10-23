@@ -1,9 +1,10 @@
 import type {EngiDB} from '../db/engi-db';
+import {readGoalStateRows} from './goal-state-rows';
 import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {TaskContract} from '../lib/engi/study-core/contracts';
 import {recordIntervalEvidence,type IntervalEvidence} from '../lib/engi/study-core/interval-evidence';
 const prefix='studyCore:intervalEvidence:';
-export async function readIntervalEvidence(db:EngiDB,ids:string[]){const rows=await db.appMeta.bulkGet(ids.map(id=>prefix+id));return new Map(rows.flatMap(r=>r?[[r.value.goalId,r.value as IntervalEvidence] as const]:[]));}
+export async function readIntervalEvidence(db:EngiDB,ids:string[]){const rows=await readGoalStateRows(db,ids,'intervalEvidence');return new Map(rows.flatMap(r=>r?[[r.value.goalId,r.value as IntervalEvidence] as const]:[]));}
 /** Disclosures are not successful attempts: even an inferred final pair must wait after seeing its years. */
 export async function recordIntervalDisclosure(db:EngiDB,contract:TaskContract,goalIds:string[],at:string){
  if(!contract.intervalEvidence)return;

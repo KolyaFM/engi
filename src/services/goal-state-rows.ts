@@ -4,7 +4,7 @@ import {feedSpan} from './feed-performance';
  * Preserve bulkGet's order and holes.
  * No progress cache: edits, newly committed answers and other DB instances stay visible.
  */
-export async function readGoalStateRows(db:EngiDB,goalIds:string[],kind:'memory'|'exposure'){
+export async function readGoalStateRows(db:EngiDB,goalIds:string[],kind:'memory'|'exposure'|'intervalEvidence'){
  if(!goalIds.length)return [];
  const end=feedSpan('state.'+kind+'.read');try{
   const prefix='studyCore:'+kind+':',range=db.appMeta.where('key').startsWith(prefix),stored=await range.count();

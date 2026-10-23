@@ -79,8 +79,9 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   clearTimeout(introTimer.current);if(task?.recipe.diagnostic)introTimer.current=setTimeout(()=>setChallengeIntro(false),500);
   if(!task)setState('ready');if(session.intro)void getBundle(db).then(setIntroBundle).catch(e=>setError(e.message));
   if(task)trainerService.getFeedback(task.id).then(f=>{if(!valid)return;cardLoadReadyTask.current=task.id;if(f){lock.current=true;setState('feedback');setFeedback(f);scheduleNext(f)}else setState('ready')}).catch(e=>{if(valid){setError(e.message);setState('ready')}});
-  void trainerService.preloadMedia(session.id).then(urls=>mediaStore.prewarm(urls)).catch(()=>{});
-  return()=>{valid=false;cardLoadEnd.current?.();cardLoadEnd.current=undefined;clearTimeout(timer.current);clearTimeout(introTimer.current)};
+  const warmup=new AbortController();
+  void trainerService.preloadMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal)).then(()=>warmup.signal.aborted?undefined:trainerService.previewFeedMedia(session.id).then(urls=>mediaStore.prewarm(urls,warmup.signal))).catch(()=>{});
+  return()=>{valid=false;warmup.abort();cardLoadEnd.current?.();cardLoadEnd.current=undefined;clearTimeout(timer.current);clearTimeout(introTimer.current)};
  },[task?.id,session.intro?.unitIds.join('|'),session.exhausted]);
 
  function observe(phase:`card-reveal:${string}`|'question'|'feedback'|'order-reveal'|'matched-pairs'|'answer-reveal'|'early-answer'|'details'|'source',episode:string,event:'start'|'refresh'|'end'){
@@ -122,8 +123,8 @@ function StudyFeedContent({initial,onExit}:{initial:SessionRow;onExit:()=>void})
   const previous=draft;
   if(isDiscrete(task)&&value!==discreteAnswer(task))setDraft({taskId:task.id,attemptSequence:[...new Set([...(draft?.attemptSequence??[]),value])]});
   const end=feedSpan('ui.submit');
-  try{await measureFeed('ui.answer.writeQueue',()=>writes.current);const result=await trainerService.answer({sessionId:session.id,taskId:task.id,answer:value,latencyMs:Date.now()-started.current});if(!alive.current)return;void loadDayPlan().catch(visibilityError);
-   if(result.pending){setDraft(result.interaction);setState('ready');lock.current=false;return false}
+  try{await measureFeed('ui.answer.writeQueue',()=>writes.current);const result=await trainerService.answer({sessionId:session.id,taskId:task.id,answer:value,latencyMs:Date.now()-started.current});if(!alive.current)return;
+   if(result.pending){void loadDayPlan().catch(visibilityError);setDraft(result.interaction);setState('ready');lock.current=false;return false}
    setFeedback(result.feedback);setState('feedback');
    if(result.feedback.score===1){playSuccess(preferences.sound);try{navigator.vibrate?.(10)}catch{}}
    scheduleNext(result.feedback);return true;

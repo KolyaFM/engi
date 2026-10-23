@@ -27,17 +27,18 @@ test('successful portrait practice rotates knowledge before choosing its present
    for(const unit of ledger.units){unit.stage='confirmation';unit.successes=0;unit.requiredSuccesses=1;unit.rehearsedAt=new Date(at-1000).toISOString();unit.lastAttemptAt=new Date(at-1000).toISOString();unit.availableAt=new Date(at+ACQUISITION_CONFIRMATION_MS).toISOString();}
    await db.appMeta.bulkPut([{key:'studyCore:learningLifecycle',value:ledger},{key:'introducedEntities',value:b.entities.map(e=>e.id)},{key:'studyPreferences',value:{newCardsPerDay:0}}]);
    startStudyTrace(db,300);const svc=createTrainerService(db);let session=await svc.startGoalFeed('all',format,'daily',{endless:true});
-   const screens:{turn:number;object:string;property:string;format:string;intent?:string;reason:string;learningRecall:boolean;correct:boolean;availableAt:string;rehearsedAt?:string}[]=[];
+   const screens:{turn:number;object:string;objects:string[];properties:string[];property:string;format:string;intent?:string;reason:string;learningRecall:boolean;correct:boolean;availableAt:string;rehearsedAt?:string}[]=[];
    for(let turn=0;turn<24;turn++){
     const task=session.tasks[0];assert(task);const goal=task.studyContract!.primaryGoals[0];assert(goal);
     await svc.observeVisibility(session.id,task.id,'question','question'+turn,'start');mock.timers.setTime(at+(turn+1)*8000);
     const response=task.studyContract!.response;let answer:unknown;
     if(response.kind==='self-report'){await svc.saveInteraction(session.id,task.id,{revealed:true,recallElapsedMs:5000});await svc.observeVisibility(session.id,task.id,'answer-reveal','reveal'+turn,'start');answer=true;}
     else if(response.kind==='choice')answer=response.expected;
+    else if(response.kind==='mapping')answer=Object.fromEntries(response.bindings.filter(b=>!b.support).map(b=>[b.responseKey,b.expected]));
     else throw Error('Unexpected response '+response.kind);
     await svc.answer({sessionId:session.id,taskId:task.id,answer});
     const current=(await db.appMeta.get('studyCore:learningLifecycle'))!.value.units.find((u:any)=>propertyKey(u.goal)===propertyKey(goal));
-    screens.push({turn,object:task.items[0].entityId,property:propertyKey(goal),format:task.recipe.format,intent:task.intent,reason:task.reason,learningRecall:!!task.learningRecall,correct:true,availableAt:current.availableAt,rehearsedAt:current.rehearsedAt});
+    screens.push({turn,objects:task.items.map(i=>i.entityId),properties:task.studyContract!.primaryGoals.map(propertyKey),object:task.items[0].entityId,property:propertyKey(goal),format:task.recipe.format,intent:task.intent,reason:task.reason,learningRecall:!!task.learningRecall,correct:true,availableAt:current.availableAt,rehearsedAt:current.rehearsedAt});
     await svc.observeVisibility(session.id,task.id,'feedback','feedback'+turn,'start');await svc.observeVisibility(session.id,task.id,'feedback','feedback'+turn,'end');
     session=await svc.advanceFeed(session.id,false,task.id);
    }
@@ -47,13 +48,14 @@ test('successful portrait practice rotates knowledge before choosing its present
    assert(screens.every(s=>s.intent==='practice'),'pending confirmations should not earn premature independent credit');
    assert.equal(await db.appMeta.where('key').startsWith('studyCore:memory:').count(),0);
    assert.equal((await svc.getDayPlan()).workload!.mistakes,0,'every answer was correct');
-   assert.equal(new Set(screens.map(s=>s.object)).size,count,'a protected confirmation must not permanently remove a portrait from practice');
-   assert(screens.every((s,n)=>n===0||s.property!==screens[n-1].property),'no consecutive repeats');
-   if(count===3){assert(screens.every((s,n)=>n<3||!screens.slice(n-2,n).some(previous=>previous.property===s.property)),'use all three portraits before returning to one');if(format==='mixed'){assert(recalls.length>0,'recall remains available');assert.equal(closeRecalls.length,0,'the same portrait recall cannot return after one or two intervening tasks');}}
+   assert.equal(new Set(screens.flatMap(s=>s.objects)).size,count,'a protected confirmation must not permanently remove a portrait from practice');
+   assert(screens.every((s,n)=>n===0||s.properties.length>1||screens[n-1].properties.length>1||s.property!==screens[n-1].property),'no consecutive atomic repeats');
+   if(count===3){assert(screens.every((s,n)=>n<3||s.properties.length>1||screens.slice(n-2,n).some(previous=>previous.properties.length>1)||!screens.slice(n-2,n).some(previous=>previous.property===s.property)),'use all three portraits before returning to one');if(format==='mixed'){assert(recalls.length>0,'recall remains available');assert.equal(closeRecalls.length,0,'the same portrait recall cannot return after one or two intervening tasks');}}
    reports.push({count,format,recalls:recalls.length,closeReturns,closeRecalls,screens,trace:studyTraceReport(db)});
    console.log('Recall frequency:',JSON.stringify({count,format,recalls:recalls.length,closeReturns:closeReturns.length,closeRecalls}));
    await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));
-   if(count===4){const byObject=Object.fromEntries(b.entities.map(e=>[e.id,recalls.filter(r=>r.object===e.id).map(r=>r.turn)]));console.log('Four-object recall distribution:',JSON.stringify(byObject));assert.equal(new Set(recalls.map(r=>r.object)).size,4,'recall must not keep choosing the same subset while other admitted objects support it');}
+   if(format==='mixed'){assert(recalls.length<=Math.ceil(screens.length*.2),'optional recall should occupy at most 20% of practice with objective alternatives');for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(s=>s.format==='recall_reveal').length<=4,'rolling recall budget');}
+   if(count===4){const counts=new Map<string,number>();for(const r of recalls){counts.set(r.object,(counts.get(r.object)??0)+1);assert(!(counts.get(r.object)!>=3&&counts.size<4),'no third recall of one portrait before other portraits receive a chance');}}
   }finally{stopStudyTrace(db);db.close();await db.delete();}
  }}finally{Math.random=originalRandom;crypto.randomUUID=originalUUID;mock.timers.reset();}
  await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));

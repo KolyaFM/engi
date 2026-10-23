@@ -28,7 +28,9 @@ test('audit four-object fresh feeds with correct recall answers, resume and long
    const recalls=screens.filter(q=>q.format==='recall_reveal'),byObject=Object.fromEntries(content(withFacts).entities.map(e=>[e.id,recalls.filter(q=>q.objects.includes(e.id)).map(q=>q.turn)]));
    const trace=studyTraceReport(db);assert(trace.filter(e=>e.kind==='answer').every(e=>(e.results as {correct:boolean}[]).every(r=>r.correct)),'all submitted answers are correct');assert.equal((await svc.getDayPlan()).workload!.mistakes,0);
    reports.push({withFacts,seedValue,byObject,screens,trace});console.log('Fresh four-object feed:',JSON.stringify({withFacts,seedValue,byObject}));
-   const portraitCounts=new Map<string,number>();for(const recall of recalls.filter(q=>q.properties[0]?.startsWith('identity:'))){const object=recall.objects[0];portraitCounts.set(object,(portraitCounts.get(object)??0)+1);assert(!(portraitCounts.get(object)!>=3&&portraitCounts.size<4),'do not ask the same portrait a third time while another available portrait has never received recall');}
+   assert.equal(new Set(screens.flatMap(q=>q.objects)).size,4,'all four objects remain in the feed across formats');
+   const lastRecall=new Map<string,number>();for(const recall of recalls){const key=recall.objects[0]+':'+recall.properties[0],previous=lastRecall.get(key);assert(previous===undefined||recall.turn-previous>=5,'successful knowledge cannot return as optional recall after just one or two questions');lastRecall.set(key,recall.turn);}
+   for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(q=>q.format==='recall_reveal').length<=4,'actual mixed screens respect the global recall budget');
   }finally{stopStudyTrace(db);db.close();await db.delete();}
  }}finally{Math.random=random;crypto.randomUUID=uuid;mock.timers.reset();await mkdir('artifacts',{recursive:true});await writeFile('artifacts/four-object-feed.json',JSON.stringify(reports,null,2));}
 });

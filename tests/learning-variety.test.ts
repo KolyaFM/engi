@@ -19,11 +19,19 @@ test('self-check image fronts do not depend on which direction the choice genera
  const ready=proposals.slice(0,4).map((p,n)=>({...p,recipe:{...p.recipe,format:'choice' as const,cue:n%2?'name' as const:'image' as const,answerPresentation:n%2?'image' as const:undefined},items:p.items.map(i=>({...i,image:n%2?undefined:'flag'+n,answerImage:'flag'+n}))}));
  const t=buildSelfCheck(bundle,ready)!;assert.equal(t.items.length,4);assert.equal(t.recipe.cue,'image');assert.deepEqual(t.items.map(i=>i.image),['flag0','flag1','flag2','flag3']);
 });
+async function nextSelfCheck(d:EngiDB,bundle:Bundle,enabled:any[],s:any,ids:string[]){
+ for(let turn=0;turn<30;turn++){
+  const result=await pickLifecycleFeed(d,bundle,enabled,s,{day:'test',introducedEntityIds:ids,extraBudget:0},ids);assert(result.task,'a ready collection remains playable');
+  if(result.task.recipe.format==='self_check')return result;
+  result.task.studyContract=compileTaskContract(bundle,result.task);s.cooldown=[...s.cooldown,result.task].slice(-30);s.completedCount=(s.completedCount??0)+1;
+ }throw Error('self-check was continuously eligible for 30 opportunities but never selected');
+}
+
 test('mixed feed schedules a self-check from ready properties without adding learning obligations',async()=>{
  const d=new EngiDB('grid-select-'+crypto.randomUUID());try{await putBundle(d,b);for(const item of canonicalTargets(b))await d.learningState.put(learningRow(triagedMemory(item,'red','seed',0)));const enabled=(await d.learningState.toArray()).map(r=>r.payload),catalog=buildGoalCatalog(b,enabled);let ledger=emptyLifecycle();for(const e of b.entities)ledger=admitAcquisition(ledger,e.id,catalog.filter(c=>c.entityIds.includes(e.id)).map(c=>c.goal),new Date(0));await d.appMeta.put({key:'studyCore:learningLifecycle',value:ledger});await d.appMeta.put({key:'studyPreferences',value:{newCardsPerDay:0}});
  const s:any={id:'grid',tasks:[],currentPosition:0,results:[],mode:'daily',memoryModel:'goals',learningLifecycle:1,endless:true,format:'mixed',tag:'all',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),status:'active',timeLeft:0,cooldown:Array.from({length:9},(_,n)=>({id:'h'+n,recipe:{format:'choice'},items:[{entityId:'e8',factId:'f8'}],reason:'bootstrap',options:[]}))};
- const result=await pickLifecycleFeed(d,b,enabled,s,{day:'test',introducedEntityIds:b.entities.map(e=>e.id),extraBudget:0},b.entities.map(e=>e.id));assert.equal(result.task?.recipe.format,'self_check');assert.equal(result.task?.items.length,4);assert(!result.task?.items.some(i=>i.entityId==='e8'));assert.deepEqual((await d.appMeta.get('studyCore:learningLifecycle'))!.value,ledger);
- const first=result.task!;s.cooldown.push(first,...s.cooldown.slice(-9));const second=await pickLifecycleFeed(d,b,enabled,s,{day:'test',introducedEntityIds:b.entities.map(e=>e.id),extraBudget:0},b.entities.map(e=>e.id));assert.equal(second.task?.recipe.format,'self_check');assert(second.task!.items.every(i=>!first.items.some(previous=>previous.factId===i.factId)),'feed must rotate the self-check even after its ordinary object cooldown expires');
+ const result=await nextSelfCheck(d,b,enabled,s,b.entities.map(e=>e.id));assert.equal(result.task?.recipe.format,'self_check');assert.equal(result.task?.items.length,4);assert(!result.task?.items.some(i=>s.cooldown.at(-1).items.some((last:any)=>last.entityId===i.entityId)));assert.deepEqual((await d.appMeta.get('studyCore:learningLifecycle'))!.value,ledger);
+ const first=result.task!;s.cooldown.push(first,...s.cooldown.slice(-9));const second=await nextSelfCheck(d,b,enabled,s,b.entities.map(e=>e.id));assert.equal(second.task?.recipe.format,'self_check');assert(second.task!.items.every(i=>!first.items.some(previous=>previous.factId===i.factId)),'feed must rotate the self-check even after its ordinary object cooldown expires');
  }finally{d.close();await d.delete();}
 });
 test('incorrect and hinted timed rehearsals cannot promote a property or raise memory',async()=>{
@@ -73,7 +81,7 @@ test('long self-check feeds do not cycle through a fixed prefix when bounded his
   const s:any={id:'long-grid',tasks:[],currentPosition:0,results:[],completedCount:0,mode:'daily',memoryModel:'goals',learningLifecycle:1,endless:true,format:'mixed',tag:'all',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),status:'active',timeLeft:0,cooldown:Array.from({length:9},()=>ordinary)};
   const seen=new Set<string>(),ids=bundle.entities.map(e=>e.id);
   for(let round=0;round<30;round++){
-   const result=await pickLifecycleFeed(d,bundle,enabled,s,{day:'test',introducedEntityIds:ids,extraBudget:0},ids);
+   const result=await nextSelfCheck(d,bundle,enabled,s,ids);
    assert.equal(result.task?.recipe.format,'self_check');result.task!.items.forEach(i=>seen.add(i.entityId));
    s.cooldown=[...s.cooldown,result.task,...Array.from({length:9},()=>ordinary)].slice(-30);s.completedCount+=10;
   }
