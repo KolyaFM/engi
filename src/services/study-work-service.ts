@@ -8,6 +8,16 @@ import {MISTAKE_EPISODES_KEY,markRepairUnavailable,type MistakeEpisode} from './
 import {compileTaskContract} from '../lib/engi/study-core/compiler';
 import {buildGoalCatalog} from './goal-catalog';
 import {canonicalTargets} from '../lib/engi/questions/recipe-factory';
+import {rankPresentationCandidates} from './feed-presentations';
+import {classifyFeedInteraction} from './feed-interactions';
+/** Read-only check for replacing an obsolete saved timed repair on resume. */
+export function hasObjectiveRepairAlternative(b:Bundle,enabled:Memory[],session:SessionRow,task:import('../lib/engi/types').Task,failedImage?:string){
+ const keys=new Set(task.studyContract?.primaryGoals.map(knowledgeMistakeKey)??[]),pool=goalProposalPool(b,enabled,session.tag,'mixed');
+ for(const p of pool.proposals.filter(p=>p.recipe.format!=='recall_reveal'&&p.goals.length===1&&keys.has(knowledgeMistakeKey(p.goals[0]))).slice(0,8)){
+  const alternative=materializeGoalProposal(b,enabled,p,pool.context,session.tag??'all',session.cooldown??[]);if(!alternative||failedImage&&alternative.recipe.cue==='image'&&alternative.items.some(i=>i.image===failedImage))continue;
+  const contract=compileTaskContract(b,alternative),shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));if(contract.primaryGoals.every(g=>!shown.has(g.id)))return true;
+ }return false;
+}
 export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],session:SessionRow,memories:ReadonlyMap<string,GoalMemory>,hasLearning:boolean,options:{excludedKeys?:ReadonlySet<string>;format?:string}={}){
  if(session.mode==='practice')return;
  const ledger=await db.appMeta.get(MISTAKE_EPISODES_KEY),episodes=(ledger?.value.episodes??[]).filter((e:MistakeEpisode)=>e.status==='open'||e.status==='unavailable'&&e.unavailableReason) as MistakeEpisode[];
@@ -21,13 +31,19 @@ export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],sessi
  const requestedKeys=new Set(pool.proposals.filter(p=>p.goals.length===1&&p.recipe.format===session.format).map(p=>knowledgeMistakeKey(p.goals[0])));
  // Ready errors have priority even when the same goal also has ordinary work.
  // Otherwise regular variety ranking can postpone their correction indefinitely.
- const candidates=pool.proposals.filter(p=>p.goals.length===1&&byKey.has(knowledgeMistakeKey(p.goals[0]))&&!options.excludedKeys?.has(knowledgeMistakeKey(p.goals[0]))&&(!format||format==='mixed'||p.recipe.format===format)&&(!requestedKeys.has(knowledgeMistakeKey(p.goals[0]))||p.recipe.format===session.format)&&!(hasLearning&&dueReview(p.goals)&&p.items.some(i=>lastObjects.has(owner(i))))).map(proposal=>({proposal,episode:byKey.get(knowledgeMistakeKey(proposal.goals[0]))!}));
+ let candidates=pool.proposals.filter(p=>p.goals.length===1&&byKey.has(knowledgeMistakeKey(p.goals[0]))&&!options.excludedKeys?.has(knowledgeMistakeKey(p.goals[0]))&&(!format||format==='mixed'||p.recipe.format===format)&&(!requestedKeys.has(knowledgeMistakeKey(p.goals[0]))||p.recipe.format===session.format)&&!(hasLearning&&dueReview(p.goals)&&p.items.some(i=>lastObjects.has(owner(i))))).map(proposal=>({proposal,episode:byKey.get(knowledgeMistakeKey(proposal.goals[0]))!}));
+ // Repairs are real feed screens too. They cannot bypass the shared timer
+ // budget just because the ordinary selector did not choose this task.
+ const mixed=(!session.format||session.format==='mixed')&&(!format||format==='mixed');
+ if(mixed){const timed=candidates.filter(c=>c.proposal.recipe.format==='recall_reveal').map((c,n)=>({key:String(n),interaction:classifyFeedInteraction(c.proposal),goals:c.proposal.goals,supportGoalIds:[],proposal:c.proposal})),allowed=new Set(rankPresentationCandidates(timed,session.cooldown??[],{seed:session.id,format:'mixed'}).filter(r=>!r.blocked).map(r=>r.candidate.proposal));candidates=candidates.filter(c=>c.proposal.recipe.format!=='recall_reveal'||allowed.has(c.proposal));}
  const targets=new Set(canonicalTargets(b,session.tag).map(i=>i.targetId)),scopedKeys=new Set(buildGoalCatalog(b,enabled).filter(e=>!e.suspended&&e.targetIds.every(id=>targets.has(id))).map(e=>knowledgeMistakeKey(e.goal)));
  const atomicKeys=new Set(pool.proposals.filter(p=>p.goals.length===1).map(p=>knowledgeMistakeKey(p.goals[0])));
  await markRepairUnavailable(db,episodes.filter(e=>scopedKeys.has(e.key)&&!atomicKeys.has(e.key)).map(e=>e.id));
  const blocked=new Set<string>();
  while(candidates.length){
-  const preferred=candidates.filter(c=>c.proposal.recipe.format===session.format),considered=preferred.length?preferred:candidates;
+  const objectiveKeys=new Set(candidates.filter(c=>c.proposal.recipe.format!=='recall_reveal').map(c=>c.episode.key));
+  const permitted=mixed?candidates.filter(c=>c.proposal.recipe.format!=='recall_reveal'||!objectiveKeys.has(c.episode.key)):candidates;
+  const preferred=permitted.filter(c=>c.proposal.recipe.format===session.format),considered=preferred.length?preferred:permitted;
   const selected=selectRepairCandidate(considered.map(c=>({key:c.episode.key,lastAttemptAt:c.episode.lastAttemptAt,goal:c.proposal.goals[0],format:c.proposal.recipe.format})),session.cooldown??[],hasLearning);
   if(selected<0)return;const index=candidates.indexOf(considered[selected]);
   const {proposal,episode}=candidates[index],task=materializeGoalProposal(b,enabled,proposal,pool.context,session.tag??'all',session.cooldown??[],false,memories);

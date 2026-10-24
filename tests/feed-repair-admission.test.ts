@@ -3,7 +3,10 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {EngiDB,type SessionRow} from '../src/db/engi-db';
 import type {Bundle} from '../src/lib/engi/types';
-import {goalProposalPool} from '../src/services/goal-proposals';
+import {goalProposalPool,materializeGoalProposal} from '../src/services/goal-proposals';
+import {putBundle,learningRow} from '../src/db/repositories';
+import {createTrainerService} from '../src/services/trainer-service';
+import {prepareStudyTask} from '../src/services/study-core-bridge';
 import {selectRepairWork} from '../src/services/study-work-service';
 import {knowledgeMistakeKey} from '../src/lib/engi/study-core/mistakes';
 import {pickFeed,dailyNewState} from '../src/lib/engi/session/candidate-pool';
@@ -12,9 +15,45 @@ import {triagedMemory} from '../src/lib/engi/learning/bootstrap';
 import {deckStudyScope} from '../src/services/deck-study-scope';
 import {createEmptyCard} from 'ts-fsrs';
 import type {GoalMemory} from '../src/lib/engi/study-core/memory';
+import {compileTaskContract} from '../src/lib/engi/study-core/compiler';
 
 const fixture=():Bundle=>({entities:Array.from({length:8},(_,n)=>({id:'e'+n,type:'object',name:'Объект '+n,aliases:[],externalIds:{}})),facts:Array.from({length:8},(_,n)=>({id:'f'+n,entityId:'e'+n,key:'nickname',valueKind:'text' as const,valueText:'Прозвище '+n,verification:'user_confirmed' as const,source:{kind:'manual' as const,name:'Test'}})),media:[],tags:[],entityTags:[],missing:[],unresolved:[],properties:[{id:'nickname',name:'Прозвище',valueKind:'text',cardinality:'one',learnable:true,subjectTypes:['object'],learning:{reverse:true,choice:'on'}}],decks:['a','b'].map(id=>({id,name:id,learning:{imageRecognition:false}})),deckMembers:Array.from({length:8},(_,n)=>({deckId:n<4?'a':'b',entityId:'e'+n}))});
 const session=():SessionRow=>({id:'test',format:'mixed',mode:'daily',tasks:[],currentPosition:0,results:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),status:'active',timeLeft:90,cooldown:[]});
+
+test('resuming an old reverse timed repair replaces it with an objective repair that clears the error',async()=>{
+ const d=new EngiDB('repair-resume-'+crypto.randomUUID());try{
+  const b=fixture();await putBundle(d,b);const enabled=canonicalTargets(b).map(i=>triagedMemory(i,'red','test',0));await d.learningState.bulkPut(enabled.map(learningRow));
+  const pool=goalProposalPool(b,enabled,'all','mixed'),p=pool.proposals.find(p=>p.recipe.format==='recall_reveal'&&p.goals[0]?.direction==='reverse')!,goal=p.goals[0],at=new Date().toISOString();
+  await d.appMeta.put({key:'studyCore:mistakeEpisodes',value:{version:1,episodes:[{id:'error',key:knowledgeMistakeKey(goal),goal,status:'open',failedAt:at,openedAt:at,lastAttemptAt:at,attemptIds:[]}]}});
+  const timed=materializeGoalProposal(b,enabled,p,pool.context,'all',[])!;timed.memoryModel='goals';timed.learningLifecycle=1;timed.intent='repair';timed.reason='retry';timed.repairEpisodeIds=['error'];await prepareStudyTask(d,b,timed);
+  const saved={...session(),memoryModel:'goals' as const,learningLifecycle:1 as const,endless:true,feed:true,tag:'all',tasks:[timed]};await d.activeSessions.put(saved);
+  const svc=createTrainerService(d),resumed=await svc.getResumableSession({endless:true}),q=resumed!.tasks[0];assert.notEqual(q.id,timed.id);assert.equal(q.recipe.format,'choice');assert.equal(q.recipe.direction,'reverse');
+  assert.equal((await d.appMeta.get('studyCore:attempt:'+timed.id))!.value.phase,'skipped');assert.equal(await d.reviewEvents.count(),0,'replacement must not grade the pending question');
+  const r=q.studyContract!.response;if(r.kind!=='choice')throw Error('Expected choice');await svc.answer({sessionId:resumed!.id,taskId:q.id,answer:r.expected});
+  assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].status,'resolved');assert.equal(await d.appMeta.where('key').startsWith('studyCore:memory:').count(),0,'repair clears the error without inventing FSRS memory');
+ }finally{d.close();await d.delete();}
+});
+
+test('mixed mistake repair does not alternate a valid objective check with timed self-report',async()=>{
+ const d=new EngiDB('repair-timer-loop-'+crypto.randomUUID());try{
+  const b=fixture(),enabled=canonicalTargets(b).map(i=>triagedMemory(i,'red','test',0)),goal=goalProposalPool(b,enabled,'all','mixed').proposals.find(p=>p.goals[0]?.direction==='reverse'&&p.recipe.format==='choice')!.goals[0],key=knowledgeMistakeKey(goal),at=new Date().toISOString();
+  await d.appMeta.put({key:'studyCore:mistakeEpisodes',value:{version:1,episodes:[{id:'error',key,goal,status:'open',failedAt:at,openedAt:at,lastAttemptAt:at,attemptIds:[]}]}});
+  const first=await selectRepairWork(d,b,enabled,session(),new Map(),false);assert.equal(first?.recipe.format,'choice');
+  const next=await selectRepairWork(d,b,enabled,{...session(),cooldown:[first!]},new Map(),false);
+  assert.equal(next?.recipe.format,'choice','format variation must not turn an objective error into a repeating timer');
+ }finally{d.close();await d.delete();}
+});
+test('recall-only repair data obeys the shared canonical repeat guard; explicit recall remains possible',async()=>{
+ const d=new EngiDB('repair-sparse-'+crypto.randomUUID());try{
+  const b=fixture();b.properties![0].learning={...b.properties![0].learning,choice:'off',recallReveal:'on'};
+  const enabled=canonicalTargets(b).map(i=>triagedMemory(i,'red','test',0)),goal=goalProposalPool(b,enabled,'all','mixed').proposals.find(p=>p.recipe.format==='recall_reveal')!.goals[0],key=knowledgeMistakeKey(goal),at=new Date().toISOString();
+  await d.appMeta.put({key:'studyCore:mistakeEpisodes',value:{version:1,episodes:[{id:'error',key,goal,status:'open',failedAt:at,openedAt:at,lastAttemptAt:at,attemptIds:[]}]}});
+  const first=await selectRepairWork(d,b,enabled,session(),new Map(),false);assert.equal(first?.recipe.format,'recall_reveal');first!.studyContract=compileTaskContract(b,first!);
+  const history=[first!];assert.equal(await selectRepairWork(d,b,enabled,{...session(),cooldown:history},new Map(),false),undefined,'draining errors must not bypass the same-knowledge timer guard');
+  assert.equal((await d.appMeta.get('studyCore:mistakeEpisodes'))!.value.episodes[0].status,'open','waiting for spacing is not an unavailable error');
+  assert.equal((await selectRepairWork(d,b,enabled,{...session(),format:'recall_reveal',cooldown:history},new Map(),false))?.recipe.format,'recall_reveal');
+ }finally{d.close();await d.delete();}
+});
 
 test('an eligible reverse error gets a repair even while it is also ordinary learning work',async()=>{
  const d=new EngiDB('repair-priority-'+crypto.randomUUID());try{

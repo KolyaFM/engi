@@ -37,6 +37,7 @@ import {pickLifecycleFeed} from './lifecycle-feed-service';
 import {groupContext} from './group-affinity';
 import {acceptLifecycleIntro,lifecycleProjection,LIFECYCLE_KEY} from './learning-lifecycle-service';
 import {studyWorkload} from '../lib/engi/study-core/workload';
+import {hasObjectiveRepairAlternative} from './study-work-service';
 
 function setIntroProperty(intro:NonNullable<SessionRow['intro']>,unitId:string,color:Familiarity){const base=unitId.replace(/:(forward|reverse)$/,'');for(const id of intro.unitIds)if(id===unitId||id.replace(/:(forward|reverse)$/,'')===base)intro.selections[id]=color;}
 // Only forwarded inside the accepting write transaction, after the choices have
@@ -140,6 +141,11 @@ export function createTrainerService(d:EngiDB){return {
    // Preserve submitted answers and every genuine rehearsal/review/repair.
    if(s.learningLifecycle&&(!s.format||s.format==='mixed')&&task?.recipe.format==='recall_reveal'&&(task.intent==='practice'||task.reason==='game')&&task.intent!=='repair'&&!task.learningRecall&&!await d.reviewEvents.get(task.id)){
     if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);
+   }
+   if(s.learningLifecycle&&(!s.format||s.format==='mixed')&&task?.recipe.format==='recall_reveal'&&task.intent==='repair'&&!await d.reviewEvents.get(task.id)){
+    const content=await getBundle(d),bundle=deckStudyScope(content,s.deckIds,settings),enabled=directionConfiguration(bundle,(await d.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.payload));
+    const failedImage=((await d.appMeta.get(MISTAKE_EPISODES_KEY))?.value.episodes??[]).find((e:MistakeEpisode)=>task.repairEpisodeIds?.includes(e.id))?.failedImage;
+    if(hasObjectiveRepairAlternative(bundle,enabled,s,task,failedImage)){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s,{bundle:content,settings});}
    }
    if(task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)&&!task.contextual&&!task.intervalExercise){const affinity=groupContext(await getBundle(d)),signatures=task.items.map(i=>affinity.signature(i,task.recipe));if(signatures.some(signature=>!signature||signature!==signatures[0])){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
    if(task&&((task.recipe.format==='match'&&task.items.length===2)||(task.presentation==='conveyor'&&(task.items.length<3||task.items.length>6)))){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
