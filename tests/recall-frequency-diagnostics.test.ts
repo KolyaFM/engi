@@ -28,9 +28,9 @@ test('successful portrait practice rotates knowledge before choosing its present
    await db.appMeta.bulkPut([{key:'studyCore:learningLifecycle',value:ledger},{key:'introducedEntities',value:b.entities.map(e=>e.id)},{key:'studyPreferences',value:{newCardsPerDay:0}}]);
    startStudyTrace(db,300);const svc=createTrainerService(db);let session=await svc.startGoalFeed('all',format,'daily',{endless:true});
    const screens:{turn:number;object:string;objects:string[];properties:string[];property:string;format:string;intent?:string;reason:string;learningRecall:boolean;correct:boolean;availableAt:string;rehearsedAt?:string}[]=[];
-   for(let turn=0;turn<24;turn++){
+   for(let turn=0;turn<120;turn++){
     const task=session.tasks[0];assert(task);const goal=task.studyContract!.primaryGoals[0];assert(goal);
-    await svc.observeVisibility(session.id,task.id,'question','question'+turn,'start');mock.timers.setTime(at+(turn+1)*8000);
+    await svc.observeVisibility(session.id,task.id,'question','question'+turn,'start');mock.timers.setTime(at+(turn+1)*2000);
     const response=task.studyContract!.response;let answer:unknown;
     if(response.kind==='self-report'){await svc.saveInteraction(session.id,task.id,{revealed:true,recallElapsedMs:5000});await svc.observeVisibility(session.id,task.id,'answer-reveal','reveal'+turn,'start');answer=true;}
     else if(response.kind==='choice')answer=response.expected;
@@ -50,12 +50,26 @@ test('successful portrait practice rotates knowledge before choosing its present
    assert.equal((await svc.getDayPlan()).workload!.mistakes,0,'every answer was correct');
    assert.equal(new Set(screens.flatMap(s=>s.objects)).size,count,'a protected confirmation must not permanently remove a portrait from practice');
    assert(screens.every((s,n)=>n===0||s.properties.length>1||screens[n-1].properties.length>1||s.property!==screens[n-1].property),'no consecutive atomic repeats');
-   if(count===3){assert(screens.every((s,n)=>n<3||s.properties.length>1||screens.slice(n-2,n).some(previous=>previous.properties.length>1)||!screens.slice(n-2,n).some(previous=>previous.property===s.property)),'use all three portraits before returning to one');if(format==='mixed'){assert(recalls.length>0,'recall remains available');assert.equal(closeRecalls.length,0,'the same portrait recall cannot return after one or two intervening tasks');}}
+   if(count===3){assert(screens.every((s,n)=>n<3||s.properties.length>1||screens.slice(n-2,n).some(previous=>previous.properties.length>1)||!screens.slice(n-2,n).some(previous=>previous.property===s.property)),'use all three portraits before returning to one');if(format==='mixed'){assert.equal(closeRecalls.length,0,'the same portrait recall cannot return after one or two intervening tasks');}}
    reports.push({count,format,recalls:recalls.length,closeReturns,closeRecalls,screens,trace:studyTraceReport(db)});
    console.log('Recall frequency:',JSON.stringify({count,format,recalls:recalls.length,closeReturns:closeReturns.length,closeRecalls}));
    await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));
-   if(format==='mixed'){assert(recalls.length<=Math.ceil(screens.length*.1),'optional recall should occupy at most 10% of practice with objective alternatives');for(let n=0;n<screens.length;n++)assert(screens.slice(Math.max(0,n-19),n+1).filter(s=>s.format==='recall_reveal').length<=2,'rolling recall budget');}
+   if(format==='mixed'){assert.equal(recalls.length,0,'waiting for confirmation must not manufacture recall obligations as filler');}
    if(count===4){const counts=new Map<string,number>();for(const r of recalls){counts.set(r.object,(counts.get(r.object)??0)+1);assert(!(counts.get(r.object)!>=3&&counts.size<4),'no third recall of one portrait before other portraits receive a chance');}}
+   if(count===4){
+    const explicit=await svc.startGoalFeed('all','recall_reveal','practice',{endless:true});assert.equal(explicit.tasks[0].recipe.format,'recall_reveal');
+    const obsolete=explicit.tasks[0],beforeEvents=await db.reviewEvents.count();
+    await db.activeSessions.put({...explicit,mode:'daily',format:'mixed'});
+    const resumed=await svc.getResumableSession({endless:true});
+    assert.notEqual(resumed!.tasks[0]?.id,obsolete.id,'an old queued practice timer must not resurrect after updating the feed');
+    assert.notEqual(resumed!.tasks[0]?.recipe.format,'recall_reveal');assert.equal(await db.reviewEvents.count(),beforeEvents,'retiring an obsolete timer is not an answer');
+    assert.equal((await db.appMeta.get('studyCore:attempt:'+obsolete.id))!.value.phase,'skipped');
+    const graded=await svc.startGoalFeed('all','recall_reveal','practice',{endless:true}),q=graded.tasks[0];
+    await svc.saveInteraction(graded.id,q.id,{revealed:true,recallElapsedMs:5000});await svc.answer({sessionId:graded.id,taskId:q.id,answer:true});
+    await db.activeSessions.put({...(await db.activeSessions.get(graded.id))!,mode:'daily',format:'mixed'});
+    const withReceipt=await svc.getResumableSession({endless:true});assert.equal(withReceipt!.tasks[0].id,q.id,'a submitted answer must retain its result rather than being retired');
+    assert.equal((await db.appMeta.get('studyCore:attempt:'+q.id))!.value.phase,'submitted');
+   }
   }finally{stopStudyTrace(db);db.close();await db.delete();}
  }}finally{Math.random=originalRandom;crypto.randomUUID=originalUUID;mock.timers.reset();}
  await mkdir('artifacts',{recursive:true});await writeFile('artifacts/recall-frequency-diagnostics.json',JSON.stringify(reports,null,2));

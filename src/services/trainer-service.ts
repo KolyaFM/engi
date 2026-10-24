@@ -136,6 +136,11 @@ export function createTrainerService(d:EngiDB){return {
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
+   // An already queued filler from the previous policy must not survive reload.
+   // Preserve submitted answers and every genuine rehearsal/review/repair.
+   if(s.learningLifecycle&&(!s.format||s.format==='mixed')&&task?.recipe.format==='recall_reveal'&&(task.intent==='practice'||task.reason==='game')&&task.intent!=='repair'&&!task.learningRecall&&!await d.reviewEvents.get(task.id)){
+    if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);
+   }
    if(task&&task.items.length>1&&['match','categorize','self_check'].includes(task.recipe.format)&&!task.contextual&&!task.intervalExercise){const affinity=groupContext(await getBundle(d)),signatures=task.items.map(i=>affinity.signature(i,task.recipe));if(signatures.some(signature=>!signature||signature!==signatures[0])){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}}
    if(task&&((task.recipe.format==='match'&&task.items.length===2)||(task.presentation==='conveyor'&&(task.items.length<3||task.items.length>6)))){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}
    if(task?.recipe.format==='sort'&&task.studyContract?.response.kind==='order'&&task.studyContract.response.direction!=='bottom-up'){if(await d.appMeta.get('studyCore:attempt:'+task.id))await feedStudyCore(d).skip(task.id);return selectNext(d,s);}

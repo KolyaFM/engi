@@ -92,7 +92,10 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const history=s.cooldown??[],recent=history.slice(-5).flatMap(t=>t.studyContract?.primaryGoals.map(g=>g.id)??[]);
  const recentProperties=new Set(history.at(-1)?.studyContract?.primaryGoals.map(propertyKey)??[]);
  const knownKeys=new Set([...ledger.units.map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)).map(e=>propertyKey(e.goal))]);
- const practicePool=pool.proposals.filter(p=>compatible(p)&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(propertyKey(g))));
+ // A self-report that cannot advance learning is not filler for a waiting
+ // confirmation. Timed recall belongs to a first-check rehearsal or due work;
+ // explicitly requested recall-only practice remains available.
+ const practicePool=pool.proposals.filter(p=>compatible(p)&&(p.recipe.format!=='recall_reveal'||s.format==='recall_reveal')&&p.goals.every(g=>activeIds.has(g.id)&&knownKeys.has(propertyKey(g))));
  // Prefer presentations that leave the nearest confirmation undisclosed, but
  // never let this preference exclude older knowledge from continuous practice.
  const pending=new Map<string,number>();for(const p of practicePool)for(const g of p.goals){const key=propertyKey(g),date=at(g.id);if(active.has(key)&&date>now)pending.set(key,Math.min(pending.get(key)??Infinity,date));}
