@@ -45,6 +45,6 @@ export function submitAttempt(attempt: Attempt, contract: TaskContract, answer: 
   const results = gradeResponse(contract, answer).map(r => ({ ...r, credit: !contract.intervalEvidence&&!contract.learningRecall&&!contract.contextual&&contract.intent!=='repair'&&!contract.practice &&
     !attempt.ineligibleGoalIds.includes(r.goalId) && !automaticGoalIds.includes(r.goalId),
     ...(contract.intervalEvidence?{intervalCredit:!contract.practice&&!attempt.hintedGoalIds?.includes(r.goalId)}:{}),
-    ...(contract.intent==='repair'?{repairEligible:!contract.intervalEvidence&&!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
+    ...(contract.intent==='repair'||contract.repairEpisodeIds?.length?{repairEligible:!contract.intervalEvidence&&!attempt.hintedGoalIds?.includes(r.goalId)&&!shown.has(r.goalId)&&!automaticGoalIds.includes(r.goalId)}:{}) }));
   return { ...attempt, phase: 'submitted', firstAnswer: structuredClone(answer), submittedAt: now.toISOString(), results };
 }

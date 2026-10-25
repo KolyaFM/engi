@@ -59,6 +59,6 @@ export async function getStatisticsInput(db:EngiDB,s:Snapshot,now=new Date()):Pr
    data.answers.push({id:event.id+':'+result.goalId,key,at,correct:!!result.correct,scheduled});
   }
  }
- for(const episode of h.episodes)if(episode.status==='resolved'&&episode.resolvedAt)data.repairs.push({id:episode.id,key:statisticsKey(episode.goal),at:episode.resolvedAt});
+ for(const episode of h.episodes)if(episode.status==='resolved'&&episode.resolvedAt&&episode.resolution!=='manual')data.repairs.push({id:episode.id,key:statisticsKey(episode.goal),at:episode.resolvedAt});
  return data;
 }

@@ -51,7 +51,7 @@ export async function selectRepairWork(db:EngiDB,b:Bundle,enabled:Memory[],sessi
   // An actual due review must retain ordinary FSRS rights. An extra repair
   // before its due date only clears the error and cannot reschedule memory.
   const due=dueReview(proposal.goals);
-  task.intent=due?'learn':'repair';task.repairEpisodeIds=due?undefined:[episode.id];task.reason=due?'due':'retry';task.studyContract=undefined;
+  task.intent=due?'learn':'repair';task.repairEpisodeIds=[episode.id];task.reason=due?'due':'retry';task.studyContract=undefined;
   const contract=compileTaskContract(b,task),shown=new Set(contract.shownClaims.flatMap(c=>c.revealsGoalIds));
   if(contract.primaryGoals.some(g=>shown.has(g.id))){blocked.add(episode.id);candidates.splice(index,1);continue;}
   if(episode.status==='unavailable'){const current=await db.appMeta.get(MISTAKE_EPISODES_KEY),stored=current?.value.episodes.find((e:MistakeEpisode)=>e.id===episode.id);if(stored){stored.status='open';stored.unavailableReason=undefined;await db.appMeta.put({key:current!.key,value:current!.value});}}

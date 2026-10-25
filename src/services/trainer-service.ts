@@ -27,7 +27,8 @@ import {measureFeed} from './feed-performance';
 import {answerMatchPair,type MatchPairInput} from './matching-service';
 import {knowledgeMistakeKey} from '../lib/engi/study-core/mistakes';
 import {newAdmission} from '../lib/engi/study-core/day-plan';
-import {markRepairUnavailable,MISTAKE_EPISODES_KEY,type MistakeEpisode} from './mistake-episodes';
+import {markRepairUnavailable,resolveMistakesManually,MISTAKE_EPISODES_KEY,type MistakeEpisode} from './mistake-episodes';
+import {ACQUISITION_CONFIRMATION_MS} from '../lib/engi/study-core/acquisition';
 import {studyAvailability} from './study-availability-service';
 import {readStudyPreferences} from './study-preferences-service';
 import {pickEndlessFeed} from './endless-study-service';
@@ -109,6 +110,21 @@ export function createTrainerService(d:EngiDB){return {
   if(task){if(skip){await abandonReview(d,task.id);if(task.intent==='repair')await markRepairUnavailable(d,task.repairEpisodeIds??[],task.recipe.cue==='image'?task.items[0].image:undefined);if(task.studyContract)await feedStudyCore(d).skip(task.id);}if(!skip&&!await d.reviewEvents.get(task.id))throw Error('Сначала завершите карточку');s.cooldown=[...s.cooldown??[],task].slice(-30);s.completedCount=(s.completedCount??0)+1;if(!skip&&!task.recipe.diagnostic&&!task.retryOf&&task.intent!=='repair')s.ordinaryCount=(s.ordinaryCount??0)+1;if(task.recipe.diagnostic)s.diagnosticSeen=[...s.diagnosticSeen??[],task.recipe.id]}
   return selectNext(d,s);
  }))},
+ async acceptCorrectAnswer(id:string,taskId:string){return d.transaction('rw',sessionTables(d),async()=>{
+  const s=await d.activeSessions.get(id);if(!s?.feed||s.status!=='active')throw Error('Лента не найдена');
+  const receiptKey='studyCore:manualCorrection:'+taskId;if(await d.appMeta.get(receiptKey))return s;
+  const task=s.tasks[s.currentPosition];if(s.intro||!task||task.id!==taskId)throw Error('Вопрос уже сменился');
+  const contract=task.studyContract;if(!contract?.primaryGoals.length)throw Error('В этом задании нет проверяемых знаний');
+  const now=new Date(),resolved=await resolveMistakesManually(d,contract,now),until=new Date(+now+ACQUISITION_CONFIRMATION_MS).toISOString();
+  // Pause the affected obligation, rather than immediately giving the same due
+  // question again. Keep successes, stability and difficulty exactly as they were.
+  const properties=new Set(contract.primaryGoals.map(propertyKey)),ledger=await d.appMeta.get(LIFECYCLE_KEY);
+  if(ledger){for(const unit of ledger.value.units)if(unit.stage!=='completed'&&properties.has(propertyKey(unit.goal))&&unit.availableAt<until)unit.availableAt=until;await d.appMeta.put(ledger);}
+  const entries=buildGoalCatalog(await getBundle(d),(await d.learningState.toArray()).map(r=>r.payload)).filter(e=>properties.has(propertyKey(e.goal)));
+  for(const entry of entries){const row=await d.appMeta.get('studyCore:memory:'+entry.goal.id);if(row&&new Date(row.value.card.due)<new Date(until)){row.value.card.due=new Date(until);await d.appMeta.put(row);}}
+  await d.appMeta.put({key:receiptKey,value:{sessionId:id,taskId,goalIds:contract.primaryGoals.map(g=>g.id),at:now.toISOString(),resolved}});
+  return createTrainerService(d).advanceFeed(id,true,taskId);
+ })},
  async openMore(id:string,practice=false){return d.transaction('rw',sessionTables(d),async()=>{const s=await d.activeSessions.get(id);if(!s||s.status!=='active'||!s.exhausted)throw Error('Сначала завершите текущую практику');if(practice){s.mode='practice';s.format='mixed'}else{const {newCardsPerDay}=await readStudyPreferences(d);if(!newCardsPerDay)throw Error('Укажите дневной лимит новых карточек в настройках');const daily=dailyNewState((await d.appMeta.get('newLearning'))?.value);daily.extraBudget+=newCardsPerDay;await d.appMeta.put({key:'newLearning',value:daily})}return selectNext(d,s)})},
  async saveIntroSelection(id:string,unitId:string,color:Familiarity){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro||!s.intro.unitIds.includes(unitId)||!['red','orange','yellow','green','suspended'].includes(color))throw Error('Свойство больше не доступно');setIntroProperty(s.intro,unitId,color);await d.activeSessions.put(s);return s})},
  async saveIntroSelections(id:string,selections:Record<string,Familiarity>){return d.transaction('rw',d.activeSessions,async()=>{const s=await d.activeSessions.get(id);if(!s?.intro)throw Error('Знакомство уже завершено');for(const [unitId,color] of Object.entries(selections)){if(s.intro.unitIds.includes(unitId)&&['red','orange','yellow','green','suspended'].includes(color))setIntroProperty(s.intro,unitId,color)}await d.activeSessions.put(s);return s})},

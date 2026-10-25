@@ -45,7 +45,9 @@ export async function applyAcquisitionEvidence(db:EngiDB,attempt:Attempt,contrac
   const after=next.units.find(u=>u.key===unit.key)!;ledger=next;
   const completed=eligible&&after.stage==='completed',old=previous.find(m=>m.goalId===result.goalId);
   if(completed&&!old)graduated.push(graduateGoalMemory(goal,now));
-  return {...result,acquisitionCredit:eligible,...(contract.intent==='repair'?{repairEligible:eligible}:{}),acquisitionStageBefore:unit.stage,acquisitionStageAfter:after.stage,credit:completed&&(!old||new Date(old.card.due)<=now)};
+  // A fresh repair may close an error while acquisition still waits for its gap.
+  // Keep the independently computed repair right; do not replace it with FSRS rights.
+  return {...result,acquisitionCredit:eligible,acquisitionStageBefore:unit.stage,acquisitionStageAfter:after.stage,credit:completed&&(!old||new Date(old.card.due)<=now)};
  });
  await db.appMeta.put({key:LIFECYCLE_KEY,value:ledger});return {attempt:{...attempt,results},graduated};
 }

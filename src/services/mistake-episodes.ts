@@ -6,7 +6,7 @@ import type {Attempt} from '../lib/engi/study-core/attempts';
 import type {TaskContract} from '../lib/engi/study-core/contracts';
 import {knowledgeMistakeKey,synchronizeMistakes,type KnowledgeMistake} from '../lib/engi/study-core/mistakes';
 export const MISTAKE_EPISODES_KEY='studyCore:mistakeEpisodes';
-export type MistakeEpisode=KnowledgeMistake&{id:string;status:'open'|'resolved'|'unavailable'|'superseded';openedAt:string;lastAttemptAt:string;attemptIds:string[];resolvedAt?:string;unavailableReason?:string;failedImage?:string};
+export type MistakeEpisode=KnowledgeMistake&{id:string;status:'open'|'resolved'|'unavailable'|'superseded';openedAt:string;lastAttemptAt:string;attemptIds:string[];resolvedAt?:string;resolution?:'answer'|'manual';resolutionTaskId?:string;unavailableReason?:string;failedImage?:string};
 type Ledger={version:1;episodes:MistakeEpisode[]};
 export async function synchronizeEpisodes(db:EngiDB,catalog:GoalCatalogEntry[],memories:GoalMemory[],legacy:GoalDayPlan|undefined,now:Date){
  const previous=(await db.appMeta.get(MISTAKE_EPISODES_KEY))?.value as Ledger|undefined;
@@ -41,18 +41,26 @@ export async function recordMistakeOutcome(db:EngiDB,attempt:Attempt,contract:Ta
   const key=knowledgeMistakeKey(goal);
   let episode=ledger.episodes.find(e=>e.key===key&&(e.status==='open'||e.status==='unavailable'));
   if(episode?.attemptIds.includes(attempt.id))continue;
-  const repair=contract.intent==='repair'&&result.repairEligible===true&&!!episode&&contract.repairEpisodeIds?.includes(episode.id);
+  const repair=result.repairEligible===true&&!!episode&&contract.repairEpisodeIds?.includes(episode.id);
   const gameFailure=contract.game&&contract.practice&&contract.intent==='practice'&&!result.correct&&!attempt.hintedGoalIds?.includes(goal.id)&&!contract.shownClaims.some(c=>c.revealsGoalIds.includes(goal.id));
   if(!result.credit&&!result.acquisitionCredit&&!repair&&!gameFailure&&!result.intervalCredit)continue;
   if(!result.correct){
    if(!episode){episode={id:crypto.randomUUID(),key,goal,status:'open',failedAt:attempt.submittedAt!,openedAt:attempt.submittedAt!,lastAttemptAt:attempt.submittedAt!,attemptIds:[]};ledger.episodes.push(episode);}
    episode.failedAt=attempt.submittedAt!;
    episode.status='open';episode.unavailableReason=undefined;
-  }else if(episode&&!contract.intervalEvidence){episode.status='resolved';episode.resolvedAt=attempt.submittedAt!;resolved++;}
+  }else if(episode&&!contract.intervalEvidence){episode.status='resolved';episode.resolvedAt=attempt.submittedAt!;episode.resolution='answer';resolved++;}
   if(episode){episode.lastAttemptAt=attempt.submittedAt!;episode.attemptIds.push(attempt.id);}
  }
  await db.appMeta.put({key:MISTAKE_EPISODES_KEY,value:ledger});
  const plan=await db.appMeta.get('studyCore:dayPlan');
  if(plan)await db.appMeta.put({key:plan.key,value:{...plan.value,mistakes:ledger.episodes.filter(e=>e.status==='open')}});
+ return resolved;
+}
+/** Explicit user correction: no invented answer, acquisition success, or FSRS evidence. */
+export async function resolveMistakesManually(db:EngiDB,contract:TaskContract,now:Date){
+ const keys=new Set(contract.primaryGoals.map(knowledgeMistakeKey)),row=await db.appMeta.get(MISTAKE_EPISODES_KEY);let resolved=0;
+ if(row){const ledger=row.value as Ledger;for(const episode of ledger.episodes)if(keys.has(episode.key)&&(episode.status==='open'||episode.status==='unavailable')){episode.status='resolved';episode.resolvedAt=now.toISOString();episode.resolution='manual';episode.resolutionTaskId=contract.id;episode.unavailableReason=undefined;resolved++;}
+  await db.appMeta.put(row);const plan=await db.appMeta.get('studyCore:dayPlan');if(plan)await db.appMeta.put({key:plan.key,value:{...plan.value,mistakes:ledger.episodes.filter(e=>e.status==='open')}});
+ }
  return resolved;
 }
