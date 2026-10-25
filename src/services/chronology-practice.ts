@@ -6,7 +6,7 @@ import {selectionTie} from '../lib/engi/session/continuous-feed-policy';
 /** Diagnostics use learned, enabled facts only. They never assert knowledge of exact dates. */
 export function chronologyPractice(b:Bundle,enabled:Memory[],facts:Set<string>,protectedGoals:Set<string>,tag:string,format:string,history:Task[],seed:string,onlyStandalone=false){
  const available:Format[]=['sort'],formats=available.filter(f=>format==='mixed'||f===format||format==='timeline');
- const context=compositionContext(b),standalone=context.standaloneOrderingTargets,knownTargets=new Set([...facts].map(id=>`ku:fact:${id}:forward`));
+ const context=compositionContext(b),standalone=context.standaloneOrderingTargets,knownTargets=new Set([...facts].map(id=>id.startsWith('ku:')?id:`ku:fact:${id}:forward`));
  const allowed=new Set(enabled.filter(m=>!m.legacyOf&&m.status!=='suspended'&&(standalone.has(m.id)||knownTargets.has(m.id))).map(m=>m.id));
  const tasks=formats.flatMap(f=>composeFeed(b,enabled,tag,f,'practice',history,Math.max(4,context.recipes.filter(r=>r.format==='sort').length),allowed)).filter(t=>!onlyStandalone||t.items.some(i=>orderingTargets(i).some(id=>standalone.has(id))));
  const owners=(t:Task)=>t.items.map(i=>i.factId?b.facts.find(f=>f.id===i.factId)?.entityId??i.entityId:i.entityId),last=new Set(history.at(-1)?owners(history.at(-1)!):[]);

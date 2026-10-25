@@ -39,7 +39,7 @@ import {acceptLifecycleIntro,lifecycleProjection,LIFECYCLE_KEY} from './learning
 import {studyWorkload} from '../lib/engi/study-core/workload';
 import {hasObjectiveRepairAlternative} from './study-work-service';
 
-function setIntroProperty(intro:NonNullable<SessionRow['intro']>,unitId:string,color:Familiarity){const base=unitId.replace(/:(forward|reverse)$/,'');for(const id of intro.unitIds)if(id===unitId||id.replace(/:(forward|reverse)$/,'')===base)intro.selections[id]=color;}
+function setIntroProperty(intro:NonNullable<SessionRow['intro']>,unitId:string,color:Familiarity){const base=unitId.replace(/:(?:start:)?(forward|reverse)$/,'');for(const id of intro.unitIds)if(id===unitId||id.replace(/:(?:start:)?(forward|reverse)$/,'')===base)intro.selections[id]=color;}
 // Only forwarded inside the accepting write transaction, after the choices have
 // been applied. Never cache mutable progress across tasks or transactions.
 type SelectionContent={bundle:Bundle;settings:Awaited<ReturnType<typeof readDeckPropertySettings>>;catalog?:ReturnType<typeof buildGoalCatalog>;ledger?:Awaited<ReturnType<typeof acceptLifecycleIntro>>;stored?:Memory[];memories?:Memory[]};

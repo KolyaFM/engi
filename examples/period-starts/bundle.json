@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 3,
+  "name": "Начала периодов — тест",
+  "description": "Вымышленные объекты и даты для проверки механики.",
+  "properties": [
+    {
+      "name": "Правление",
+      "valueType": "date",
+      "learning": {
+        "reverse": false,
+        "periodStart": {
+          "name": "Начало правления",
+          "question": "В каком году началось правление?"
+        }
+      }
+    },
+    {
+      "name": "Ход войны",
+      "valueType": "date",
+      "learning": {
+        "reverse": false,
+        "periodStart": {
+          "name": "Начало войны",
+          "question": "В каком году началась война?"
+        }
+      }
+    },
+    {
+      "name": "Год события",
+      "valueType": "date",
+      "learning": {
+        "reverse": false
+      }
+    }
+  ],
+  "entities": [
+    {
+      "name": "Правитель А",
+      "type": "Человек",
+      "facts": [
+        {
+          "property": "Правление",
+          "value": {
+            "start": "1100",
+            "end": "1150"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетический тест, не исторические данные"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    },
+    {
+      "name": "Война Б",
+      "type": "Событие",
+      "facts": [
+        {
+          "property": "Ход войны",
+          "value": {
+            "start": "1120",
+            "end": "1170"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетический тест, не исторические данные"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    },
+    {
+      "name": "Правитель В",
+      "type": "Человек",
+      "facts": [
+        {
+          "property": "Правление",
+          "value": {
+            "start": "1140",
+            "end": "1190"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетический тест, не исторические данные"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    },
+    {
+      "name": "Событие Г",
+      "type": "Событие",
+      "facts": [
+        {
+          "property": "Год события",
+          "value": "1110",
+          "source": {
+            "kind": "manual",
+            "name": "Синтетический тест, не исторические данные"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    },
+    {
+      "name": "Война Д",
+      "type": "Событие",
+      "facts": [
+        {
+          "property": "Ход войны",
+          "value": {
+            "start": "1130",
+            "end": "1160"
+          },
+          "source": {
+            "kind": "manual",
+            "name": "Синтетический тест, не исторические данные"
+          },
+          "verification": "user_confirmed"
+        }
+      ]
+    }
+  ],
+  "deck": {
+    "name": "Начала периодов — тест",
+    "members": [
+      {
+        "name": "Правитель А",
+        "type": "Человек"
+      },
+      {
+        "name": "Война Б",
+        "type": "Событие"
+      },
+      {
+        "name": "Правитель В",
+        "type": "Человек"
+      },
+      {
+        "name": "Событие Г",
+        "type": "Событие"
+      },
+      {
+        "name": "Война Д",
+        "type": "Событие"
+      }
+    ],
+    "learning": {
+      "imageRecognition": false,
+      "properties": [
+        "Правление",
+        "Ход войны",
+        "Год события"
+      ]
+    }
+  }
+}

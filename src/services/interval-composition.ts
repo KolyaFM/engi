@@ -4,6 +4,7 @@ import type {Bundle,Task} from '../lib/engi/types';
 import type {IntervalEvidence} from '../lib/engi/study-core/interval-evidence';
 import {yearInterval} from '../lib/engi/questions/date-interval';
 export function buildEndpointTask(b:Bundle,exact:Task,evidence:IntervalEvidence|undefined,history:Task[]):Task|undefined{
+ if(exact.items.some(i=>i.dateEdge))return;
  if(exact.recipe.format!=='choice'||exact.recipe.direction==='reverse'||exact.items.length!==1||exact.intent==='repair'||exact.practice||['confirmation','due'].includes(exact.reason))return;
  const item=exact.items[0],ix=indexes(b),f=ix.factsByEntityAndKey.get(item.entityId)?.get(exact.recipe.answerKey)?.find(f=>f.id===item.factId),range=f&&yearInterval(f),p=ix.propertyById.get(exact.recipe.answerKey);
  if(!range||p?.learning?.rangeBoundary==='off'||p?.learning?.choice==='off')return;

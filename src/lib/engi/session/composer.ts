@@ -46,7 +46,7 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   const item={...i},recipe={...r},pool=poolFor(r),exemplar=selectExemplar(b,i.entityId,r,m);if(r.cue==='image'){if(!exemplar)continue;item.image=exemplar.url;item.mediaId=exemplar.id}
   // A selected scope still uses global context distractors. Reuse that pool
   // rather than resolving every object's images and facts for each proposal.
-  const globalRecipe=b.studyScope&&r.tag===b.studyScope.id?context?.recipes.find(g=>g.tag===undefined&&g.subjectType===r.subjectType&&g.answerKey===r.answerKey&&g.cue===r.cue&&g.direction===r.direction&&g.format===r.format&&g.answerPresentation===r.answerPresentation&&JSON.stringify(g.mediaRoles)===JSON.stringify(r.mediaRoles)):undefined;
+  const globalRecipe=b.studyScope&&r.tag===b.studyScope.id?context?.recipes.find(g=>g.tag===undefined&&g.subjectType===r.subjectType&&g.answerKey===r.answerKey&&g.dateEdge===r.dateEdge&&g.cue===r.cue&&g.direction===r.direction&&g.format===r.format&&g.answerPresentation===r.answerPresentation&&JSON.stringify(g.mediaRoles)===JSON.stringify(r.mediaRoles)):undefined;
   const answerPool=b.studyScope&&r.tag===b.studyScope.id?(globalRecipe?poolFor(globalRecipe):eligible(b,{...r,tag:undefined})):pool;
   const imagePool=r.answerPresentation==='image'?answerPool.filter((i,n,all)=>i.answerImage&&(i.answerId===item.answerId||i.answerImage!==item.answerImage)&&all.findIndex(x=>x.answerImage===i.answerImage)===n):answerPool;
   const nearby=(nearbyNumericDistractors(b,item,r)??intervalDistractors(b,item,r)),previousNumeric=[...history].reverse().find(t=>t.numericChoiceMode&&!t.retryOf);
@@ -56,6 +56,7 @@ export function composeUnit(b:Bundle,m:Memory,tag='all',format='mixed',history:T
   const options=shuffle([{id:item.answerId,name:item.answer},...(twin?wrong.slice(0,1):wrong)]);
   if(r.answerPresentation==='image')for(const o of options){const candidate=answerPool.find(i=>i.answerId===o.id);Object.assign(o,{image:candidate?.answerImage,mediaId:candidate?.answerMediaId});}
   const p=properties(b).find(p=>p.id===r.answerKey);recipe.prompt=questionPrompt(p??{id:r.answerKey,name:r.label??'Имя',learnable:true,valueKind:'text',cardinality:'one'},item.valueCue?.text??item.name,r.format,r.direction);
+  if(r.dateEdge==='start')recipe.prompt=(p?.learning?.periodStart?.question??p?.promptTemplates?.rangeStart??`В каком году: ${p?.learning?.periodStart?.name??'начало периода'}?`).replace(/\{subject\}/g,item.name);
   if(r.answerKey==='created_by'&&r.cue==='image'&&!p?.promptTemplates?.forward)recipe.prompt='Кто автор этой работы?';
   if(p?.valueKind==='image')recipe.prompt=r.answerPresentation==='image'?`Выберите ${p.name.toLowerCase()} для: ${item.name}`:(p.promptTemplates?.forward&&!p.promptTemplates.forward.includes('{subject}')?p.promptTemplates.forward:`Какому объекту принадлежит ${p.name.toLowerCase()}?`);
   if(r.answerKey==='identity')recipe.prompt=r.answerPresentation==='image'?'Выберите подходящее изображение.':'Кто или что на изображении?';

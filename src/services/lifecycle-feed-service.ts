@@ -132,7 +132,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  const earlyContext:Task[]=[];
  const sinceOrder=history.slice(history.map(t=>t.recipe.format).lastIndexOf('sort')+1).length;
  if(pool.context.standaloneOrderingTargets.size&&(!s.format||['mixed','sort'].includes(s.format))&&!due.length&&(sinceOrder>=6||!catalog.length&&(sinceOrder>=3||!history.length))){
-  const known=new Set(catalog.filter(e=>!e.suspended&&e.goal.knowledge.kind==='fact'&&(ledger.units.some(u=>u.stage==='completed'&&propertyKey(u.goal)===propertyKey(e.goal))||memories.has(e.goal.id)&&!active.has(propertyKey(e.goal)))).map(e=>e.goal.knowledge.key));
+  const known=new Set(catalog.filter(e=>!e.suspended&&e.goal.knowledge.kind==='fact'&&(ledger.units.some(u=>u.stage==='completed'&&propertyKey(u.goal)===propertyKey(e.goal))||memories.has(e.goal.id)&&!active.has(propertyKey(e.goal)))).flatMap(e=>e.targetIds));
   const task=chronologyPractice(b,enabled,known,new Set(catalog.filter(e=>active.has(propertyKey(e.goal))).map(e=>e.goal.id)),s.tag??'all','sort',history,s.id+(s.completedCount??0),true);
   if(task)earlyContext.push(task);
  }
@@ -167,7 +167,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
  }
  const protectedGoals=new Set(catalog.filter(e=>active.has(propertyKey(e.goal))).map(e=>e.goal.id));
  const completedKeys=new Set([...ledger.units.filter(u=>u.stage==='completed').map(u=>propertyKey(u.goal)),...catalog.filter(e=>memories.has(e.goal.id)&&!active.has(propertyKey(e.goal))).map(e=>propertyKey(e.goal))]);
- const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(propertyKey(e.goal))&&e.goal.knowledge.kind==='fact').map(e=>e.goal.knowledge.key));
+ const knownFacts=new Set(catalog.filter(e=>!e.suspended&&completedKeys.has(propertyKey(e.goal))&&e.goal.knowledge.kind==='fact').flatMap(e=>e.targetIds));
  let diagnosticCache:Task|undefined,diagnosticRead=false;
  const diagnostic=()=>{if(diagnosticRead)return diagnosticCache;diagnosticRead=true;return diagnosticCache=chronologyPractice(b,enabled,knownFacts,protectedGoals,s.tag??'all',s.format??'mixed',history,s.id+(s.completedCount??0));};
  const lastDiagnostic=history.map(t=>!!t.recipe.diagnostic).lastIndexOf(true),diagnosticActions=history.slice(lastDiagnostic+1).reduce((n,t)=>n+Math.max(1,t.items.length),0);

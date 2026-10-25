@@ -1,3 +1,4 @@
+import {periodStart} from '../questions/period-start';
 import {matchingResponseKey} from '../questions/matching-response-key';
 import {yearInterval} from '../questions/date-interval';
 import {orderingValues,compatibleOrder} from '../questions/ordering';
@@ -33,6 +34,11 @@ export function associationGoal(b: Bundle, f: Fact, skill: LearningGoal['skill']
   return defineGoal({ knowledge:{kind:'fact',key:f.id},skill,direction,cueRole:direction==='reverse'?'value-to-subject':'subject-to-value',
     precision:f.valueKind==='date'?f.datePrecision??'year':'value',revision:factRevision(b,f) });
 }
+export function periodStartGoal(b:Bundle,f:Fact,skill:LearningGoal['skill']){
+ const start=periodStart(b,f);if(!start||!trusted(f))throw Error('Period start is unavailable');
+ return defineGoal({knowledge:{kind:'fact',key:f.id},skill,direction:'forward',cueRole:'subject-to-value',precision:'period-start-year',revision:version([f.entityId,f.key,start.year])});
+}
+function claimForStart(b:Bundle,f:Fact):Claim{return {key:`fact-start:${f.id}`,revision:periodStartGoal(b,f,'recognition').revision,revealsGoalIds:['recognition','recall'].map(s=>periodStartGoal(b,f,s as LearningGoal['skill']).id)};}
 export function completeSetGoal(b: Bundle, entityId: string, propertyId: string) {
   const rows=b.facts.filter(f=>f.entityId===entityId&&f.key===propertyId&&!f.archived);
   if (!rows.length || rows.some(f=>!trusted(f)||!f.completeSet||f.valueKind!=='entity'||f.learnable===false)) throw Error('Complete set is not confirmed');
@@ -43,7 +49,7 @@ export function claimForName(b: Bundle, id: string): Claim {
   return {key:`entity:${id}`,revision:entityRevision(b,id),revealsGoalIds:['recognition','recall'].map(skill=>identityGoal(b,id,skill as LearningGoal['skill']).id)};
 }
 export function claimForFact(b: Bundle, f: Fact): Claim {
-  return {key:`fact:${f.id}`,revision:factRevision(b,f),revealsGoalIds:f.learnable===false?[]:['recognition','recall'].flatMap(skill=>['forward','reverse'].map(direction=>associationGoal(b,f,skill as LearningGoal['skill'],direction as LearningGoal['direction']).id))};
+  return {key:`fact:${f.id}`,revision:factRevision(b,f),revealsGoalIds:f.learnable===false?[]:['recognition','recall'].flatMap(skill=>['forward','reverse'].map(direction=>associationGoal(b,f,skill as LearningGoal['skill'],direction as LearningGoal['direction']).id)).concat(periodStart(b,f)?claimForStart(b,f).revealsGoalIds:[])};
 }
 /** Compiles the information actually rendered by the current StudyFeed, not every field in Item. */
 export function compileTaskContract(b: Bundle, task: Task): TaskContract {
@@ -54,7 +60,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   const revisions: Record<string,string>={}, addClaim=(claim:Claim)=>{revisions[claim.key]=claim.revision;return claim;};
   for(const item of task.items){
     revisions[`entity:${item.entityId}`]=entityRevision(b,item.entityId);
-    if(item.factId){const f=factFor(b,item);revisions[`fact:${f.id}`]=factRevision(b,f);
+    if(item.factId){const f=factFor(b,item);if(item.dateEdge==='start'){const start=periodStart(b,f);if(!start||item.year!==start.year||(!task.contextual&&item.answer!==String(start.year)))throw Error('Period start disagrees with graph');}revisions[`fact:${f.id}`]=factRevision(b,f);
       if(task.recipe.direction==='reverse'){
         const cue=valueCue(b,f);if(!cue||cue.key!==item.valueCue?.key||cue.text!==item.valueCue.text||item.entityId!==f.entityId||item.answerId!==f.entityId)throw Error('Reverse cue disagrees with graph');
         const owners=valueOwners(b,cue.key);if(task.recipe.format==='recall_reveal'&&owners.size!==1||task.options.some(o=>o.id!==item.answerId&&owners.has(o.id)))throw Error('Reverse answer is ambiguous');
@@ -70,13 +76,13 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   }
   if(task.recipe.answerPresentation==='image')for(const option of task.options){const media=b.media.find(m=>m.id===option.mediaId&&!m.archived),owned=task.recipe.answerKey==='identity'?allowedMedia(b,option.id,task.recipe).some(m=>m.id===media?.id):b.facts.some(f=>trusted(f)&&f.entityId===option.id&&f.key===task.recipe.answerKey&&f.valueMediaId===media?.id);if(!media||media.url!==option.image||media.entityId!==option.id||!owned)throw Error('Image option is unavailable');revisions[`media:${media.id}`]=version([media.entityId,media.url,media.role,media.learningExemplar]);}
   const definitions=properties(b);
-  const keys=task.intervalExercise?.kind==='bands'?new Set(task.items.map(i=>factFor(b,i).key)):new Set([task.recipe.answerKey]);
+  const keys=task.intervalExercise?.kind==='bands'||task.contextual?new Set(task.items.map(i=>factFor(b,i).key)):new Set([task.recipe.answerKey]);
   for(const key of keys){const p=definitions.find(p=>p.id===key);if(p){if(task.intervalExercise?.kind==='bands'&&(!p.learnable||p.learning?.rangeBands==='off'||p.learning?.match==='off'))throw Error('Period property is disabled');revisions[`property:${p.id}`]=version([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse,...(task.intervalExercise?.kind==='bands'&&task.intervalExercise.interaction==='quiz'?[p.name,p.shortName]:[])]);}}
   const goals:LearningGoal[]=[],supportGoals:LearningGoal[]=[];
-  const goalFor=(i:Item)=>i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
+  const goalFor=(i:Item)=>i.dateEdge==='start'?periodStartGoal(b,factFor(b,i),skill):i.factId?associationGoal(b,factFor(b,i),skill,task.recipe.direction??'forward'):identityGoal(b,i.entityId,skill);
   const isSupport=(item:Item)=>task.contextual?.supportTargetIds.includes(item.targetId)||(task.intervalExercise?.kind==='bands'&&task.intervalExercise.scale.bands.some(b=>b.id===item.answerId&&b.support));
   let response:TaskContract['response'],actionFamily:TaskContract['actionFamily'],practice=!!task.practice||task.recipe.diagnostic;
-  if(fmt==='self_check'){response={kind:'practice-view',cards:task.items.map(i=>({entityId:i.entityId,claimKey:i.factId?`fact:${i.factId}`:`entity:${i.entityId}`}))};actionFamily='explore';practice=true;}else if(fmt==='multi_choice'){
+  if(fmt==='self_check'){response={kind:'practice-view',cards:task.items.map(i=>({entityId:i.entityId,claimKey:i.factId?`${i.dateEdge?'fact-start':'fact'}:${i.factId}`:`entity:${i.entityId}`}))};actionFamily='explore';practice=true;}else if(fmt==='multi_choice'){
     const g=completeSetGoal(b,first.entityId,task.recipe.answerKey),rows=b.facts.filter(f=>f.entityId===first.entityId&&f.key===task.recipe.answerKey&&!f.archived);
     const expected=[...new Set(rows.map(f=>f.valueEntityId!))].sort();
     if(!task.answerSet||version([...task.answerSet].sort())!==version(expected))throw Error('A partial set cannot be presented as all values');
@@ -118,10 +124,10 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
     if(fmt!=='missing'&&task.contextual?.kind!=='boundary')for(const item of task.items){
     if(fmt==='sort'&&item.ordering){for(const id of item.ordering.factIds){const f=b.facts.find(f=>f.id===id)!;feedbackClaims.push(addClaim({...claimForFact(b,f),when:'order-complete'}));}continue;}
     if(item.factId){
-      const fact=factFor(b,item),claim=claimForFact(b,fact);
+      const fact=factFor(b,item),claim=item.dateEdge==='start'?claimForStart(b,fact):claimForFact(b,fact);
       // Ordering reveals years only after the player completes the screen.
       if(fmt==='sort'||fmt==='timeline'){
-        if(fact.valueKind==='date'&&fact.datePrecision&&fact.datePrecision!=='year')claim.revealsGoalIds=[];
+        if(!item.dateEdge&&fact.valueKind==='date'&&fact.datePrecision&&fact.datePrecision!=='year')claim.revealsGoalIds=[];
         if(fmt==='sort')claim.when='order-complete';
       }
       feedbackClaims.push(addClaim(claim));
@@ -134,7 +140,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(fmt==='recall_reveal')hintClaims.push({key:'early-answer',revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
-  if(task.contextual){for(const item of task.items){const f=factFor(b,item),number=task.contextual.kind==='order'&&f.valueKind==='number'&&Number.isFinite(f.valueNumber);if(number?item.year!==f.valueNumber:f.valueKind!=='date'||f.datePrecision!=='year'||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact ordering data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
+  if(task.contextual){for(const item of task.items){const f=factFor(b,item),number=task.contextual.kind==='order'&&f.valueKind==='number'&&Number.isFinite(f.valueNumber);if(number?item.year!==f.valueNumber:f.valueKind!=='date'||(item.dateEdge==='start'?!periodStart(b,f):f.datePrecision!=='year')||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact ordering data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
   if(task.intervalExercise){
     for(const item of task.items){const f=factFor(b,item),range=yearInterval(f);if(!range||task.recipe.direction==='reverse')throw Error('Interval requires exact year bounds');
       if(task.intervalExercise.kind==='endpoint'&&(task.items.length!==1||item.answerId!==String(range[task.intervalExercise.edge])||JSON.stringify(item.interval)!==JSON.stringify(range)))throw Error('Incorrect endpoint answer');

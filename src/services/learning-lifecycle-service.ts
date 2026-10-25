@@ -1,3 +1,4 @@
+import {periodStartSourceTarget} from '../lib/engi/questions/period-start';
 import {readGoalStateRows} from './goal-state-rows';
 import {propertyWorkload} from '../lib/engi/knowledge/property-workload';
 import type {EngiDB} from '../db/engi-db';
@@ -31,7 +32,7 @@ export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=n
   for(const card of ledger.cards){
    const prior=unitsByEntity.get(card.entityId)??[],base=(g:typeof prior[number]['goal'])=>JSON.stringify([g.knowledge.kind,g.knowledge.key,g.direction,g.precision]);
    const revisions=new Map<string,Set<string>>();for(const u of prior){const key=base(u.goal),values=revisions.get(key)??new Set<string>();values.add(u.goal.revision);revisions.set(key,values);}
-   const changed=(byEntity.get(card.entityId)??[]).filter(e=>{const old=revisions.get(base(e.goal));return old&&([...old].some(r=>r!==e.goal.revision))&&!keys.has(acquisitionKey(e.goal));});
+   const changed=(byEntity.get(card.entityId)??[]).filter(e=>{const old=revisions.get(base(e.goal));return (old&&[...old].some(r=>r!==e.goal.revision)||e.goal.precision==='period-start-year'&&prior.some(u=>u.goal.knowledge.kind==='fact'&&u.goal.knowledge.key===e.goal.knowledge.key&&u.goal.precision==='range'))&&!keys.has(acquisitionKey(e.goal));});
    if(changed.length){dirty=true;ledger=admitAcquisition(ledger,card.entityId,changed.map(e=>e.goal),now,'migration');for(const e of changed)keys.add(acquisitionKey(e.goal));}
   }
   if(dirty)await db.appMeta.put({key:LIFECYCLE_KEY,value:ledger});return ledger;
@@ -42,7 +43,7 @@ export async function ensureLifecycle(db:EngiDB,catalog:GoalCatalogEntry[],now=n
  const rows=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'memory'),memories=new Map(rows.filter(r=>!!r).map(r=>[r!.value.goalId,r!.value as GoalMemory]));
  const legacyTargets=new Set((await db.learningState.toArray()).filter(r=>!r.payload.legacyOf).map(r=>r.id));
  const exposures=await readGoalStateRows(db,catalog.map(e=>e.goal.id),'exposure');
- const disclosedKeys=new Set(catalog.filter((e,i)=>!!exposures[i]||memories.has(e.goal.id)||e.targetIds.some(id=>legacyTargets.has(id))).map(e=>acquisitionKey(e.goal)));
+ const disclosedKeys=new Set(catalog.filter((e,i)=>!!exposures[i]||memories.has(e.goal.id)||e.targetIds.some(id=>legacyTargets.has(id)||legacyTargets.has(periodStartSourceTarget(id)??''))).map(e=>acquisitionKey(e.goal)));
  const introduced=new Set<string>((await db.appMeta.get('introducedEntities'))?.value??[]);
  for(const entry of catalog)if(memories.has(entry.goal.id))for(const id of entry.entityIds)introduced.add(id);
  for(const entityId of introduced){

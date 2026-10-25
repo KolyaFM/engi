@@ -10,7 +10,7 @@ export function buildIntervalGroup(b:Bundle,ready:GoalProposal[],supports:GoalPr
  if(history.slice(-6).some(t=>t.intervalExercise?.kind==='bands')||history.at(-1)?.recipe.format==='sort')return;
  const ix=indexes(b),facts=new Map(b.facts.map(f=>[f.id,f])),fact=(p:GoalProposal)=>facts.get(p.items[0]?.factId??'');
  const ranges=new Map([...ready,...supports].map(p=>{const f=fact(p);return [p,f&&yearInterval(f)] as const;})),range=(p:GoalProposal)=>ranges.get(p);
- const valid=(p:GoalProposal)=>{const f=fact(p),property=f&&ix.propertyById.get(f.key);return p.goals.length===1&&p.goals[0].skill==='recognition'&&p.recipe.format==='choice'&&p.recipe.direction!=='reverse'&&p.items.length===1&&!!range(p)&&property?.learnable&&property.learning?.rangeBands!=='off'&&property.learning?.match!=='off';};
+ const valid=(p:GoalProposal)=>{const f=fact(p),property=f&&ix.propertyById.get(f.key);return !p.items[0]?.dateEdge&&p.goals.length===1&&p.goals[0].skill==='recognition'&&p.recipe.format==='choice'&&p.recipe.direction!=='reverse'&&p.items.length===1&&!!range(p)&&property?.learnable&&property.learning?.rangeBands!=='off'&&property.learning?.match!=='off';};
  const candidates=[...new Map(ready.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,24);
  const known=[...new Map(supports.filter(valid).map(p=>[p.items[0].targetId,p])).values()].slice(0,12);
  function create(selected:GoalProposal[],support?:GoalProposal):Task|undefined{

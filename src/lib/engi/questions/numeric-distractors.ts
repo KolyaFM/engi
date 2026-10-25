@@ -8,7 +8,7 @@ export function nearbyNumericDistractors(b:Bundle,item:Item,recipe:Recipe,random
  if(!fact)return;
  let value:number,min:number,max=Number.MAX_SAFE_INTEGER,suffix='';
  if(fact.valueKind==='date'){
-  if(fact.datePrecision&&fact.datePrecision!=='year'||!/^\d{4}(?:-|$)/.test(fact.dateStart??'')||fact.dateEnd&&fact.dateEnd.slice(0,4)!==fact.dateStart?.slice(0,4))return;
+  if(!item.dateEdge&&(fact.datePrecision&&fact.datePrecision!=='year'||!/^\d{4}(?:-|$)/.test(fact.dateStart??'')||fact.dateEnd&&fact.dateEnd.slice(0,4)!==fact.dateStart?.slice(0,4)))return;
   value=Number(fact.dateStart!.slice(0,4));min=1;max=9999;
  }else if(fact.valueKind==='number'){
   value=fact.valueNumber!;min=value>0?1:value===0?0:Number.MIN_SAFE_INTEGER;suffix=fact.unit?' '+fact.unit:'';

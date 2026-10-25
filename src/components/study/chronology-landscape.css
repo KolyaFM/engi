@@ -41,3 +41,6 @@ body .chronology-horizontal .sort-mark:empty,body .chronology-horizontal .sort-y
  body .chronology-horizontal .sort-position { flex-basis:32px; padding:2px 4px; gap:4px; }
  body .chronology-horizontal .sort-content strong { font-size:14px; }
 }
+.chronology-list .sort-content.has-date-label { flex-direction:column; justify-content:center; gap:4px; min-height:0; }
+.chronology-list .sort-content.has-date-label img { flex:1 1 0; min-height:0; height:0; }
+.sort-date-label { flex:0 0 auto; color:var(--muted-foreground,#817a73); font-size:11px; line-height:1.2; text-align:center; overflow-wrap:anywhere; }

@@ -1,3 +1,4 @@
+import {periodStartSourceTarget} from '../questions/period-start';
 import type {Bundle,Memory} from '../types';
 import {canonicalTargets} from '../questions/recipe-factory';
 import {triagedMemory} from './bootstrap';
@@ -5,10 +6,10 @@ import {triagedMemory} from './bootstrap';
 export function directionConfiguration(b:Bundle,rows:Memory[],enabled=true):Memory[]{
  if(!enabled)return rows;
  const existing=new Map(rows.filter(m=>!m.legacyOf).map(m=>[m.id,m]));
- if(!rows.some(m=>/:(forward|reverse)$/.test(m.id)&&!existing.has(m.id.replace(/:(forward|reverse)$/,m.id.endsWith(':reverse')?':forward':':reverse'))))return rows;
+ if(!b.properties?.some(p=>p.learning?.periodStart)&&!rows.some(m=>/:(forward|reverse)$/.test(m.id)&&!existing.has(m.id.replace(/:(forward|reverse)$/,m.id.endsWith(':reverse')?':forward':':reverse'))))return rows;
  const extra:Memory[]=[];
  for(const item of canonicalTargets(b))if(item.factId&&!existing.has(item.targetId)){
-  const other=existing.get(item.targetId.replace(/:(forward|reverse)$/,item.targetId.endsWith(':reverse')?':forward':':reverse'));if(!other)continue;
+  const other=existing.get(periodStartSourceTarget(item.targetId)??item.targetId.replace(/:(forward|reverse)$/,item.targetId.endsWith(':reverse')?':forward':':reverse'));if(!other)continue;
   const row=triagedMemory(item,other.initialFamiliarity??'red','',0);
   if(other.status==='suspended'){row.status='suspended';row.suspendedFrom=other.suspendedFrom;}
   extra.push(row);

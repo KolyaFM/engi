@@ -5,7 +5,7 @@ import {groupContext} from './group-affinity';
 export function buildSelfCheck(b:Bundle,ready:GoalProposal[],affinity=groupContext(b),history:Task[]=[]):Task|undefined{
  // Both directions test the same image property. Present its own image as the
  // front even when the ordinary choice generator picked image answer buttons.
- ready=ready.filter(p=>p.recipe.direction!=='reverse').map(p=>p.recipe.answerPresentation==='image'&&b.properties?.some(d=>d.id===p.recipe.answerKey&&d.valueKind==='image')?{...p,recipe:{...p.recipe,cue:'image',answerPresentation:undefined},items:p.items.map(i=>({...i,image:i.answerImage,mediaId:i.answerMediaId}))}:p);
+ ready=ready.filter(p=>p.recipe.direction!=='reverse'&&!p.items.some(i=>i.dateEdge)).map(p=>p.recipe.answerPresentation==='image'&&b.properties?.some(d=>d.id===p.recipe.answerKey&&d.valueKind==='image')?{...p,recipe:{...p.recipe,cue:'image',answerPresentation:undefined},items:p.items.map(i=>({...i,image:i.answerImage,mediaId:i.answerMediaId}))}:p);
  // Keep self-check history beyond the shorter ordinary object/pair cooldown.
  // Count the actual fact, so another property of the same object stays eligible.
  const key=(item:Task['items'][number],answerKey:string)=>JSON.stringify([item.entityId,item.factId??answerKey]);

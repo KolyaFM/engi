@@ -1,3 +1,4 @@
+import {periodStart,periodStartTarget} from './period-start';
 import {formatDateFact,yearInterval} from './date-interval';
 import {orderingValues,orderingTargets,selectOrderItems} from './ordering';
 import {reversePromptAvailable} from './question-templates';
@@ -17,6 +18,11 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  const def=ix.propertyById.get(r.answerKey);if(!def||!def.learnable||def.archived)return [];
  if(deck?.learning.propertyIds&&!deck.learning.propertyIds.includes(r.answerKey))return [];
  const all=ix.factsByEntityAndKey.get(e.id)?.get(r.answerKey)??[];const values=all.filter(trusted);if(!values.length||all.some(f=>!trusted(f)))return [];
+ if(r.dateEdge==='start'){
+  if(values.length!==1||deck?.learning.excludedFactIds?.includes(values[0].id))return [];
+  const f=values[0],start=periodStart(b,f);if(!start||r.format==='sort'&&start.sort==='off')return [];
+  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:periodStartTarget(f.id),factId:f.id,dateEdge:'start',chronologyLabel:start.name,answer:String(start.year),answerId:String(start.year),year:start.year,aliases:[],sourceUrl:f.source.url??'',summary:e.summary}];
+ }
  if(r.format==='sort'){
   if(all.some(f=>f.valueKind!==def.valueKind||deck?.learning.excludedFactIds?.includes(f.id))||def.cardinality==='one'&&new Set(all.map(factValue)).size>1)return [];
   const ordering=orderingValues(all);if(!ordering)return [];const f=values[0];
@@ -43,6 +49,13 @@ export function recipes(b:Bundle):Recipe[]{refreshValueOwners(b);const ix=indexe
  for(const [tag,members] of scopes)for(const type of new Set(members.map(e=>e.type))){const typed=members.filter(e=>e.type===type);const image=typed.some(e=>ix.mediaByEntity.has(e.id));
  if(image){const base=recipe(tag,type,'identity','image','image_to_name','choice','Кто или что на изображении?');const pool=questionPool(base);if(pool.length){result.push({...base,format:'recall_reveal',id:base.id.replace(/choice$/,'recall_reveal'),evidence:{...base.evidence!,selfReport:true}});if(new Set(pool.map(i=>i.answerId)).size>=3){result.push(base);if(pool.length>=3)result.push({...base,id:base.id.replace(/choice$/,'match'),format:'match',feed:{...base.feed!,presentation:'rapid_sequence'}})}const imageAnswer={...base,id:base.id+':image-answer',cue:'name' as const,answerPresentation:'image' as const};if(new Set(questionPool(imageAnswer).map(i=>i.answerImage)).size>=4)result.push(imageAnswer);}}
  for(const p of properties(b).filter(p=>p.learnable&&(!p.subjectTypes?.length||p.subjectTypes.includes(type)))){
+  if(p.learning?.periodStart&&p.valueKind==='date'&&p.cardinality==='one'){
+   for(const format of ['choice','recall_reveal','sort'] as const){
+    if(format==='choice'&&p.learning.choice==='off'||format==='recall_reveal'&&p.learning.recallReveal==='off'||format==='sort'&&p.learning.periodStart.sort==='off')continue;
+    const next={...recipe(tag,type,p.id,'name',`property:${p.id}:start`,format,p.learning.periodStart.name),dateEdge:'start' as const};next.id+=':start';
+    const pool=questionPool(next);if(pool.length&&(format!=='sort'||selectOrderItems(pool).length>=3))result.push(next);
+   }
+  }
   if(['date','number'].includes(p.valueKind)&&p.learning?.sort==='on'){
    const sort=recipe(tag,type,p.id,'name',builtinKey(p,'name'),'sort',p.name);if(selectOrderItems(questionPool(sort)).length>=3)result.push(sort);
   }
@@ -56,8 +69,8 @@ export function recipes(b:Bundle):Recipe[]{refreshValueOwners(b);const ix=indexe
    if(direction==='reverse'){
     const recall={...base,format:'recall_reveal' as const};if(p.learning?.recallReveal!=='off'&&questionPool(recall).length)formats.push('recall_reveal');
     if(p.learning?.choice!=='off'&&pool.some(i=>new Set(pool.filter(other=>!valueOwners(b,i.valueCue!.key).has(other.answerId)).map(other=>other.answerId)).size>=2))formats.push('choice');
-   }else{if(enabled('recall_reveal'))formats.push('recall_reveal');if((unique.size>=3||pool.some(i=>{const f=b.facts.find(f=>f.id===i.factId);return f&&yearInterval(f);}))&&enabled('choice'))formats.push('choice');if(unique.size>=3&&pool.length>=3&&p.valueKind==='entity'&&enabled('match'))formats.push('match');if(unique.size>=2&&repeated&&p.valueKind==='entity'&&enabled('categorize'))formats.push('categorize');}
-   if(['date','number'].includes(p.valueKind)&&direction==='forward'&&new Set(pool.map(i=>i.year)).size>=3&&(p.valueKind!=='number'||new Set(pool.map(i=>b.facts.find(f=>f.id===i.factId)?.unit??'')).size===1)){if(enabled('sort')&&p.learning?.sort!=='on')formats.push('sort');if(p.valueKind==='date'&&enabled('timeline'))formats.push('timeline');if(p.valueKind==='date'&&enabled('missing'))formats.push('missing')}
+   }else{if(enabled('recall_reveal'))formats.push('recall_reveal');if((unique.size>=3||pool.some(i=>{const f=b.facts.find(f=>f.id===i.factId);return f&&(yearInterval(f)||f.valueKind==='date'&&f.datePrecision==='year'||f.valueKind==='number'&&Number.isSafeInteger(f.valueNumber));}))&&enabled('choice'))formats.push('choice');if(unique.size>=3&&pool.length>=3&&p.valueKind==='entity'&&enabled('match'))formats.push('match');if(unique.size>=2&&repeated&&p.valueKind==='entity'&&enabled('categorize'))formats.push('categorize');}
+  if(['date','number'].includes(p.valueKind)&&direction==='forward'&&new Set(pool.map(i=>i.year)).size>=3&&(p.valueKind!=='number'||new Set(pool.map(i=>b.facts.find(f=>f.id===i.factId)?.unit??'')).size===1)){if(enabled('sort')&&p.learning?.sort!=='on')formats.push('sort');if(p.valueKind==='date'&&enabled('timeline'))formats.push('timeline');if(p.valueKind==='date'&&enabled('missing'))formats.push('missing')}
    for(const f of formats){const next=recipe(tag,type,p.id,base.cue,base.memoryKey,f,base.label!,direction);if(cue!==cues[0])next.id=next.id.replace(`:${f}`,`:${cue}:${f}`);result.push(next)}
   }
  }

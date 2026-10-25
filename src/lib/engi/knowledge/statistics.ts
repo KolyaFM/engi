@@ -2,7 +2,7 @@ import type {LearningGoal} from '../study-core/goals';
 import {dayBoundary} from '../study-core/day-plan';
 
 /** A learned fact is one achievement even if its revision or testing direction changes. */
-export const statisticsKey=(g:LearningGoal)=>JSON.stringify([g.knowledge.kind,g.knowledge.key]);
+export const statisticsKey=(g:LearningGoal)=>JSON.stringify([g.knowledge.kind,g.knowledge.key,...(g.precision==='period-start-year'?[g.precision]:[])]);
 export type StatisticsProperty={key:string;entityId:string;name:string;objectName:string;deckIds:string[];image?:string};
 export type StatisticsInput={now:Date;properties:StatisticsProperty[];completions:{key:string;at?:string}[];learning:string[];known:string[];
  answers:{id:string;key:string;at:string;correct:boolean;scheduled:boolean}[];
