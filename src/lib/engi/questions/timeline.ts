@@ -1,3 +1,4 @@
+import {MIN_YEAR_INDEX} from '../historical-date';
 import type {Item,Task} from '../types';
 
 /** One scale per complete property/category pool, never per selected answer. */
@@ -7,7 +8,7 @@ export function timelineContext(pool:Item[]):NonNullable<Task['timeline']> {
  const low=Math.min(...values),high=Math.max(...values);
  const span=Math.max(100,high-low),margin=Math.max(25,span*.15);
  const unit=span>1000?100:span>300?50:25;
- const min=Math.max(1,Math.floor((low-margin)/unit)*unit),max=Math.ceil((high+margin)/unit)*unit;
+ const min=Math.max(low<1?MIN_YEAR_INDEX:1,Math.floor((low-margin)/unit)*unit),max=Math.ceil((high+margin)/unit)*unit;
  const midpoint=Math.round((min+max)/2),hits=(value:number)=>values.filter(year=>Math.abs(year-value)<=15).length;
  // A tightly clustered chronology must still require an intentional estimate.
  // Select from this shared scale, never from the currently displayed item.

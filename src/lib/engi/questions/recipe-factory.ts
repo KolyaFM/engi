@@ -1,3 +1,4 @@
+import {dateYear,formatHistoricalYear} from '../historical-date';
 import {periodStart,periodStartTarget} from './period-start';
 import {formatDateFact,yearInterval} from './date-interval';
 import {orderingValues,orderingTargets,selectOrderItems} from './ordering';
@@ -21,7 +22,7 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
  if(r.dateEdge==='start'){
   if(values.length!==1||deck?.learning.excludedFactIds?.includes(values[0].id))return [];
   const f=values[0],start=periodStart(b,f);if(!start||r.format==='sort'&&start.sort==='off')return [];
-  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:periodStartTarget(f.id),factId:f.id,dateEdge:'start',chronologyLabel:start.name,answer:String(start.year),answerId:String(start.year),year:start.year,aliases:[],sourceUrl:f.source.url??'',summary:e.summary}];
+  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:periodStartTarget(f.id),factId:f.id,dateEdge:'start',chronologyLabel:start.name,answer:formatHistoricalYear(start.year),answerId:formatHistoricalYear(start.year),year:start.year,aliases:[],sourceUrl:f.source.url??'',summary:e.summary}];
  }
  if(r.format==='sort'){
   if(all.some(f=>f.valueKind!==def.valueKind||deck?.learning.excludedFactIds?.includes(f.id))||def.cardinality==='one'&&new Set(all.map(factValue)).size>1)return [];
@@ -37,8 +38,8 @@ export function eligible(b:Bundle,r:Recipe):Item[]{const ix=indexes(b);const mem
   return [{entityId:e.id,name:e.name,valueCue:cue,targetId:knowledgeUnitId(b,e.id,f.id,'reverse'),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
  }
  if(f.valueKind==='image'){const value=b.media.find(m=>m.id===f.valueMediaId&&!m.archived&&m.entityId===e.id);if(!value)return [];return [{entityId:e.id,name:e.name,image:r.cue==='image'?value.url:undefined,mediaId:r.cue==='image'?value.id:undefined,targetId:knowledgeUnitId(b,e.id,f.id),answer:e.name,aliases:e.aliases,answerId:e.id,answerEntityId:e.id,answerImage:value.url,answerMediaId:value.id,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];}
- const year=f.valueKind==='date'?Number(f.dateStart?.slice(0,4)):f.valueKind==='number'?f.valueNumber:undefined;
- if(f.valueKind==='date'&&(!year||!Number.isFinite(year)))return [];
+ const year=f.valueKind==='date'?dateYear(f):f.valueKind==='number'?f.valueNumber:undefined;
+ if(f.valueKind==='date'&&(!Number.isFinite(year)))return [];
  const dateAnswer=f.valueKind==='date'?formatDateFact(f):undefined;
  const answer=obj?.name??f.valueText??(f.valueKind==='boolean'?(f.valueBoolean?'Да':'Нет'):dateAnswer??String(f.valueNumber??year??'')+(f.unit?' '+f.unit:''));if(!answer)return [];
  return [{entityId:e.id,name:e.name,image,mediaId:media?.id,targetId:knowledgeUnitId(b,e.id,f.id,r.direction,r.cue,f.key),answer,aliases:obj?.aliases??[],answerId:obj?.id??answer,answerEntityId:obj?.id,year,factId:f.id,sourceUrl:f.source.url??'',summary:e.summary}];
@@ -82,7 +83,7 @@ export function canonicalTargets(b:Bundle,tag='all'){
  if(cached)return structuredClone(cached.items);
  const allRecipes=recipes(b),definitions=new Map(properties(b).map(p=>[p.id,p])),facts=new Map(b.facts.map(f=>[f.id,f])),out=new Map<string,Item>();for(const r of allRecipes.filter(r=>r.countsTowardMastery&&(tag==='all'?r.tag===undefined:r.tag===tag)))for(const i of eligible(b,r))out.set(i.targetId,i);
  // Explicit ordering-only fields must still appear in introductions and deck settings.
- for(const r of allRecipes.filter(r=>r.format==='sort'&&definitions.get(r.answerKey)?.learning?.sort==='on'&&(tag==='all'?r.tag===undefined:r.tag===tag)))for(const item of eligible(b,r))for(const id of item.ordering?.factIds??[]){const targetId=knowledgeUnitId(b,item.entityId,id);if(!out.has(targetId)){const fact=facts.get(id)!;out.set(targetId,{...item,ordering:undefined,factId:id,targetId,answer:fact.valueKind==='date'?formatDateFact(fact):String(fact.valueNumber),year:fact.valueKind==='date'?Number(fact.dateStart?.slice(0,4)):fact.valueNumber});}}
+ for(const r of allRecipes.filter(r=>r.format==='sort'&&definitions.get(r.answerKey)?.learning?.sort==='on'&&(tag==='all'?r.tag===undefined:r.tag===tag)))for(const item of eligible(b,r))for(const id of item.ordering?.factIds??[]){const targetId=knowledgeUnitId(b,item.entityId,id);if(!out.has(targetId)){const fact=facts.get(id)!;out.set(targetId,{...item,ordering:undefined,factId:id,targetId,answer:fact.valueKind==='date'?formatDateFact(fact):String(fact.valueNumber),year:fact.valueKind==='date'?dateYear(fact):fact.valueNumber});}}
  const items=[...out.values()];targetCache.push({key,items:structuredClone(items)});if(targetCache.length>4)targetCache.shift();return structuredClone(items);
 }
 

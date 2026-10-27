@@ -1,3 +1,4 @@
+import {dateYear,formatHistoricalYear} from '../historical-date';
 import {periodStart} from '../questions/period-start';
 import {matchingResponseKey} from '../questions/matching-response-key';
 import {yearInterval} from '../questions/date-interval';
@@ -60,7 +61,7 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   const revisions: Record<string,string>={}, addClaim=(claim:Claim)=>{revisions[claim.key]=claim.revision;return claim;};
   for(const item of task.items){
     revisions[`entity:${item.entityId}`]=entityRevision(b,item.entityId);
-    if(item.factId){const f=factFor(b,item);if(item.dateEdge==='start'){const start=periodStart(b,f);if(!start||item.year!==start.year||(!task.contextual&&item.answer!==String(start.year)))throw Error('Period start disagrees with graph');}revisions[`fact:${f.id}`]=factRevision(b,f);
+    if(item.factId){const f=factFor(b,item);if(item.dateEdge==='start'){const start=periodStart(b,f);if(!start||item.year!==start.year||(!task.contextual&&item.answer!==formatHistoricalYear(start.year)))throw Error('Period start disagrees with graph');}revisions[`fact:${f.id}`]=factRevision(b,f);
       if(task.recipe.direction==='reverse'){
         const cue=valueCue(b,f);if(!cue||cue.key!==item.valueCue?.key||cue.text!==item.valueCue.text||item.entityId!==f.entityId||item.answerId!==f.entityId)throw Error('Reverse cue disagrees with graph');
         const owners=valueOwners(b,cue.key);if(task.recipe.format==='recall_reveal'&&owners.size!==1||task.options.some(o=>o.id!==item.answerId&&owners.has(o.id)))throw Error('Reverse answer is ambiguous');
@@ -140,10 +141,10 @@ export function compileTaskContract(b: Bundle, task: Task): TaskContract {
   if(fmt==='recall_reveal')hintClaims.push({key:'early-answer',revision:goals[0].revision,revealsGoalIds:[goals[0].id]});
   const visibleEntities=[...new Set([...task.items.map(i=>i.entityId),...task.options.filter(o=>b.entities.some(e=>e.id===o.id)).map(o=>o.id)])];
   for(const id of visibleEntities)revisions[`entity:${id}`]=entityRevision(b,id);
-  if(task.contextual){for(const item of task.items){const f=factFor(b,item),number=task.contextual.kind==='order'&&f.valueKind==='number'&&Number.isFinite(f.valueNumber);if(number?item.year!==f.valueNumber:f.valueKind!=='date'||(item.dateEdge==='start'?!periodStart(b,f):f.datePrecision!=='year')||item.year!==Number(f.dateStart?.slice(0,4)))throw Error('Context requires current exact ordering data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
+  if(task.contextual){for(const item of task.items){const f=factFor(b,item),number=task.contextual.kind==='order'&&f.valueKind==='number'&&Number.isFinite(f.valueNumber);if(number?item.year!==f.valueNumber:f.valueKind!=='date'||(item.dateEdge==='start'?!periodStart(b,f):f.datePrecision!=='year')||item.year!==dateYear(f))throw Error('Context requires current exact ordering data');if(task.contextual.kind==='boundary'&&(!Number.isFinite(task.contextual.threshold)||item.answerId!==(item.year!<task.contextual.threshold!?'before':'after')))throw Error('Invalid boundary');}}
   if(task.intervalExercise){
     for(const item of task.items){const f=factFor(b,item),range=yearInterval(f);if(!range||task.recipe.direction==='reverse')throw Error('Interval requires exact year bounds');
-      if(task.intervalExercise.kind==='endpoint'&&(task.items.length!==1||item.answerId!==String(range[task.intervalExercise.edge])||JSON.stringify(item.interval)!==JSON.stringify(range)))throw Error('Incorrect endpoint answer');
+      if(task.intervalExercise.kind==='endpoint'&&(task.items.length!==1||item.answerId!==formatHistoricalYear(range[task.intervalExercise.edge])||JSON.stringify(item.interval)!==JSON.stringify(range)))throw Error('Incorrect endpoint answer');
     }
     if(task.intervalExercise.kind==='bands'){
      const scale=task.intervalExercise.scale;if(task.recipe.format!=='match'||task.items.length!==scale.bands.length||task.items.length<3||task.items.length>5||scale.min>=scale.max||!Number.isFinite(scale.min)||!Number.isFinite(scale.max))throw Error('Invalid interval scale');

@@ -1,8 +1,9 @@
+import {MIN_YEAR_INDEX} from '../historical-date';
 import type {DateInterval} from './date-interval';
 
 /** Content selection only: keep old saved exercises and their scales valid. */
 export function arePeriodsClose(periods:DateInterval[]):boolean{
- if(periods.length<3||periods.length>5||periods.some(p=>!Number.isInteger(p.start)||!Number.isInteger(p.end)||p.start<1||p.end>9999||p.start>p.end))return false;
+ if(periods.length<3||periods.length>5||periods.some(p=>!Number.isInteger(p.start)||!Number.isInteger(p.end)||p.start<MIN_YEAR_INDEX||p.end>9999||p.start>p.end))return false;
  const durations=periods.map(p=>p.end-p.start+1).sort((a,b)=>a-b),middle=Math.floor(durations.length/2);
  // A very long event must not enlarge the allowed gaps for all shorter ones.
  const typical=durations.length%2?durations[middle]:(durations[middle-1]+durations[middle])/2;

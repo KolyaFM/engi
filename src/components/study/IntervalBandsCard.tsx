@@ -1,3 +1,4 @@
+import {formatHistoricalYear,formatHistoricalRange} from '../../lib/engi/historical-date';
 import {useEffect,useLayoutEffect,useRef,useState,type CSSProperties} from 'react';
 import type {Task,Item} from '../../lib/engi/types';
 import type {InteractionDraft} from '../../db/engi-db';
@@ -16,9 +17,10 @@ export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaR
  const remaining=task.items.filter(i=>!matched[key(i)]),found=task.items.filter(i=>matched[key(i)]===i.answerId),complete=remaining.length===0;
  const current=remaining[0],activeBand=complete?inspect:current?.answerId,active=scale.bands.find(v=>v.id===activeBand);
  const position=(year:number)=>(year-scale.min)/(scale.max-scale.min)*100,color=(index:number)=>`var(--interval-color-${index%5})`;
+ const yearLabel=(year:number)=>formatHistoricalYear(year,scale.min<1&&scale.max>1);
  const ticks=intervalAxisTicks(scale.min,scale.max,plotWidth);
  const tickSpacing=ticks.length>1?(ticks[1]-ticks[0])/(scale.max-scale.min)*plotWidth:plotWidth;
- const tickFontSize=Math.min(14,tickSpacing/(Math.max(...ticks.map(year=>String(year).length))*0.62+0.3));
+ const tickFontSize=Math.min(14,tickSpacing/(Math.max(...ticks.map(year=>yearLabel(year).length))*0.62+0.3));
  useEffect(()=>{alive.current=true;onMediaReady(true);return()=>{alive.current=false}},[]);
  useLayoutEffect(()=>{const el=axis.current;if(!el)return;const measure=()=>setPlotWidth(el.clientWidth),observer=new ResizeObserver(measure);measure();observer.observe(el);return()=>observer.disconnect();},[]);
  useLayoutEffect(()=>{
@@ -38,18 +40,18 @@ export function IntervalBandsCard({task,progress,busy,onPair,onComplete,onMediaR
  return <section className="interval-bands" aria-label="Сопоставление периодов" aria-busy={pending}>
   <div className="interval-stage">
    <div className="interval-heading"><h2>Какой это период?</h2></div>
-   <div className="interval-chart" role="img" aria-label={`Общая временная шкала: ${scale.min}–${scale.max}. ${scale.bands.length} периодов.`}>
-    <div className="interval-axis" ref={axis} style={{fontSize:tickFontSize}}>{ticks.map((year,n)=><span key={year} className={n===0?'first':n===ticks.length-1?'last':''} style={{left:position(year)+'%',top:0}}>{year}</span>)}</div>
+   <div className="interval-chart" role="img" aria-label={`Общая временная шкала: ${yearLabel(scale.min)} — ${yearLabel(scale.max)}. ${scale.bands.length} периодов.`}>
+    <div className="interval-axis" ref={axis} style={{fontSize:tickFontSize}}>{ticks.map((year,n)=><span key={year} className={n===0?'first':n===ticks.length-1?'last':''} style={{left:position(year)+'%',top:0}}>{yearLabel(year)}</span>)}</div>
     <div className="interval-plot">
-     <div className="interval-grid" aria-hidden="true">{ticks.map(year=><i key={year} style={{left:position(year)+'%'}}/>)}</div>
+     <div className="interval-grid" aria-hidden="true">{ticks.map(year=><i key={year} style={{left:position(year)+'%'}}/>)}{scale.min<1&&scale.max>1&&<i className="interval-era-boundary" style={{left:position(1)+'%'}}/>}</div>
      {scale.bands.map(band=><div key={band.id} className={`interval-band-row ${activeBand===band.id?'is-active':''}`} data-active-band={activeBand===band.id?band.id:undefined} style={{'--band-color':color(band.colorIndex)} as CSSProperties} aria-hidden="true"><span className="interval-band-indicator"><svg viewBox="0 0 12 12" width="12" height="12" fill="none" aria-hidden="true"><path d="M4 2 8 6 4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></span><span className="interval-band-bar" style={{left:position(band.start)+'%',width:(position(band.end+1)-position(band.start))+'%'}}/></div>)}
     </div>
    </div>
-   {active&&<div className="interval-current" aria-live="polite"><span className="interval-color-key" style={{background:color(active.colorIndex)}} aria-hidden="true"/><strong className="interval-current-years">{active.start}–{active.end}</strong></div>}
+   {active&&<div className="interval-current" aria-live="polite"><span className="interval-color-key" style={{background:color(active.colorIndex)}} aria-hidden="true"/><strong className="interval-current-years">{formatHistoricalRange(active.start,active.end,scale.min<1)}</strong></div>}
   </div>
   <div className="interval-records" ref={records}>
    <div className="interval-answers" role="group" aria-label="Варианты ответа">{remaining.map(item=><div key={key(item)} data-record={key(item)}><SurfaceButton className={`interval-answer ${wrong===key(item)?'is-wrong':''}`} aria-label={`${item.name} — ${label(item)}`} disabled={busy||pending} onClick={()=>void check(item)}><strong>{item.name}</strong><span>{label(item)}</span></SurfaceButton></div>)}</div>
-   {found.length>0&&<div className="interval-found">{found.map(item=>{const band=scale.bands.find(b=>b.id===item.answerId)!;return <button key={key(item)} data-record={key(item)} type="button" className="interval-found-row" aria-label={`Посмотреть: ${item.name} — ${label(item)}`} aria-pressed={complete&&inspect===band.id} onClick={()=>{if(complete)setInspect(inspect===band.id?undefined:band.id)}}><span className="interval-color-key" style={{background:color(band.colorIndex)}} aria-hidden="true"/><span><strong>{item.name}</strong><small>{label(item)} · <span className="interval-found-years">{band.start}–{band.end}</span></small></span></button>})}</div>}
+   {found.length>0&&<div className="interval-found">{found.map(item=>{const band=scale.bands.find(b=>b.id===item.answerId)!;return <button key={key(item)} data-record={key(item)} type="button" className="interval-found-row" aria-label={`Посмотреть: ${item.name} — ${label(item)}`} aria-pressed={complete&&inspect===band.id} onClick={()=>{if(complete)setInspect(inspect===band.id?undefined:band.id)}}><span className="interval-color-key" style={{background:color(band.colorIndex)}} aria-hidden="true"/><span><strong>{item.name}</strong><small>{label(item)} · <span className="interval-found-years">{formatHistoricalRange(band.start,band.end,scale.min<1)}</span></small></span></button>})}</div>}
   </div>
   <p className="interval-status" role="status">{status}</p>
   {complete&&<SurfaceButton className="button primary interval-continue" disabled={pending||busy} onClick={onComplete}>Продолжить</SurfaceButton>}

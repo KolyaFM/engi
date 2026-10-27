@@ -1,3 +1,4 @@
+import {dateYear,formatHistoricalYear,MIN_YEAR_INDEX} from '../historical-date';
 import {indexes} from '../indexes';
 import type {Bundle,Item,Recipe,Task} from '../types';
 
@@ -9,11 +10,12 @@ export function nearbyNumericDistractors(b:Bundle,item:Item,recipe:Recipe,random
  let value:number,min:number,max=Number.MAX_SAFE_INTEGER,suffix='';
  if(fact.valueKind==='date'){
   if(!item.dateEdge&&(fact.datePrecision&&fact.datePrecision!=='year'||!/^\d{4}(?:-|$)/.test(fact.dateStart??'')||fact.dateEnd&&fact.dateEnd.slice(0,4)!==fact.dateStart?.slice(0,4)))return;
-  value=Number(fact.dateStart!.slice(0,4));min=1;max=9999;
+  value=dateYear(fact);min=MIN_YEAR_INDEX;max=9999;
  }else if(fact.valueKind==='number'){
   value=fact.valueNumber!;min=value>0?1:value===0?0:Number.MIN_SAFE_INTEGER;suffix=fact.unit?' '+fact.unit:'';
  }else return;
- if(!Number.isSafeInteger(value)||value<min||value>max||item.answer!==String(value)+suffix)return;
+ const display=(n:number)=>fact.valueKind==='date'?formatHistoricalYear(n):String(n)+suffix;
+ if(!Number.isSafeInteger(value)||value<min||value>max||item.answer!==display(value))return;
  const lower=[1,2,3].map(delta=>value-delta).filter(n=>n>=min&&Number.isSafeInteger(n));
  const upper=[1,2,3].map(delta=>value+delta).filter(n=>n<=max&&Number.isSafeInteger(n));
  // Choose the answer's numerical rank first, rather than making it the centre every time.
@@ -25,5 +27,5 @@ export function nearbyNumericDistractors(b:Bundle,item:Item,recipe:Recipe,random
   while(result.length<count)result.push(remaining.splice(Math.floor(random()*remaining.length),1)[0]);
   return result;
  }
- return [...sample(lower,rank),...sample(upper,3-rank)].map(n=>({id:String(n)+suffix,name:String(n)+suffix}));
+ return [...sample(lower,rank),...sample(upper,3-rank)].map(n=>({id:display(n),name:display(n)}));
 }

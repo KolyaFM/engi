@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 3,
+  "name": "Эры и периоды — тест",
+  "description": "Вымышленные объекты для проверки годов до нашей эры, нашей эры и перехода между ними.",
+  "properties": [
+    {"name":"Период","valueType":"date","learning":{"reverse":false,"periodStart":{"name":"Начало периода","question":"В каком году начался период?"}}}
+  ],
+  "entities": [
+    {"name":"Древний период А","type":"Событие","facts":[{"property":"Период","value":{"start":{"year":100,"era":"BCE"},"end":{"year":44,"era":"BCE"}},"verification":"user_confirmed","source":{"kind":"manual","name":"Синтетический пример"}}]},
+    {"name":"Переходный период Б","type":"Событие","facts":[{"property":"Период","value":{"start":{"year":27,"era":"BCE"},"end":14},"verification":"user_confirmed","source":{"kind":"manual","name":"Синтетический пример"}}]},
+    {"name":"Древний период В","type":"Событие","facts":[{"property":"Период","value":{"start":{"year":10,"era":"BCE"},"end":{"year":5,"era":"BCE"}},"verification":"user_confirmed","source":{"kind":"manual","name":"Синтетический пример"}}]},
+    {"name":"Переходный период Г","type":"Событие","facts":[{"property":"Период","value":{"start":{"year":1,"era":"BCE"},"end":8},"verification":"user_confirmed","source":{"kind":"manual","name":"Синтетический пример"}}]},
+    {"name":"Период нашей эры Д","type":"Событие","facts":[{"property":"Период","value":{"start":2,"end":20},"verification":"user_confirmed","source":{"kind":"manual","name":"Синтетический пример"}}]}
+  ],
+  "deck": {"name":"Эры и периоды — тест","members":[{"name":"Древний период А","type":"Событие"},{"name":"Переходный период Б","type":"Событие"},{"name":"Древний период В","type":"Событие"},{"name":"Переходный период Г","type":"Событие"},{"name":"Период нашей эры Д","type":"Событие"}],"learning":{"properties":["Период"],"imageRecognition":false}}
+}

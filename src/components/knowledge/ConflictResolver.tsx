@@ -1,3 +1,4 @@
+import {formatDateFact} from '../../lib/engi/questions/date-interval';
 import {useState} from 'react';
 import type {Bundle} from '../../lib/engi/types';
 import {packConflicts,type ConflictTable} from '../../lib/engi/knowledge/conflicts';
@@ -14,7 +15,7 @@ export function ConflictResolver({bundle,onReload}:{bundle:Bundle;onReload:()=>P
  const typeName=(id:string)=>bundle.entityTypes?.find(t=>t.id===id)?.name??id;
  function details(row:any):[string,string][]{
   if(conflict?.table==='entities')return [['Тип',typeName(row.type)],['Другие названия',row.aliases?.join(', ')||'Нет']];
-  if(conflict?.table==='facts')return [['Объект',bundle.entities.find(e=>e.id===row.entityId)?.name??row.entityId],['Поле',bundle.properties?.find(p=>p.id===row.key)?.name??row.key],['Проверка',({verified:'Проверено',direct:'Прямое подтверждение',user_confirmed:'Подтверждено лично',unverified:'Не проверено',ambiguous:'Неоднозначно',conflict:'Противоречие',rejected:'Отклонено'} as Record<string,string>)[row.verification]??row.verification],...(row.dateStart?[['Период',`${row.dateStart} — ${row.dateEnd??row.dateStart}`] as [string,string]]:[])];
+  if(conflict?.table==='facts')return [['Объект',bundle.entities.find(e=>e.id===row.entityId)?.name??row.entityId],['Поле',bundle.properties?.find(p=>p.id===row.key)?.name??row.key],['Проверка',({verified:'Проверено',direct:'Прямое подтверждение',user_confirmed:'Подтверждено лично',unverified:'Не проверено',ambiguous:'Неоднозначно',conflict:'Противоречие',rejected:'Отклонено'} as Record<string,string>)[row.verification]??row.verification],...(row.dateStart?[['Период',formatDateFact(row)] as [string,string]]:[])];
   if(conflict?.table==='media')return [['Лицензия',row.license],['Основное',row.primary?'Да':'Нет'],['Для обучения',row.learningExemplar===false?'Нет':'Да'],['Источник изображения',row.sourceUrl??'Личное изображение']];
   if(conflict?.table==='tags')return [['Родительская подборка',bundle.tags.find(t=>t.id===row.parentId)?.name??'Нет']];
   if(conflict?.table==='entityTypes')return [['Множественное число',row.pluralName??'Не задано'],['Значок',row.icon??'Нет']];

@@ -1,3 +1,4 @@
+import {formatDateFact} from './date-interval';
 import type {Bundle,Fact,Item} from '../types';
 import {indexes} from '../indexes';
 import {trusted} from '../knowledge/properties';
@@ -8,7 +9,7 @@ export function valueCue(b:Bundle,f:Fact):Item['valueCue']{
  if(f.valueKind==='entity')text=indexes(b).entityById.get(f.valueEntityId??'')?.name;
  else if(f.valueKind==='text')text=f.valueText?.trim();
  else if(f.valueKind==='number'&&Number.isFinite(f.valueNumber))text=String(f.valueNumber)+(f.unit?' '+f.unit:'');
- else if(f.valueKind==='date'&&f.dateStart&&!['range','circa'].includes(f.datePrecision??''))text=f.datePrecision==='day'?f.dateStart.split('-').reverse().join('.'):f.datePrecision==='month'?f.dateStart.slice(0,7).split('-').reverse().join('.'):f.dateStart.slice(0,4);
+ else if(f.valueKind==='date'&&f.dateStart&&!['range','circa'].includes(f.datePrecision??''))text=formatDateFact(f);
  if(!text||text.length>180)return;
  return {text,key:JSON.stringify([f.key,normalize(text)])};
 }

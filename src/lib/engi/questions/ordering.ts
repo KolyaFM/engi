@@ -1,3 +1,4 @@
+import {dateYear} from '../historical-date';
 import type {Fact,Item} from '../types';
 import {trusted} from '../knowledge/properties';
 import {formatDateFact} from './date-interval';
@@ -11,8 +12,8 @@ export function orderingValues(rows:Fact[]):OrderingValues|undefined{
   // Legacy year facts may contain only "1900", without dateEnd. Precision,
   // rather than storage padding, determines their possible calendar bounds.
   const length=f.datePrecision==='year'?4:f.datePrecision==='month'?7:10,prefix=f.dateStart.slice(0,length);
-  if(!(length===4?/^\d{4}$/:length===7?/^\d{4}-\d{2}$/:/^\d{4}-\d{2}-\d{2}$/).test(prefix)||Number(prefix.slice(0,4))<1||f.dateEnd&&f.dateEnd.slice(0,length)!==prefix)return;
-  const key=Number(prefix.replaceAll('-','')),min=length===4?key*10000+101:length===7?key*100+1:key,max=length===4?key*10000+1231:length===7?key*100+31:key;
+  if(!(length===4?/^\d{4}$/:length===7?/^\d{4}-\d{2}$/:/^\d{4}-\d{2}-\d{2}$/).test(prefix)||!Number.isFinite(dateYear(f))||f.dateEnd&&(f.dateEnd.slice(0,length)!==prefix||dateYear(f,'end')!==dateYear(f)))return;
+  const year=dateYear(f),month=Number(prefix.slice(5,7)),day=Number(prefix.slice(8,10)),min=year*10000+(length===4?101:month*100+(length===7?1:day)),max=year*10000+(length===4?1231:month*100+(length===7?31:day));
   return {min,max,label:formatDateFact(f)};
  });if(values.some(v=>!v))return;const ordered=values.filter(v=>!!v).sort((a,b)=>a.min-b.min);
  return {min:Math.min(...ordered.map(v=>v.min)),max:Math.max(...ordered.map(v=>v.max)),factIds:rows.map(f=>f.id).sort(),label:[...new Set(ordered.map(v=>v.label))].join(', '),kind,unit:rows[0].unit??''};
