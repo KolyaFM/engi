@@ -160,8 +160,7 @@ export async function pickLifecycleFeed(db:EngiDB,b:Bundle,enabled:Memory[],s:Se
   // At most one partial/contextual disclosure between exact checks; otherwise
   // the repeated reveals would perpetually push confirmations five minutes away.
   const targets=[...new Map([...selected,...pending].filter(freshIntervalContext).map(p=>[p.goals.map(g=>g.id).join()+':'+p.recipe.format,p])).values()];
-  const supports=pool.proposals.filter(p=>p.goals.every(g=>activeIds.has(g.id)&&memories.has(g.id)&&!active.has(propertyKey(g))&&new Date(memories.get(g.id)!.card.due).getTime()>now));
-  const task=buildIntervalGroup(b,targets,supports,history,Math.max(160,Math.min(560,(s.presentationWidth??360)-100)));
+  const task=buildIntervalGroup(b,targets,history,Math.max(160,Math.min(560,(s.presentationWidth??360)-100)));
   if(audit)decision.checks.intervalBands={status:task?'generated':history.slice(-6).some(t=>t.intervalExercise?.kind==='bands')?'cooldown':'no-compatible-group',count:targets.length};
   if(task&&lane!=='due')contextTasks.push(task);
  }

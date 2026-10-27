@@ -62,7 +62,7 @@ test('source exclusions and selected properties control both period and derived 
 test('derived start cannot be converted into a whole-period boundary or bands task',()=>{
  const b=periodBundle(),proposals=canonicalTargets(b).filter(i=>i.dateEdge).map(i=>{const q=composeUnit(b,triagedMemory(i,'red','',0),'all','choice')!;return {recipe:q.recipe,items:q.items,goals:compileTaskContract(b,q).primaryGoals};});
  const q=composeUnit(b,triagedMemory(canonicalTargets(b).find(i=>i.dateEdge)!,'red','',0),'all','choice')!;
- assert.equal(buildEndpointTask(b,q,undefined,[]),undefined);assert.equal(buildIntervalGroup(b,proposals,[],[],390),undefined);
+ assert.equal(buildEndpointTask(b,q,undefined,[]),undefined);assert.equal(buildIntervalGroup(b,proposals,[],390),undefined);
 });
 test('intro reveals the start through the original period and couples familiarity choices',async()=>{
  const d=new EngiDB('period-start-'+crypto.randomUUID());try{

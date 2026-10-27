@@ -13,29 +13,29 @@ const proposals=(b:Bundle)=>goalProposalPool(b,canonicalTargets(b).map(i=>triage
 test('period groups reject distant eras even when every band is wide enough to render',()=>{
  for(const width of [240,560]){
   const b=fixture([[100,150],[1000,1050],[1900,1950]]);
-  assert.equal(buildIntervalGroup(b,proposals(b),[],[],width),undefined,'readable width alone must not admit unrelated eras');
+  assert.equal(buildIntervalGroup(b,proposals(b),[],width),undefined,'readable width alone must not admit unrelated eras');
  }
 });
 
-test('a distant known reference cannot bypass temporal proximity',()=>{
+test('fewer than three current periods cannot create a group',()=>{
  const b=fixture([[1939,1960],[1970,1990],[1500,1550]]),ready=proposals(b);
- assert.equal(buildIntervalGroup(b,ready.filter(p=>p.items[0].factId!=='f2'),ready.filter(p=>p.items[0].factId==='f2'),[],560),undefined);
+ assert.equal(buildIntervalGroup(b,ready.filter(p=>p.items[0].factId!=='f2'),[],560),undefined);
 });
 
 test('group search skips early outliers and finds a smaller local cluster',()=>{
  const b=fixture([[800,850],[1400,1450],[1939,1945],[1941,1945],[1947,1950]]);
- for(const width of [240,560]){const task=buildIntervalGroup(b,proposals(b),[],[],width);assert(task);assert.equal(task.items.length,3);assert(task.items.every(i=>['f2','f3','f4'].includes(i.factId!)));}
+ for(const width of [240,560]){const task=buildIntervalGroup(b,proposals(b),[],width);assert(task);assert.equal(task.items.length,3);assert(task.items.every(i=>['f2','f3','f4'].includes(i.factId!)));}
 });
 
 test('proximity adapts to long periods and keeps custom mixed event types',()=>{
  for(const ranges of [[[100,400],[250,600],[500,800]],[[1922,1991],[1939,1945],[1955,1975],[1953,1960],[1961,1963]],[[9980,9985],[9987,9990],[9991,9999]]]){
-  const b=fixture(ranges),task=buildIntervalGroup(b,proposals(b),[],[],560);assert(task);assert.equal(task.items.length,ranges.length);
+  const b=fixture(ranges),task=buildIntervalGroup(b,proposals(b),[],560);assert(task);assert.equal(task.items.length,ranges.length);
  }
 });
 
 test('one huge enclosing period cannot make distant short periods comparable',()=>{
  const b=fixture([[1000,1800],[1001,1040],[1750,1789]]);
- assert.equal(buildIntervalGroup(b,proposals(b),[],[],560),undefined);
+ assert.equal(buildIntervalGroup(b,proposals(b),[],560),undefined);
 });
 
 test('proximity uses inclusive years, handles overlap, rejects invalid bounds and does not mutate inputs',()=>{

@@ -153,6 +153,11 @@ export function createTrainerService(d:EngiDB){return {
    if(s.exhausted)return selectNext(d,s);
    if(s.intro&&!s.learningLifecycle){const plan=await createTrainerService(d).getDayPlan();if(Math.min(Math.max(0,plan.newTarget-plan.newGoalIds.length),newAdmission(plan).available)===0)return selectNext(d,s);}
    const task=s.tasks[s.currentPosition];
+   // Retire an unfinished legacy period screen with a pre-revealed reference.
+   // Previously recorded pair answers remain historical; no new answer is graded.
+   if(task?.intervalExercise?.kind==='bands'&&task.intervalExercise.scale.bands.some(b=>b.support)&&!await d.reviewEvents.get(task.id)){
+    await abandonReview(d,task.id);if(task.studyContract)await feedStudyCore(d).skip(task.id);return selectNext(d,s);
+   }
    // An already queued filler from the previous policy must not survive reload.
    // Preserve submitted answers and every genuine rehearsal/review/repair.
    if(s.learningLifecycle&&(!s.format||s.format==='mixed')&&task?.recipe.format==='recall_reveal'&&(task.intent==='practice'||task.reason==='game')&&task.intent!=='repair'&&!task.learningRecall&&!await d.reviewEvents.get(task.id)){

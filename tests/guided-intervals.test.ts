@@ -22,16 +22,16 @@ function fixture():Bundle{
 function proposals(b:Bundle){const enabled=canonicalTargets(b).map(i=>triagedMemory(i,'red','s',0));return {enabled,ready:goalProposalPool(b,enabled,'all','choice').proposals};}
 
 test('guided phone groups mix custom fields, keep five facts and distinguish two periods of one object',()=>{
- const b=fixture(),{ready}=proposals(b),t=buildIntervalGroup(b,ready,[],[],300)!;
+ const b=fixture(),{ready}=proposals(b),t=buildIntervalGroup(b,ready,[],300)!;
  assert(t);assert.equal(t.items.length,5);assert.equal(t.intervalExercise?.kind,'bands');if(t.intervalExercise?.kind==='bands')assert.equal(t.intervalExercise.interaction,'quiz');
  assert.equal(t.items.filter(i=>i.entityId==='kennedy').length,2);assert.equal(t.items.find(i=>i.factId==='fact0')!.interval?.propertyLabel,'Президентство');
  const c=compileTaskContract(b,t);assert(c.response.kind==='mapping');assert.equal(new Set(c.response.bindings.map(v=>v.responseKey)).size,5);assert(c.response.bindings.every(v=>t.items.some(i=>i.targetId===v.responseKey)));
  const changed=structuredClone(b);changed.properties!.find(p=>p.id==='event')!.learning={rangeBands:'off'};assert.throws(()=>compileTaskContract(changed,t));assert(Object.values(taskContentRevisions(changed,t,c)).every(v=>v==='unavailable'));
- const restricted=buildIntervalGroup(changed,proposals(changed).ready,[],[],300)!;assert(restricted);assert(restricted.items.every(i=>!['fact3','fact4'].includes(i.factId!)));
+ const restricted=buildIntervalGroup(changed,proposals(changed).ready,[],300)!;assert(restricted);assert(restricted.items.every(i=>!['fact3','fact4'].includes(i.factId!)));
 });
 
 test('guided pair persistence owns the chosen fact, restores progress and cannot update exact memory',async()=>{
- const b=fixture(),{enabled,ready}=proposals(b),task=buildIntervalGroup(b,ready,[],[],300)!,d=new EngiDB('guided-'+crypto.randomUUID());assert(task);
+ const b=fixture(),{enabled,ready}=proposals(b),task=buildIntervalGroup(b,ready,[],300)!,d=new EngiDB('guided-'+crypto.randomUUID());assert(task);
  try{await putBundle(d,b);await d.learningState.bulkPut(enabled.map(learningRow));const svc=createTrainerService(d),base=await svc.startGoalFeed('all','mixed','daily',{endless:true});await prepareStudyTask(d,b,task);await d.activeSessions.put({...base,tasks:[task],currentPosition:0,intro:undefined,interaction:undefined});
   const kennedy=task.items.filter(i=>i.entityId==='kennedy'),first=kennedy[0],wrong=task.items.find(i=>i.entityId==='ussr')!;
   const failure=await svc.answerMatchPair({sessionId:base.id,taskId:task.id,entityId:first.entityId,responseKey:first.targetId,answerId:wrong.answerId,requestId:'wrong'});assert(!failure.correct);
@@ -46,7 +46,7 @@ test('guided pair persistence owns the chosen fact, restores progress and cannot
 });
 
 test('legacy saved interval contracts retain entity response keys and original property revisions',()=>{
- const b=intervals(),t=buildIntervalGroup(b,proposals(b).ready,[],[],300)!;assert(t.intervalExercise?.kind==='bands');delete t.intervalExercise.interaction;
+ const b=intervals(),t=buildIntervalGroup(b,proposals(b).ready,[],300)!;assert(t.intervalExercise?.kind==='bands');delete t.intervalExercise.interaction;
  const c=compileTaskContract(b,t);assert(c.response.kind==='mapping');assert(c.response.bindings.every(v=>b.entities.some(e=>e.id===v.responseKey)));
  const p=b.properties![0];assert.equal(c.contentRevisions['property:'+p.id],JSON.stringify([p.valueKind,p.cardinality,p.learnable,p.learning,p.promptTemplates,p.inverse]));
 });
